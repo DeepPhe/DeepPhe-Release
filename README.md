@@ -119,8 +119,8 @@ mvn clean package -Dmaven.test.skip=true
 	
 If you are using a binary installation of DeepPhe, you can start the pipelines by executing scripts from the command line:
 ````
-bin/DocumentSummarization
-bin/PhenotypeSummarization
+bin/DocumentSummarizer
+bin/PhenotypeSummarizer
 ````
 
 	
