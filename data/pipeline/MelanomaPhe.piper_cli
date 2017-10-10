@@ -1,0 +1,14 @@
+// InputDirectory
+-i=output/sample/reports/patientX/melanoma
+
+// OutputDirectory
+-o=output/sample/reports/patientX/melanoma
+
+// ConfigDirectory
+-c=data/melanoma
+
+// TcgaIdMapFile
+-t=data/melanoma/transmart/transmart-tcga-mapping-spec.txt
+
+// sectionsOwl
+-w=data/ontology/nlpMelanoma.owl

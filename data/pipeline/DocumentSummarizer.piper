@@ -1,0 +1,18 @@
+// This file contains commands and parameters to run the Deep Phenome document summarizer pipeline
+
+// Available settings for packaged DeepPhe configurations, Breast Cancer and Melanoma:
+# ontologyUri
+! http://ontologies.dbmi.pitt.edu/deepphe/nlpBreastCancer.owl
+! http://ontologies.dbmi.pitt.edu/deepphe/nlpMelanoma.owl
+# owlPath
+! data/ontology/nlpBreastCancer.owl
+! data/ontology/nlpMelanoma.owl
+# LookupXml
+! org/apache/ctakes/cancer/dictionary/lookup/fast/BreastCancer.xml
+! org/apache/ctakes/cancer/dictionary/lookup/fast/Melanoma.xml
+
+// Start with the -NLP- pipeline
+load data/pipeline/DeepPhe.piper
+
+package org.healthnlp.deepphe.uima.ae
+addLogged DocumentSummarizerAE

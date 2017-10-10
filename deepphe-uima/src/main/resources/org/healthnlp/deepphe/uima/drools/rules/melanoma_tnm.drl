@@ -1,0 +1,598 @@
+import org.healthnlp.deepphe.fhir.fact.Fact;
+
+import java.util.Set;
+import java.lang.Integer;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.healthnlp.deepphe.util.FHIRUtils;
+import org.healthnlp.deepphe.util.FHIRConstants;
+
+import org.healthnlp.deepphe.fhir.fact.Fact;
+import org.healthnlp.deepphe.fhir.fact.FactFactory;
+import org.healthnlp.deepphe.fhir.fact.FactHelper;
+
+import org.healthnlp.deepphe.fhir.summary.*;
+import org.healthnlp.deepphe.uima.drools.*;
+
+
+declare melaSuffixes
+	suffixList : List
+end
+
+
+rule "mela-initSuffixies"
+	salience 55560
+	no-loop true
+	when
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)
+		not(melaSuffixes())
+	then
+		melaSuffixes sf = new melaSuffixes();
+		sf.setSuffixList(new ArrayList<String>());
+		insert(sf);
+end
+
+
+
+//Create mela-record-level T
+rule "mela-record-setGenercTClassification"
+	salience 55559
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		IdMapper($oldSummaryId : oldSummaryId, $newSummaryId == newSummaryId)
+		
+		$cPheTclFact : Fact(summaryType == FHIRConstants.CANCER_PHENOTYPE , documentType != FHIRConstants.RECORD_SUMMARY, category == FHIRConstants.HAS_T_CLASSIFICATION, 
+			rulesApplied not contains "setGenercTClassification")
+			
+		not(Fact(summaryType == FHIRConstants.CANCER_PHENOTYPE , documentType == FHIRConstants.RECORD_SUMMARY, category == FHIRConstants.HAS_T_CLASSIFICATION, 
+			provenanceFacts contains $cPheTclFact))
+	then
+			String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+			
+			modify($cPheTclFact){	addRulesApplied("setGenercTClassification") }
+
+			Fact cf = FactFactory.createFact($cPheTclFact, $cPheTclFact.getType(), $domain.getOntologyURI()+"#"+$cPheTclFact.getName(), FHIRConstants.RECORD_SUMMARY);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFact($cPheTclFact);
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			insert(new IdMapper($cPheTclFact.getIdentifier(), newId, $cPheTclFact.getDocumentType(), $cPheTclFact.getSummaryId(), newId));
+					
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+
+end   
+
+
+//Create mela-record-level N
+rule "mela-record-setGenercNClassification"
+	salience 55558
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		IdMapper($oldSummaryId : oldSummaryId, $newSummaryId == newSummaryId)
+		
+		$cPheTclFact : Fact(summaryType == FHIRConstants.CANCER_PHENOTYPE , documentType != FHIRConstants.RECORD_SUMMARY, category == FHIRConstants.HAS_N_CLASSIFICATION, $name : name)
+			
+		not(Fact(summaryType == FHIRConstants.CANCER_PHENOTYPE , documentType == FHIRConstants.RECORD_SUMMARY, category == FHIRConstants.HAS_N_CLASSIFICATION, 
+			provenanceFacts contains $cPheTclFact))
+		then
+			String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+			Fact cf = FactFactory.createFact($cPheTclFact, $cPheTclFact.getType(), $domain.getOntologyURI()+"#"+$name, FHIRConstants.RECORD_SUMMARY);
+			cf.setIdentifier(newId); cf.setSummaryId(newId); 
+			cf.addProvenanceFact($cPheTclFact);
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			insert(new IdMapper($cPheTclFact.getIdentifier(), newId, $cPheTclFact.getDocumentType(), $cPheTclFact.getSummaryId(), newId));
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+
+end 	
+
+//Create mela-record-level M
+rule "mela-record-setGenercMClassification"
+	salience 55557
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		IdMapper($oldSummaryId : oldSummaryId, $newSummaryId == newSummaryId)
+		
+		$cPheTclFact : Fact(summaryType == FHIRConstants.CANCER_PHENOTYPE , documentType != FHIRConstants.RECORD_SUMMARY, category == FHIRConstants.HAS_M_CLASSIFICATION, $name : name)
+			
+		not(Fact(summaryType == FHIRConstants.CANCER_PHENOTYPE , documentType == FHIRConstants.RECORD_SUMMARY, category == FHIRConstants.HAS_M_CLASSIFICATION, 
+			provenanceFacts contains $cPheTclFact))
+		then
+			String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+			Fact cf = FactFactory.createFact($cPheTclFact, $cPheTclFact.getType(), $domain.getOntologyURI()+"#"+$name, FHIRConstants.RECORD_SUMMARY);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFact($cPheTclFact);
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			insert(new IdMapper($cPheTclFact.getIdentifier(), newId, $cPheTclFact.getDocumentType(), $cPheTclFact.getSummaryId(), newId));
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+
+end 
+
+
+//Create mela-record-level prefixes
+
+rule "mela-record-setTNMPrefix"
+	salience 55556
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		IdMapper($oldSummaryId : oldSummaryId, $newSummaryId == newSummaryId)
+		
+		$cPheTFact : Fact(summaryType == FHIRConstants.CANCER_PHENOTYPE , documentType == FHIRConstants.RECORD_SUMMARY, category == FHIRConstants.HAS_T_CLASSIFICATION, 
+			$newCPheSummaryId : summaryId)
+		IdMapper($oldcPheId : oldId, newSummaryId == $newCPheSummaryId)
+		$tnmPrefFact : Fact(summaryType == FHIRConstants.CANCER_PHENOTYPE , documentType != FHIRConstants.RECORD_SUMMARY, category =="hasTNMPrefix",
+			containerIdentifier contains  $oldcPheId, $name : name)
+		not(Fact (summaryType == FHIRConstants.CANCER_PHENOTYPE , documentType == FHIRConstants.RECORD_SUMMARY, category == "hasTNMPrefix", 
+			provenanceFacts contains $tnmPrefFact))
+		
+			
+		then
+
+			String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+			Fact cf = FactFactory.createFact($tnmPrefFact, $tnmPrefFact.getType(), $domain.getOntologyURI()+"#"+$name, FHIRConstants.RECORD_SUMMARY);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFact($tnmPrefFact);
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			insert(new IdMapper($tnmPrefFact.getIdentifier(), newId, $tnmPrefFact.getDocumentType(), $tnmPrefFact.getSummaryId(), newId));
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+
+end  
+
+
+//Create mela-record-level sufffixes
+rule "mela-record-setTNMSuffix"
+	salience 55555
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		IdMapper($oldSummaryId : oldSummaryId, $newSummaryId == newSummaryId)
+		
+		$cPheTFact : Fact(summaryType == FHIRConstants.CANCER_PHENOTYPE , documentType == FHIRConstants.RECORD_SUMMARY, category == FHIRConstants.HAS_T_CLASSIFICATION, 
+			$newCPheSummaryId : summaryId)
+		IdMapper($oldcPheId : oldId, newSummaryId == $newCPheSummaryId)
+		$tnmPrefFact : Fact(summaryType == FHIRConstants.CANCER_PHENOTYPE , documentType != FHIRConstants.RECORD_SUMMARY, category =="hasTNMSuffix",
+			containerIdentifier contains  $oldcPheId, $name : name)
+		not(Fact (summaryType == FHIRConstants.CANCER_PHENOTYPE , documentType == FHIRConstants.RECORD_SUMMARY, category == "hasTNMSuffix", 
+			provenanceFacts contains $tnmPrefFact))
+		$SuffList : melaSuffixes()
+			
+		then
+	
+			String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+			Fact cf = FactFactory.createFact($tnmPrefFact, $tnmPrefFact.getType(), $domain.getOntologyURI()+"#"+$name, FHIRConstants.RECORD_SUMMARY);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFact($tnmPrefFact);
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			insert(new IdMapper($tnmPrefFact.getIdentifier(), newId, $tnmPrefFact.getDocumentType(), $tnmPrefFact.getSummaryId(), newId));
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+			modify ($SuffList){
+				getSuffixList().add($name);
+			}
+
+end  
+
+
+// mela-genericT-2:
+//If there is a generic T value with an asserted prefix “p”, then convert generic T value to a pathologic primary T value. 
+rule "mela-genericT-1-to-Pathologic"
+	salience 55544
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		$origFact : Fact(documentType != FHIRConstants.RECORD_SUMMARY, summaryType ==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_T_CLASSIFICATION)
+		$genericTFact : Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_T_CLASSIFICATION,
+				containerIdentifier contains $newSummaryId, $genericName : name, provenanceFacts contains $origFact)
+		Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == "hasTNMPrefix", name == FHIRConstants.P_MODIFIER)
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_PATHOLOGIC_T_CLASSIFICATION, 
+			provenanceFacts contains $origFact))
+		$SuffList : melaSuffixes()		
+	then
+
+		String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+		Set<String> tSet = GenericToMelaTNMMapper.getMelaClassification(FHIRConstants.P_MODIFIER, $genericName, $SuffList.getSuffixList());
+		for(String brcaName: tSet){
+			Fact cf = FactFactory.createFact($genericTFact, $genericTFact.getType(), $domain.getOntologyURI()+"#"+brcaName, FHIRConstants.RECORD_SUMMARY);
+			cf.setCategory(FHIRConstants.HAS_PATHOLOGIC_T_CLASSIFICATION);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFacts($genericTFact.getProvenanceFacts());
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+		}
+
+end 
+
+
+// mela-genericT-2:
+// If there is a generic T value asserted within a report with type=“SP”, then convert generic T value to a pathologic primary T value. 
+rule "mela-genericT-2-to-Pathologic"
+	salience 55532
+	no-loop true
+	when
+		
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == "hasTNMPrefix", 
+			name == FHIRConstants.P_MODIFIER))
+		
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		$origFact : Fact($documentType : documentType, $documentType != FHIRConstants.RECORD_SUMMARY, summaryType ==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_T_CLASSIFICATION,
+			($documentType == FHIRConstants.PATHOLOGY_REPORT || $documentType == FHIRConstants.SURGICAL_PATHOLOGY_REPORT))
+		$genericTFact : Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_T_CLASSIFICATION,
+				containerIdentifier contains $newSummaryId, $genericName : name, provenanceFacts contains $origFact)
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_PATHOLOGIC_T_CLASSIFICATION, provenanceFacts contains $origFact))		
+		$SuffList : melaSuffixes()
+			
+	then	
+
+		
+		String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+
+		Set<String> tSet = GenericToMelaTNMMapper.getMelaClassification(FHIRConstants.P_MODIFIER, $genericName, $SuffList.getSuffixList());
+		for(String brcaName: tSet){
+			Fact cf = FactFactory.createFact($genericTFact, $genericTFact.getType(), $domain.getOntologyURI()+"#"+brcaName, FHIRConstants.RECORD_SUMMARY);
+			cf.setCategory(FHIRConstants.HAS_PATHOLOGIC_T_CLASSIFICATION);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFacts($genericTFact.getProvenanceFacts());
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+		}
+
+end 
+
+
+// mela-genericN-1:
+// If there is a generic N value with an asserted prefix “p”, then convert generic N value to a pathologic regional lymph node N value. 
+rule "mela-genericN-1-to-Pathologic"
+	salience 55543
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		$origFact : Fact(documentType != FHIRConstants.RECORD_SUMMARY, summaryType ==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_N_CLASSIFICATION)
+		$genericTFact : Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_N_CLASSIFICATION,
+				containerIdentifier contains $newSummaryId, $genericName : name, provenanceFacts contains $origFact)
+		Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == "hasTNMPrefix", name == FHIRConstants.P_MODIFIER)
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_PATHOLOGIC_N_CLASSIFICATION, provenanceFacts contains $origFact))
+		$SuffList : melaSuffixes()		
+	then
+
+		String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+		Set<String> tSet = GenericToMelaTNMMapper.getMelaClassification(FHIRConstants.P_MODIFIER, $genericName, $SuffList.getSuffixList());
+		for(String brcaName: tSet){
+			Fact cf = FactFactory.createFact($genericTFact, $genericTFact.getType(), $domain.getOntologyURI()+"#"+brcaName, FHIRConstants.RECORD_SUMMARY);
+			cf.setCategory(FHIRConstants.HAS_PATHOLOGIC_N_CLASSIFICATION);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFacts($genericTFact.getProvenanceFacts());
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+		}
+	
+end  
+
+
+// mela-genericN-2:
+// If there is a generic N value asserted within a report with type=“SP”, then convert generic N value to a pathologic regional lymph node N value. 
+rule "mela-genericN-2-to-Pathologic"
+	salience 55531
+	no-loop true
+	when
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == "hasTNMPrefix", 
+			name == FHIRConstants.P_MODIFIER))
+		
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		$origFact : Fact($documentType : documentType, $documentType != FHIRConstants.RECORD_SUMMARY, summaryType ==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_N_CLASSIFICATION,
+			($documentType == FHIRConstants.PATHOLOGY_REPORT || $documentType == FHIRConstants.SURGICAL_PATHOLOGY_REPORT))
+		$genericTFact : Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_N_CLASSIFICATION,
+				containerIdentifier contains $newSummaryId, $genericName : name, provenanceFacts contains $origFact)
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_PATHOLOGIC_N_CLASSIFICATION, provenanceFacts contains $origFact))		
+		$SuffList : melaSuffixes()
+			
+	then	
+	
+		String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+
+		Set<String> tSet = GenericToMelaTNMMapper.getMelaClassification(FHIRConstants.P_MODIFIER, $genericName, $SuffList.getSuffixList());
+		for(String brcaName: tSet){
+			Fact cf = FactFactory.createFact($genericTFact, $genericTFact.getType(), $domain.getOntologyURI()+"#"+brcaName, FHIRConstants.RECORD_SUMMARY);
+			cf.setCategory(FHIRConstants.HAS_PATHOLOGIC_N_CLASSIFICATION);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFacts($genericTFact.getProvenanceFacts());
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+		}
+
+end 
+
+// mela-genericM-1:
+// If there is a generic M value with an asserted prefix “p”, then convert generic M value to a pathologic distant metastasis M value.
+rule "mela-genericM-1-to-Pathologic"
+	salience 55542
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		$origFact : Fact(documentType != FHIRConstants.RECORD_SUMMARY, summaryType ==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_M_CLASSIFICATION)
+		$genericTFact : Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_M_CLASSIFICATION,
+				containerIdentifier contains $newSummaryId, $genericName : name, provenanceFacts contains $origFact)
+		Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == "hasTNMPrefix", name == FHIRConstants.P_MODIFIER)
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_PATHOLOGIC_M_CLASSIFICATION, provenanceFacts contains $origFact))
+		$SuffList : melaSuffixes()		
+	then
+
+		String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+		Set<String> tSet = GenericToMelaTNMMapper.getMelaClassification(FHIRConstants.P_MODIFIER, $genericName, $SuffList.getSuffixList());
+		for(String brcaName: tSet){
+			Fact cf = FactFactory.createFact($genericTFact, $genericTFact.getType(), $domain.getOntologyURI()+"#"+brcaName, FHIRConstants.RECORD_SUMMARY);
+			cf.setCategory(FHIRConstants.HAS_PATHOLOGIC_M_CLASSIFICATION);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFacts($genericTFact.getProvenanceFacts());
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+		}
+		
+end  
+
+// mela-genericM-2 :
+// If there is a generic M value asserted within a report with type=“SP”, then convert generic M value to a pathologic distant metastasis M value. 
+rule "mela-genericM-2-to-Pathologic"
+	salience 55530
+	no-loop true
+	when
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == "hasTNMPrefix", 
+			name == FHIRConstants.P_MODIFIER))
+		
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		$origFact : Fact($documentType : documentType, $documentType != FHIRConstants.RECORD_SUMMARY, summaryType ==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_M_CLASSIFICATION,
+			($documentType == FHIRConstants.PATHOLOGY_REPORT || $documentType == FHIRConstants.SURGICAL_PATHOLOGY_REPORT))
+		$genericTFact : Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_M_CLASSIFICATION,
+				containerIdentifier contains $newSummaryId, $genericName : name, provenanceFacts contains $origFact)
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_PATHOLOGIC_M_CLASSIFICATION, provenanceFacts contains $origFact))		
+		$SuffList : melaSuffixes()
+			
+	then	
+	
+		String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+
+		Set<String> tSet = GenericToMelaTNMMapper.getMelaClassification(FHIRConstants.P_MODIFIER, $genericName, $SuffList.getSuffixList());
+		for(String brcaName: tSet){
+			Fact cf = FactFactory.createFact($genericTFact, $genericTFact.getType(), $domain.getOntologyURI()+"#"+brcaName, FHIRConstants.RECORD_SUMMARY);
+			cf.setCategory(FHIRConstants.HAS_PATHOLOGIC_M_CLASSIFICATION);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFacts($genericTFact.getProvenanceFacts());
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+		}
+	
+end 
+
+
+// mela-genericT-3 
+// If there is a generic T value with an asserted prefix “c”, then convert generic T value to a clinical primary T value. 
+rule "mela-genericT-3-to-Clinical"
+	salience 55539
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		$origFact : Fact(documentType != FHIRConstants.RECORD_SUMMARY, summaryType ==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_T_CLASSIFICATION)
+		$genericTFact : Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_T_CLASSIFICATION,
+				containerIdentifier contains $newSummaryId, $genericName : name, provenanceFacts contains $origFact)
+		Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == "hasTNMPrefix", name == FHIRConstants.C_MODIFIER)
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_CLINICAL_T_CLASSIFICATION, provenanceFacts contains $origFact))
+		$SuffList : melaSuffixes()		
+	then
+
+		String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+		Set<String> tSet = GenericToMelaTNMMapper.getMelaClassification(FHIRConstants.C_MODIFIER, $genericName, $SuffList.getSuffixList());
+		for(String brcaName: tSet){
+			Fact cf = FactFactory.createFact($genericTFact, $genericTFact.getType(), $domain.getOntologyURI()+"#"+brcaName, FHIRConstants.RECORD_SUMMARY);
+			cf.setCategory(FHIRConstants.HAS_CLINICAL_T_CLASSIFICATION);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFacts($genericTFact.getProvenanceFacts());
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+		}
+	
+end  
+
+// mela-genericT-4
+// If there is a generic T value asserted within a report with type !=“SP”, then convert generic T value to a clinical primary T value. 
+rule "mela-genericT-4-to-Clinical"
+	salience 55529
+	no-loop true
+	when
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == "hasTNMPrefix", 
+			name == FHIRConstants.C_MODIFIER))
+		
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		$origFact : Fact($documentType : documentType, $documentType != FHIRConstants.RECORD_SUMMARY, summaryType ==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_T_CLASSIFICATION,
+			$documentType != FHIRConstants.PATHOLOGY_REPORT, $documentType != FHIRConstants.SURGICAL_PATHOLOGY_REPORT)
+		$genericTFact : Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_T_CLASSIFICATION,
+				containerIdentifier contains $newSummaryId, $genericName : name, provenanceFacts contains $origFact)
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_CLINICAL_T_CLASSIFICATION, provenanceFacts contains $origFact))		
+		$SuffList : melaSuffixes()
+			
+	then	
+		String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+
+		Set<String> tSet = GenericToMelaTNMMapper.getMelaClassification(FHIRConstants.C_MODIFIER, $genericName, $SuffList.getSuffixList());
+		for(String brcaName: tSet){
+			Fact cf = FactFactory.createFact($genericTFact, $genericTFact.getType(), $domain.getOntologyURI()+"#"+brcaName, FHIRConstants.RECORD_SUMMARY);
+			cf.setCategory(FHIRConstants.HAS_CLINICAL_T_CLASSIFICATION);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFacts($genericTFact.getProvenanceFacts());
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+		}
+
+end 
+
+// mela-mela-genericN-3 :
+// If there is a generic N value with an asserted prefix “c”, then convert generic N value to a clinical regional lymph node N value. 
+rule "mela-genericN-3-to-Clinical"
+	salience 55538
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		$origFact : Fact(documentType != FHIRConstants.RECORD_SUMMARY, summaryType ==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_N_CLASSIFICATION)
+		$genericTFact : Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_N_CLASSIFICATION,
+				containerIdentifier contains $newSummaryId, $genericName : name, provenanceFacts contains $origFact)
+		Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == "hasTNMPrefix", name == FHIRConstants.C_MODIFIER)
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_CLINICAL_N_CLASSIFICATION, provenanceFacts contains $origFact))
+		$SuffList : melaSuffixes()		
+	then
+
+		String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+		Set<String> tSet = GenericToMelaTNMMapper.getMelaClassification(FHIRConstants.C_MODIFIER, $genericName, $SuffList.getSuffixList());
+		for(String brcaName: tSet){
+			Fact cf = FactFactory.createFact($genericTFact, $genericTFact.getType(), $domain.getOntologyURI()+"#"+brcaName, FHIRConstants.RECORD_SUMMARY);
+			cf.setCategory(FHIRConstants.HAS_CLINICAL_N_CLASSIFICATION);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFacts($genericTFact.getProvenanceFacts());
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+		}
+end  
+
+// mela-genericN-4 :
+// If there is a generic N value asserted within a report with type !=“SP”, then convert generic N value to a clinical regional lymph node N value. 
+rule "mela-genericN-4-to-Clinical"
+	salience 55527
+	no-loop true
+	when
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == "hasTNMPrefix", 
+			name == FHIRConstants.C_MODIFIER))
+		
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		$origFact : Fact($documentType : documentType, $documentType != FHIRConstants.RECORD_SUMMARY, summaryType ==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_N_CLASSIFICATION,
+			$documentType != FHIRConstants.PATHOLOGY_REPORT, $documentType != FHIRConstants.SURGICAL_PATHOLOGY_REPORT)
+		$genericTFact : Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_N_CLASSIFICATION,
+				containerIdentifier contains $newSummaryId, $genericName : name, provenanceFacts contains $origFact)
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_CLINICAL_N_CLASSIFICATION, provenanceFacts contains $origFact))		
+		$SuffList : melaSuffixes()
+			
+	then	
+		String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+
+		Set<String> tSet = GenericToMelaTNMMapper.getMelaClassification(FHIRConstants.C_MODIFIER, $genericName, $SuffList.getSuffixList());
+		for(String brcaName: tSet){
+			Fact cf = FactFactory.createFact($genericTFact, $genericTFact.getType(), $domain.getOntologyURI()+"#"+brcaName, FHIRConstants.RECORD_SUMMARY);
+			cf.setCategory(FHIRConstants.HAS_CLINICAL_N_CLASSIFICATION);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFacts($genericTFact.getProvenanceFacts());
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+		}
+end 
+
+// mela-genericM-3 :
+// If there is a generic M value with an asserted prefix “c”, then convert generic M value to a clinical distant metastasis M value. 
+rule "mela-genericM-3-to-Clinical"
+	salience 55538
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		$origFact : Fact(documentType != FHIRConstants.RECORD_SUMMARY, summaryType ==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_M_CLASSIFICATION)
+		$genericTFact : Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_M_CLASSIFICATION,
+				containerIdentifier contains $newSummaryId, $genericName : name, provenanceFacts contains $origFact)
+		Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == "hasTNMPrefix", name == FHIRConstants.C_MODIFIER)
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_CLINICAL_M_CLASSIFICATION, provenanceFacts contains $origFact))
+		$SuffList : melaSuffixes()		
+	then
+
+		String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+		Set<String> tSet = GenericToMelaTNMMapper.getMelaClassification(FHIRConstants.C_MODIFIER, $genericName, $SuffList.getSuffixList());
+		for(String brcaName: tSet){
+			Fact cf = FactFactory.createFact($genericTFact, $genericTFact.getType(), $domain.getOntologyURI()+"#"+brcaName, FHIRConstants.RECORD_SUMMARY);
+			cf.setCategory(FHIRConstants.HAS_CLINICAL_M_CLASSIFICATION);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFacts($genericTFact.getProvenanceFacts());
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+		}
+end  
+
+// mela-genericM-4 :
+// If there is a generic M value asserted within a report with type !=“SP”, then convert generic M value to a clinical distant metastasis M value. 
+rule "mela-genericM-4-to-Clinical"
+	salience 55526
+	no-loop true
+	when
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == "hasTNMPrefix", 
+			name == FHIRConstants.C_MODIFIER))
+		
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName, $domainName == FHIRConstants.DOMAIN_MELANOMA)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, $newSummaryId : summaryId)
+		$origFact : Fact($documentType : documentType, $documentType != FHIRConstants.RECORD_SUMMARY, summaryType ==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_M_CLASSIFICATION,
+			$documentType != FHIRConstants.PATHOLOGY_REPORT, $documentType != FHIRConstants.SURGICAL_PATHOLOGY_REPORT)
+		$genericTFact : Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_M_CLASSIFICATION,
+				containerIdentifier contains $newSummaryId, $genericName : name, provenanceFacts contains $origFact)
+		not(Fact(documentType == FHIRConstants.RECORD_SUMMARY, summaryType==FHIRConstants.CANCER_PHENOTYPE , category == FHIRConstants.HAS_CLINICAL_M_CLASSIFICATION, provenanceFacts contains $origFact))		
+		$SuffList : melaSuffixes()
+			
+	then	
+		String newId = FHIRConstants.CANCER_PHENOTYPE +"-"+$newSummaryId.replace(FHIRConstants.CANCER_SUMMARY +"-","");
+
+		Set<String> tSet = GenericToMelaTNMMapper.getMelaClassification(FHIRConstants.C_MODIFIER, $genericName, $SuffList.getSuffixList());
+		for(String brcaName: tSet){
+			Fact cf = FactFactory.createFact($genericTFact, $genericTFact.getType(), $domain.getOntologyURI()+"#"+brcaName, FHIRConstants.RECORD_SUMMARY);
+			cf.setCategory(FHIRConstants.HAS_CLINICAL_M_CLASSIFICATION);
+			cf.setIdentifier(newId); cf.setSummaryId(newId);
+			cf.addProvenanceFacts($genericTFact.getProvenanceFacts());
+			cf.addContainerIdentifier($newSummaryId);
+			insert(cf);
+			FactHelper.addFactToSummary(cf, $record.getCancerSummary(), newId, $domain.getOntologyURI());
+		}
+		
+//System.out.println("mela-genericM-4-to-Clinical");
+end 

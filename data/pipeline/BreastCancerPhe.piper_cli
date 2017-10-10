@@ -1,0 +1,14 @@
+// InputDirectory
+-i=output/sample/reports/patientX/breastCancer
+
+// OutputDirectory
+-o=output/sample/reports/patientX/breastCancer
+
+// ConfigDirectory
+-c=data/breast
+
+// TcgaIdMapFile
+-t=data/breast/transmart/transmart-tcga-mapping-spec.txt
+
+// sectionsOwl
+-w=data/ontology/nlpBreastCancer.owl

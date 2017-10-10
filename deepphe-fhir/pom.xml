@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.healthnlp</groupId>
+        <artifactId>deepphe</artifactId>
+        <version>0.0.1</version>
+    </parent>
+    <artifactId>deepphe-fhir</artifactId>
+    <name>deepphe-fhir</name>
+    <description>deepphe-fhir</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.healthnlp</groupId>
+            <artifactId>deepphe-ctakes-cancer</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>me.fhir</groupId>
+            <artifactId>fhir-dstu2</artifactId>
+            <version>1.0.1.7108</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ogce</groupId>
+            <artifactId>xpp3</artifactId>
+            <version>1.1.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-ogm-core</artifactId>
+            <version>2.0.0-M04</version>
+        </dependency>
+    </dependencies>
+</project>

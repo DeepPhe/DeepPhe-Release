@@ -1,0 +1,14 @@
+// InputDirectory
+-i=data/sample/reports/patientX
+
+// OutputDirectory
+-o=output/sample/reports/patientX/breastCancer
+
+// LookupXml
+-l=org/apache/ctakes/cancer/dictionary/lookup/fast/BreastCancer.xml
+
+// ontologyUri
+-u=http://ontologies.dbmi.pitt.edu/deepphe/nlpBreastCancer.owl
+
+// owlPath
+-w=data/ontology/nlpBreastCancer.owl

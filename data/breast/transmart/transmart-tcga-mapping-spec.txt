@@ -1,0 +1,132 @@
+Filename	Category Code	Column Number	Data Label	Data Label Source	Controlled Vocab Code	Source Column	Source Column Alternative	caDSR CDE ID	Class	Required Avs	Property to Return Value
+tcga-breast-BH.txt	Other Columns	1	STUDY ID								
+tcga-breast-BH.txt	OMIT	2	OMIT			bcr_patient_uuid	bcr_patient_uuid				
+tcga-breast-BH.txt	Patient	3	SUBJ_ID			bcr_patient_barcode	bcr_patient_barcode	2673794			
+tcga-breast-BH.txt	OMIT	4	OMIT			form_completion_date	form_completion_date				
+tcga-breast-BH.txt	OMIT	5	OMIT			prospective_collection	tissue_prospective_collection_indicator	3088492			
+tcga-breast-BH.txt	OMIT	6	OMIT			retrospective_collection	tissue_retrospective_collection_indicator	3088528			
+tcga-breast-BH.txt	OMIT	7	OMIT			birth_days_to	days_to_birth	3008233			
+tcga-breast-BH.txt	OMIT	8	Gender			gender	gender	2200604	Patient		hasGender
+tcga-breast-BH.txt	OMIT	9	Menopause Status			menopause_status	menopause_status	2957270	Patient		hasMenopausalStatus
+tcga-breast-BH.txt	OMIT	10	Race			race	race	2192199			
+tcga-breast-BH.txt	OMIT	11	Ethnicity			ethnicity	ethnicity	2192217	Patient		hasEthnicity
+tcga-breast-BH.txt	OMIT	12	History of Other Malignancy			history_other_malignancy	prior_dx	3382736			
+tcga-breast-BH.txt	OMIT	13	Neoadjuvant Treatment			history_neoadjuvant_treatment	history_of_neoadjuvant_treatment	3382737			
+tcga-breast-BH.txt	OMIT	14	Tumor Status			tumor_status	person_neoplasm_cancer_status	2759550			
+tcga-breast-BH.txt	OMIT	15	Vital Status			vital_status	vital_status	5			
+tcga-breast-BH.txt	OMIT	16	Days to Last Followup			last_contact_days_to	days_to_last_followup	3008273			
+tcga-breast-BH.txt	OMIT	17	Days to Death			death_days_to	days_to_death	3165475			
+tcga-breast-BH.txt	OMIT	18	Radiation Adjuvant Tx			radiation_treatment_adjuvant	radiation_therapy	2005312			
+tcga-breast-BH.txt	OMIT	19	Pharmaceutical Adjuvant Tx			pharmaceutical_tx_adjuvant	postoperative_rx_tx	3397567			
+tcga-breast-BH.txt	Tumor+Tumor Phenotype	20	Histologic Diagnosis Other			histologic_diagnosis_other	histological_type_other	3124492	Tumor		hasDiagnosis
+tcga-breast-BH.txt	OMIT	21	Initial Pathologic DX (year)			initial_pathologic_dx_year	year_of_initial_pathologic_diagnosis	2896960			
+tcga-breast-BH.txt	OMIT	22	Age at Diagnosis			age_at_diagnosis	age_at_initial_pathologic_diagnosis	2006657	Tumor		hasAgeOnset
+tcga-breast-BH.txt	OMIT	23	Initial Pathologic DX Method			method_initial_path_dx	initial_pathologic_diagnosis_method	2757941			
+tcga-breast-BH.txt	OMIT	24	Initial Pathologic DX Method Other			method_initial_path_dx_other	init_pathology_dx_method_other	2757948			
+tcga-breast-BH.txt	OMIT	25	Primary Surgical Procedure			surgical_procedure_first	breast_carcinoma_surgical_procedure_name	2739580			
+tcga-breast-BH.txt	OMIT	26	Primary Surgical Procedure Other			first_surgical_procedure_other	surgical_procedure_purpose_other_text	3020338			
+tcga-breast-BH.txt	OMIT	27	Margin Status			margin_status	margin_status	3114007	Tumor		hasMarginStatus
+tcga-breast-BH.txt	OMIT	28	Surgery for Positive Margins			surgery_for_positive_margins	breast_carcinoma_primary_surgical_procedure_name	1218			
+tcga-breast-BH.txt	OMIT	29	Surgery for Positive Margins Other			surgery_for_positive_margins_other	breast_neoplasm_other_surgical_procedure_descriptive_text	3124493			
+tcga-breast-BH.txt	OMIT	30	Margin Status Reexcision			margin_status_reexcision	breast_cancer_surgery_margin_status	2241252			
+tcga-breast-BH.txt	OMIT	31	Axillary Staging Method			axillary_staging_method	axillary_lymph_node_stage_method_type	2516112			
+tcga-breast-BH.txt	OMIT	32	Axillary Staging Method Other			axillary_staging_method_other	axillary_lymph_node_stage_other_method_descriptive_text	3124496			
+tcga-breast-BH.txt	OMIT	33	Micromet Detection by IHC			micromet_detection_by_ihc	cytokeratin_immunohistochemistry_staining_method_micrometastasis_indicator	3086152			
+tcga-breast-BH.txt	OMIT	34	Lymph Nodes Examined Count			lymph_nodes_examined_count	primary_lymph_node_presentation_assessment	2200396			
+tcga-breast-BH.txt	OMIT	35	Lymph Nodes Examined			lymph_nodes_examined	lymph_node_examined_count	3			
+tcga-breast-BH.txt	OMIT	36	Lymph Nodes Examined by HE			lymph_nodes_examined_he_count	number_of_lymphnodes_positive_by_he	3086388			
+tcga-breast-BH.txt	OMIT	37	Lymph Nodes Examined IHC			lymph_nodes_examined_ihc_count	number_of_lymphnodes_positive_by_ihc	3086383			
+tcga-breast-BH.txt	OMIT	38	AJCC Staging Edition			ajcc_staging_edition	system_version	2722309			
+tcga-breast-BH.txt	Cancer+Cancer Phenotype	39	pT			ajcc_tumor_pathologic_pt	pathologic_T	3045435	BreastCancerPhenotype		hasPathologicTClassification
+tcga-breast-BH.txt	Cancer+Cancer Phenotype	40	pN 			ajcc_nodes_pathologic_pn	pathologic_N	3203106	BreastCancerPhenotype		hasPathologicNClassification
+tcga-breast-BH.txt	Cancer+Cancer Phenotype	41	pM			ajcc_metastasis_pathologic_pm	pathologic_M	3045439	BreastCancerPhenotype		hasPathologicMClassification
+tcga-breast-BH.txt	OMIT	42	Stage			ajcc_pathologic_tumor_stage	pathologic_stage	3203222			
+tcga-breast-BH.txt	Tumor	43	Metastasis site			metastasis_site	first_nonlymph_node_metastasis_anatomic_site	3124499	BreastCancerDistantTumor	hasTumorType some Distant_Metastasis	hasBodySite
+tcga-breast-BH.txt	OMIT	44	Metastasis site other			metastasis_site_other	first_recurrent_non_nodal_metastatic_anatomic_site_descriptive_text	3124503			hasBodySite
+tcga-breast-BH.txt	Tumor+Tumor Phenotype	45	ER status by IHC			er_status_by_ihc	breast_carcinoma_estrogen_receptor_status	2957359	Estrogen_Receptor_Status		hasInterpretation
+tcga-breast-BH.txt	OMIT	46	ER status IHC Percent Positive			er_status_ihc_Percent_Positive	er_level_cell_percentage_category	3128341			
+tcga-breast-BH.txt	OMIT	47	ER Positivity Scale Used			er_positivity_scale_used	breast_carcinoma_immunohistochemistry_er_pos_finding_scale	3203081			
+tcga-breast-BH.txt	OMIT	48	ER Score (IHC)			er_ihc_score	immunohistochemistry_positive_cell_score	2230166			
+tcga-breast-BH.txt	OMIT	49	ER Positivity Scale Other			er_positivity_scale_other	positive_finding_estrogen_receptor_other_measurement_scale_text	3086851			
+tcga-breast-BH.txt	OMIT	50	ER Positivity Method			er_positivity_method	er_detection_method_text	69			
+tcga-breast-BH.txt	Tumor+Tumor Phenotype	51	PR Status (IHC)			pr_status_by_ihc	breast_carcinoma_progesterone_receptor_status	2957357	Progesterone_Receptor_Status		hasInterpretation
+tcga-breast-BH.txt	OMIT	52	PR Status Ihc Percent Positive			pr_status_ihc_percent_positive	progesterone_receptor_level_cell_percent_category	3128342			
+tcga-breast-BH.txt	OMIT	53	PR Positivity Scale Used			pr_positivity_scale_used	breast_carcinoma_immunohistochemistry_progesterone_receptor_pos_finding_scale	3203083			
+tcga-breast-BH.txt	OMIT	54	PR Positivity Intensity Score (IHC)			pr_positivity_ihc_intensity_score	breast_carcinoma_immunohistochemistry_pos_cell_score	3133874			
+tcga-breast-BH.txt	OMIT	55	PR Positivity Scale Other			pr_positivity_scale_other	pos_finding_progesterone_receptor_other_measurement_scale_text	3086857			
+tcga-breast-BH.txt	OMIT	56	PR Positivity Define Method			pr_positivity_define_method	pgr_detection_method_text	785			
+tcga-breast-BH.txt	Tumor+Tumor Phenotype	57	HER2 Status By Ihc			her2_status_by_ihc	lab_proc_her2_neu_immunohistochemistry_receptor_status	2957563	HER2_Neu_Status	hasMethod some Immunohistochemical_Test	hasInterpretation
+tcga-breast-BH.txt	OMIT	58	HER2 Ihc Percent Positive			her2_ihc_percent_positive	her2_erbb_pos_finding_cell_percent_category	3086980			
+tcga-breast-BH.txt	OMIT	59	HER2 Ihc Score			her2_ihc_score	her2_immunohistochemistry_level_result	2178402			
+tcga-breast-BH.txt	OMIT	60	HER2 Positivity Scale Other			her2_positivity_scale_other	pos_finding_her2_erbb2_other_measurement_scale_text	3087479			
+tcga-breast-BH.txt	OMIT	61	HER2 Positivity Method Text			her2_positivity_method_text	her2_erbb_method_calculation_method_text	3087487			
+tcga-breast-BH.txt	Tumor+Tumor Phenotype	62	HER2 Fish Status			her2_fish_status	lab_procedure_her2_neu_in_situ_hybrid_outcome_type	2854089	HER2_Neu_Status	hasMethod some Fluorescence_In_Situ_Hybridization	hasInterpretation
+tcga-breast-BH.txt	OMIT	63	HER2 Copy Number			her2_copy_number	her2_neu_breast_carcinoma_copy_analysis_input_total_number	3133738			
+tcga-breast-BH.txt	OMIT	64	Cent17 Copy Number			cent17_copy_number	fluorescence_in_situ_hybridization_diagnostic_procedure_chromosome_17_signal_result_range	3104295			
+tcga-breast-BH.txt	OMIT	65	Her2 And Cent17 Cells Count			her2_and_cent17_cells_count	her2_neu_and_centromere_17_copy_number_analysis_input_total_number_count	3087902			
+tcga-breast-BH.txt	OMIT	66	Her2 Cent17 Ratio			her2_cent17_ratio	her2_neu_chromosone_17_signal_ratio_value	2497552			
+tcga-breast-BH.txt	OMIT	67	Her2 And Cent17 Scale Other			her2_and_cent17_scale_other	her2_and_centromere_17_positive_finding_other_measurement_scale_text	3087923			
+tcga-breast-BH.txt	OMIT	68	Her2 Fish Method			her2_fish_method	her2_erbb_pos_finding_fluorescence_in_situ_hybridization_calculation_method_text	3087929			
+tcga-breast-BH.txt	OMIT	69	New Tumor Event Dx Indicator			new_tumor_event_dx_indicator	new_tumor_event_after_initial_treatment	3121376			
+tcga-breast-BH.txt	OMIT	70	Nte Er Status			nte_er_status	metastatic_breast_carcinoma_estrogen_receptor_status	3131865			
+tcga-breast-BH.txt	OMIT	71	Nte Er Status Ihc  Positive			nte_er_status_ihc__positive	metastatic_breast_carcinoma_estrogen_receptor_level_cell_percent_category	3131869			
+tcga-breast-BH.txt	OMIT	72	Nte Er Ihc Intensity Score			nte_er_ihc_intensity_score	metastatic_breast_carcinoma_immunohistochemistry_er_pos_cell_score	3131873			
+tcga-breast-BH.txt	OMIT	73	Nte Er Positivity Other Scale			nte_er_positivity_other_scale	pos_finding_metastatic_breast_carcinoma_estrogen_receptor_other_measuremenet_scale_text	3131877			
+tcga-breast-BH.txt	OMIT	74	Nte Er Positivity Define Method			nte_er_positivity_define_method	metastatic_breast_carcinoma_estrogen_receptor_detection_method_text	3131881			
+tcga-breast-BH.txt	OMIT	75	Nte Pr Status By Ihc			nte_pr_status_by_ihc	metastatic_breast_carcinoma_progesterone_receptor_status	3131884			
+tcga-breast-BH.txt	OMIT	76	Nte Pr Status Ihc  Positive			nte_pr_status_ihc__positive	metastatic_breast_carcinoma_progesterone_receptor_level_cell_percent_category	3131891			
+tcga-breast-BH.txt	OMIT	77	Nte Pr Ihc Intensity Score			nte_pr_ihc_intensity_score	metastatic_breast_carcinoma_immunohistochemistry_pr_pos_cell_score	3131988			
+tcga-breast-BH.txt	OMIT	78	Nte Pr Positivity Other Scale			nte_pr_positivity_other_scale	metastatic_breast_carcinoma_pos_finding_progesterone_receptor_other_measure_scale_text	3131992			
+tcga-breast-BH.txt	OMIT	79	Nte Pr Positivity Define Method			nte_pr_positivity_define_method	metastatic_breast_carcinoma_progesterone_receptor_detection_method_text	3131993			
+tcga-breast-BH.txt	OMIT	80	Nte Her2 Status			nte_her2_status	metastatic_breast_carcinoma_lab_proc_her2_neu_immunohistochemistry_receptor_status	3131997			
+tcga-breast-BH.txt	OMIT	81	Nte Her2 Status Ihc  Positive			nte_her2_status_ihc__positive	metastatic_breast_carcinoma_her2_erbb_pos_finding_cell_percent_category	3132322			
+tcga-breast-BH.txt	OMIT	82	Nte Her2 Positivity Ihc Score			nte_her2_positivity_ihc_score	metastatic_breast_carcinoma_erbb2_immunohistochemistry_level_result	3132444			
+tcga-breast-BH.txt	OMIT	83	Nte Her2 Positivity Other Scale			nte_her2_positivity_other_scale	metastatic_breast_carcinoma_pos_finding_her2_erbb2_other_measure_scale_text	3132448			
+tcga-breast-BH.txt	OMIT	84	Nte Her2 Positivity Method			nte_her2_positivity_method	metastatic_breast_carcinoma_her2_erbb_method_calculation_method_text	3132452			
+tcga-breast-BH.txt	OMIT	85	Nte Her2 Fish Status			nte_her2_fish_status	metastatic_breast_carcinoma_lab_proc_her2_neu_in_situ_hybridization_outcome_type	3132455			
+tcga-breast-BH.txt	OMIT	86	Nte Her2 Signal Number			nte_her2_signal_number	her2_neu_metastatic_breast_carcinoma_copy_analysis_input_total_number	3133734			
+tcga-breast-BH.txt	OMIT	87	Nte Cent 17 Signal Number			nte_cent_17_signal_number	metastatic_breast_carcinoma_fluorescence_in_situ_hybridization_diagnostic_proc_centromere_17_signal_result_range	3132887			
+tcga-breast-BH.txt	OMIT	88	Her2 Cent17 Counted Cells Count			her2_cent17_counted_cells_count	her2_neu_and_centromere_17_copy_number_metastatic_breast_carcinoma_analysis_input_total_number_count	3132899			
+tcga-breast-BH.txt	OMIT	89	Nte Cent 17 Her2 Ratio			nte_cent_17_her2_ratio	metastatic_breast_carcinoma_her2_neu_chromosone_17_signal_ratio_value	3132903			
+tcga-breast-BH.txt	OMIT	90	Nte Cent17 Her2 Other Scale			nte_cent17_her2_other_scale	metastatic_breast_carcinoma_pos_finding_other_scale_measurement_text	3132907			
+tcga-breast-BH.txt	OMIT	91	Nte Her2 Fish Define Method			nte_her2_fish_define_method	metastatic_breast_carcinoma_her2_erbb_pos_finding_fluorescence_in_situ_hybridization_calculation_method_text	3132910			
+tcga-breast-BH.txt	OMIT	92	Laterality			anatomic_neoplasm_subdivision	anatomic_neoplasm_subdivision	3108203	Cancer	hasBodySite	hasBodyModifier
+tcga-breast-BH.txt	Cancer+Cancer Phenotype	93	clinical_M			clinical_M	clinical_M	3440331	BreastCancerPhenotype		hasClinicalMClassification
+tcga-breast-BH.txt	Cancer+Cancer Phenotype	94	clinical_N			clinical_N	clinical_N	3440330	BreastCancerPhenotype		hasClinicalNClassification
+tcga-breast-BH.txt	Cancer+Cancer Phenotype	95	clinical_T			clinical_T	clinical_T	3440328	BreastCancerPhenotype		hasClinicalTClassification
+tcga-breast-BH.txt	Cancer+Cancer Phenotype	96	clinical_stage			clinical_stage	clinical_stage	3440332	BreastCancerPhenotype		hasCancerStage
+tcga-breast-BH.txt	OMIT	97	Days To First Complete Response			days_to_first_complete_response	days_to_first_complete_response	4887531			
+tcga-breast-BH.txt	OMIT	98	Days To First Partial Response			days_to_first_partial_response	days_to_first_partial_response	4887532			
+tcga-breast-BH.txt	OMIT	99	Days To First Response			days_to_first_response	days_to_first_response	4887523			
+tcga-breast-BH.txt	OMIT	100	Days To Initial Pathologic Diagnosis			days_to_initial_pathologic_diagnosis	days_to_initial_pathologic_diagnosis	3131740			
+tcga-breast-BH.txt	OMIT	101	Days To Patient Progression Free			days_to_patient_progression_free	days_to_patient_progression_free	4887491			
+tcga-breast-BH.txt	OMIT	102	Days To Tumor Progression			days_to_tumor_progression	days_to_tumor_progression	3165480			
+tcga-breast-BH.txt	OMIT	103	OMIT			disease_code	disease_code				
+tcga-breast-BH.txt	OMIT	104	Er Disease Extent Prior Er Treatment			er_disease_extent_prior_er_treatment	er_disease_extent_prior_er_treatment	2007719			
+tcga-breast-BH.txt	OMIT	105	Er Estimated Duration Response			er_estimated_duration_response	er_estimated_duration_response	1098			
+tcga-breast-BH.txt	OMIT	106	Er Response Type			er_response_type	er_response_type	2187835			
+tcga-breast-BH.txt	OMIT	107	Er Solid Tumor Response Documented Type			er_solid_tumor_response_documented_type	er_solid_tumor_response_documented_type	4101853			
+tcga-breast-BH.txt	OMIT	108	Er Solid Tumor Response Documented Type Other			er_solid_tumor_response_documented_type_other	er_solid_tumor_response_documented_type_other	4129472			
+tcga-breast-BH.txt	OMIT	109	Extranodal Involvement			extranodal_involvement	extranodal_involvement	3364582			
+tcga-breast-BH.txt	OMIT	110	OMIT			field	field				
+tcga-breast-BH.txt	Tumor+Tumor Phenotype	111	Histological Type			histological_type	histological_type	3081934	BreastCancerPhenotype		hasHistologicType
+tcga-breast-BH.txt	OMIT	112	History Of Radiation Metastatic Site			history_of_radiation_metastatic_site	history_of_radiation_metastatic_site	2332			
+tcga-breast-BH.txt	OMIT	113	History Of Radiation Primary Site			history_of_radiation_primary_site	history_of_radiation_primary_site	2182189			
+tcga-breast-BH.txt	OMIT	114	History Prior Surgery Indicator			history_prior_surgery_indicator	history_prior_surgery_indicator	1071			
+tcga-breast-BH.txt	OMIT	115	History Prior Surgery Type			history_prior_surgery_type	history_prior_surgery_type	4297170			
+tcga-breast-BH.txt	OMIT	116	History Prior Surgery Type Other			history_prior_surgery_type_other	history_prior_surgery_type_other	3121814			
+tcga-breast-BH.txt	OMIT	117	OMIT			icd_10	icd_10	3226287			
+tcga-breast-BH.txt	OMIT	118	OMIT			icd_o_3_histology	icd_o_3_histology	3226275			
+tcga-breast-BH.txt	OMIT	119	OMIT			icd_o_3_site	icd_o_3_site	3226281			
+tcga-breast-BH.txt	OMIT	120	OMIT			informed_consent_verified	informed_consent_verified	2714689			
+tcga-breast-BH.txt	OMIT	121	Metastatic Tumor Indicator			metastatic_tumor_indicator	distant_metastasis_present_ind2	2194698	Tumor	hasTumorType some Distant	
+tcga-breast-BH.txt	OMIT	122	Molecular Abnormality Results			molecular_abnormality_results	molecular_abnormality_results	3121628			
+tcga-breast-BH.txt	OMIT	123	Molecular Abnormality Results Other			molecular_abnormality_results_other	molecular_abnormality_results_other	4500214			
+tcga-breast-BH.txt	OMIT	124	OMIT			patient_id	patient_id				
+tcga-breast-BH.txt	OMIT	125	Progression Status			patient_progression_status	patient_progression_status	4381042			
+tcga-breast-BH.txt	OMIT	126	OMIT			project_code	project_code				
+tcga-breast-BH.txt	Tumor+Tumor Phenotype	127	Site Of Primary Tumor Other			site_of_primary_tumor_other	tumor_tissue_site_other	2584114	Tumor		hasBodySite
+tcga-breast-BH.txt	OMIT	128	Stage Other			stage_other	stage_other	2007104			
+tcga-breast-BH.txt	OMIT	129	OMIT			tissue_source_site	tissue_source_site				
+tcga-breast-BH.txt	OMIT	130	OMIT			tumor_tissue_site	tumor_tissue_site	3427536			
+tcga-breast-BH.txt	OMIT	131	OMIT			AGE key label for patient table-CALCULATED			Patient		

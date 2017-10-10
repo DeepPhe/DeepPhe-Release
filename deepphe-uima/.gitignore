@@ -1,0 +1,9 @@
+/target/
+/.settings/
+/.classpath
+/.project
+/neo4jtestdb/
+/testdb/
+/metadata/
+/bin/
+*.iml

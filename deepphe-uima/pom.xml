@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>deepphe-uima</artifactId>
+    <name>deepphe-uima</name>
+    <parent>
+        <groupId>org.healthnlp</groupId>
+        <artifactId>deepphe</artifactId>
+        <version>0.0.1</version>
+    </parent>
+    <dependencies>
+
+        <dependency>
+            <groupId>org.healthnlp</groupId>
+            <artifactId>deepphe-fhir</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
+        <!-- Dependencies that still need to be uploaded to Maven Central; when
+     done, the dependency versions should be moved into the parent pom -->
+        <dependency>
+            <groupId>org.semanticweb</groupId>
+            <artifactId>owlapi</artifactId>
+            <version>4.0.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/owlapi-distribution-4.0.1.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.healthnlp</groupId>
+            <artifactId>modgen</artifactId>
+            <version>20151021</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/modgen.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+            <version>${droolsVersion}</version>
+        </dependency>
+
+
+        <!-- Neo4j and OGM -->
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j</artifactId>
+            <version>${neo4j.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>${luceneVersion}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock-junit4</artifactId>
+            <version>2.8.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock-legacy</artifactId>
+            <version>2.8.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.objenesis</groupId>
+            <artifactId>objenesis</artifactId>
+            <version>2.2</version>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>runJcasGen</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.uima</groupId>
+                        <artifactId>jcasgen-maven-plugin</artifactId>
+                        <version>2.9.0</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <typeSystemIncludes>
+                                        <typeSystemInclude>
+                                            src/main/resources/org/healthnlp/deepphe/types/TypeSystem.xml
+                                        </typeSystemInclude>
+                                    </typeSystemIncludes>
+                                    <limitToProject>true</limitToProject>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

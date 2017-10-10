@@ -1,0 +1,57 @@
+Boston Children’s Hospital and University of Pittsburgh
+Academic Software Use Agreement
+DeepPhe Software
+
+Dr. Guergana Savova, an investigator of Boston Children’s Hospital (“BCH”), and Dr. Harry Stewart Hochheiser and Dr. Rebecca S. Jacobson, investigators from University of Pittsburgh (UPIT) (“Investigators”) have created the DeepPhe software that provides deep phenotype extraction for oncology (“DeepPhe” or “Software”). BCH and UPIT are known together as “Institutions”.
+
+DeepPhe contains and uses HemOnc.org Ontology, Version 2017-09-24 (“HemOnc”). Use of HemOnc is governed by CreativeCommons NonCommercial-ShareAlike 4.0 International License and available at HemOnc.org (“HemOnc License”).
+
+DeepPhe contains and uses information extracted from NCI THESAURUS (“NCIT”). Use of NCIT is governed by license terms available at https://cbiit.cancer.gov/evs-download/license (“NCIT License”).
+
+Software is provided in source code format. Using the Software indicates your agreement to be bound by the terms of this Software Use Agreement (“Agreement”), HemOnc License and NCIT License. Absent your agreement to the terms below, you (the “End User”) have no rights to hold or use the Software whatsoever.
+
+INSTITUTIONS agree to grant hereunder a limited non-exclusive license to End User for the End User to run, display, modify, and make derivative works of the Software in performance of End User’s internal, non-profit research at End User’s institution on the following terms and conditions:
+
+1. NO REDISTRIBUTION. Software remains the property of INSTITUTIONS and End User shall not publish, distribute, or otherwise transfer or make available the Software to any other party.
+
+2. NO COMMERCIAL USE. The End User hereby represents that the End User is a researcher, staff, student, faculty, or employee at a not for profit institution. The End User shall not use Software at for profit companies or for commercial purposes and any such use hereunder this license is explicitly prohibited. This includes, but is not limited to, use of Software in fee for service core laboratories or to provide services to, or in commercial sponsored research for third parties for a fee. If End User desires to use Software for any commercial purposes, End User will need to execute a separate licensing agreement with the INSTITUTIONS. Requests for the use of Software for commercial purposes may be directed to:
+
+Technology & Innovation Development Office
+Children’s Hospital Boston
+300 Longwood Avenue
+Boston MA 02155
+tido@childrens.harvard.edu
+
+or
+
+University of Pittsburgh Innovation Institute
+1st Floor Gardner Steel Conference Center (GSCC)
+130 Thackeray Avenue
+Pittsburgh, PA 15260
+
+
+3. OWNERSHIP AND COPYRIGHT NOTICE. INSTITUTIONS own all intellectual property in the Software. End User shall gain no ownership to the Software. End User shall not remove or delete and shall retain in the Software, and any modifications to Software, the copyright, trademark, or other notices pertaining to Software as provided with the Software.
+
+4. FEEDBACK. In order to improve the Software, comments from the End User may be useful. End User agrees to provide Investigators with End User’s modifications of the Software and feedback on the End User’s use of the Software (e.g. any bugs in the Software, the user experience etc.). Investigators and INSTITUTIONS are permitted to use all code, feedback and information provided by End User in making changes and improvements to the Software without compensation or an accounting to End User.
+
+5. NON-ASSERT. End User acknowledges that Investigators and INSTITUTIONS may develop modifications to Software that may be based on the feedback provided by End User under Section 4. Investigators and INSTITUTIONS shall not be constrained in any way by End User regarding Investigators’ and INSTITUTIONS's use of such information. End User acknowledges the right of Investigators and INSTITUTIONS to prepare, publish and or use modifications to the Software that may be substantially similar or functionally equivalent to End User’s modifications, and/or improvements if any. In the event that End User obtains patent protection for any modification or improvement to Software, End User agrees not to allege or enjoin infringement of End User’s patent against Investigators, INSTITUTIONS, or any of its researchers, medical or research staff, officers, students, directors and employees.
+
+6. PUBLICATION & ATTRIBUTION. End User has the right to publish, present, or share, results from the use of the Software. If utilization of the Software results in outcomes which will be published, End User shall acknowledge Investigators and Institutions as the provider of the Software, shall specify the version of Software used and cite the following reference:
+
+Guergana K. Savova, Eugene Tseytlin, Sean P. Finan, Melissa Castine, Timothy A. Miller, Olga P. Medvedeva, David A. Harris, Harry S. Hochheiser, Chen Lin, Girish R. Chavan, Rebecca S. Jacobson. 2017. DeepPhe - A Natural Language Processing System for Extracting Cancer Phenotypes from Clinical Records. Cancer Res; 77(21) November 1, 2017 doi: 10.1158/0008-5472.CAN-17-0615
+
+7. NO CLINICAL USE. The Software is for academic research use only and it is not approved for clinical, diagnostic or treatment purposes. End User shall not use the Software for clinical, diagnostic or treatment purposes and any such uses are expressly prohibited.
+
+8. NO WARRANTIES. The Software is experimental in nature and is made available "AS IS," without obligation by INSTITUTIONS to provide accompanying services or support. Any risk associated with use of the Software is at the sole risk of Institution and End User. INSTITUTIONS and Investigators make no warranties, expressed or implied, regarding the quality of any product produced under this Agreement. Under no circumstances, shall INSTITUTIONS or Investigators be liable for incidental, special, indirect, direct or consequential damages or loss of profits, interruption of business, or related expenses which may arise from the use of the Software, including but not limited to those resulting from defects in Software and/or documentation, or loss or inaccuracy of data of any kind.
+
+INSTITUTIONS AND Investigators EACH EXPRESSLY DISCLAIM ANY AND ALL WARRANTIES CONCERNING SOFTWARE, INCLUDING ANY WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR ANY PARTICULAR PURPOSE, AND WARRANTIES OF PERFORMANCE, OR WARRANTY OF NON-INFRINGEMENT ,AND ANY WARRANTY THAT MIGHT OTHERWISE ARISE FROM THE COURSE OF DEALING OR USAGE OF TRADE. NO WARRANTY IS EITHER EXPRESSED OR IMPLIED WITH RESPECT TO THE USE OF THE SOFTWARE.
+
+9. INDEMNIFICATION. To the extent permitted by law, End User shall indemnify, defend and hold harmless INSTITUTIONS, its corporate affiliates, current or future directors, trustees, officers, faculty, medical and professional staff, employees, students and agents and their respective successors, heirs and assigns (the "Indemnitees"), against any liability, damage, loss or expense (including reasonable attorney's fees and expenses of litigation) incurred by or imposed upon the Indemnitees or any one of them in connection with any claims, suits, actions, demands or judgments arising from End User’s use of the Software except to the extent caused by the gross negligence or willful misconduct of an Indemnitee.
+
+This Section 9 indemnification clause shall survive expiration or termination of this Agreement.
+
+10. Governing Law. This Agreement shall be construed and governed by the laws of the Commonwealth of Massachusetts regardless of otherwise applicable choice of law standards.
+
+11. Non-Use of Name. Other than permitted under Sections 3 and 6, the End User shall not use the name of Investigators, INSTITUTIONS or any corporate affiliate in any publicity, advertising, or news release without the prior written approval of the authorized representative of INSTITUTIONS.
+
+

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<lookupSpecification>
+
+    <dictionaries>
+        <dictionary>
+            <name>CancerDictionaryOwl</name>
+            <implementationName>org.apache.ctakes.dictionary.lookup2.dictionary.OwlDictionary</implementationName>
+            <properties>
+                <property key="owlPath" value="data/ontology/nlpMelanoma.owl"/>
+                <property key="owlRootURIs" value="Annotation,Lexicon"/>
+            </properties>
+        </dictionary>
+    </dictionaries>
+
+    <conceptFactories>
+        <conceptFactory>
+            <name>CancerConceptFactoryOwl</name>
+            <implementationName>org.apache.ctakes.dictionary.lookup2.concept.OwlConceptFactory</implementationName>
+            <properties>
+                <property key="owlPath" value="data/ontology/nlpMelanoma.owl"/>
+                <property key="owlRootURIs" value="Annotation,Lexicon"/>
+            </properties>
+        </conceptFactory>
+    </conceptFactories>
+
+    <!--  Defines what terms and concepts will be used  -->
+    <dictionaryConceptPairs>
+        <dictionaryConceptPair>
+            <name>CancerOwl</name>
+            <dictionaryName>CancerDictionaryOwl</dictionaryName>
+            <conceptFactoryName>CancerConceptFactoryOwl</conceptFactoryName>
+        </dictionaryConceptPair>
+    </dictionaryConceptPairs>
+
+    <rareWordConsumer>
+        <name>Term Consumer</name>
+        <implementationName>org.apache.ctakes.dictionary.lookup2.consumer.OwlPrecisionTermConsumer</implementationName>
+        <properties>
+            <!-- Depending upon the consumer, the value of codingScheme may or may not be used.  With the packaged consumers,
+            codingScheme is a default value used only for cuis that do not have secondary codes (snomed, rxnorm, etc.)  -->
+            <property key="codingScheme" value="OWL_URI"/>
+        </properties>
+    </rareWordConsumer>
+
+</lookupSpecification>

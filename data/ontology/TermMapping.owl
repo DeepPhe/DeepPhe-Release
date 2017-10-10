@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE Ontology [
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://blulab.chpc.utah.edu/ontologies/TermMapping.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     ontologyIRI="http://blulab.chpc.utah.edu/ontologies/TermMapping.owl">
+    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Declaration>
+        <AnnotationProperty IRI="#abbreviation"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="#alternateCode"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="#author"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="#code"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="#definition"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="#misspelling"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="#preferredTerm"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="#regex"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="#semanticType"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="#source"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="#subjectiveExpression"/>
+    </Declaration>
+    <Declaration>
+        <AnnotationProperty IRI="#synonym"/>
+    </Declaration>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="#definition"/>
+        <IRI>#abbreviation</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A lexical variant that denotes an abbreviation or acronym related to a term.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="#definition"/>
+        <IRI>#alternateCode</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A concept code that is related to a term, but is not the preferred code associated with a term.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="#definition"/>
+        <IRI>#author</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">The creator of the term.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="#definition"/>
+        <IRI>#code</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">The unique concept code that is associated with a term.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="#definition"/>
+        <IRI>#definition</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">The definition associated with a term.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="#definition"/>
+        <IRI>#misspelling</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A lexical variant of a term that is improperly spelled.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="#definition"/>
+        <IRI>#preferredTerm</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A lexical variant of the term that is the preferred reference term.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="#definition"/>
+        <IRI>#regex</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A regular expression used to locate the term.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="#definition"/>
+        <IRI>#semanticType</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A category that describes what semantic type the concept belongs to.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="#definition"/>
+        <IRI>#subjectiveExpression</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A lexical variant that is related to a concept through a euphemism, indirect term, circumlocution or substitute term.</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty IRI="#definition"/>
+        <IRI>#synonym</IRI>
+        <Literal datatypeIRI="&rdf;PlainLiteral">A lexical variant for a concept that denotes synonymy with the concept.</Literal>
+    </AnnotationAssertion>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net -->
+

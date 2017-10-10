@@ -1,0 +1,61 @@
+Filename	Category Code	Column Number	Data Label	Data Label Source	Controlled Vocab Code	Source Column	Source Column Alternative	caDSR CDE ID	Class	Required Avs	Property to Return Value
+tcga-melanoma.txt	Other Columns	1	STUDY_ID			bcr_patient_barcode		2673794			
+tcga-melanoma.txt	OMIT	2	OMIT			informed_consent_verified		3288361			
+tcga-melanoma.txt	Tumor	3	Primary Site			icd_o_3_site		3226281	MelanomaPrimaryTumor		hasBodySite
+tcga-melanoma.txt	OMIT	4	Histology			icd_o_3_histology		3226275			
+tcga-melanoma.txt	OMIT	5	ICD-10 Code			icd_10		3226287			
+tcga-melanoma.txt	OMIT	6	OMIT			tissue_prospective_collection_indicator		3088492			
+tcga-melanoma.txt	OMIT	7	OMIT			tissue_retrospective_collection_indicator		3088528			
+tcga-melanoma.txt	OMIT	8	Person Birth Date Less Initial Pathologic Diagnosis Date (Calculated Day Value)			days_to_birth		3008233			
+tcga-melanoma.txt	OMIT	9	Gender			gender		2200604			
+tcga-melanoma.txt	OMIT	10	Height			height		649			
+tcga-melanoma.txt	OMIT	11	Weight			weight		651			
+tcga-melanoma.txt	OMIT	12	Race			race		2192199			
+tcga-melanoma.txt	OMIT	13	Ethnicity			ethnicity		2192217			
+tcga-melanoma.txt	OMIT	14	Prior Cancer Diagnosis Occurrence			other_dx		3382736			
+tcga-melanoma.txt	OMIT	15	Neoadjuvant Therapy Type Administered Prior To Resection			history_of_neoadjuvant_treatment		3382737			
+tcga-melanoma.txt	OMIT	16	Person Neoplasm Status			person_neoplasm_cancer_status		2759550			
+tcga-melanoma.txt	OMIT	17	Vital Status			vital_status		5			
+tcga-melanoma.txt	OMIT	18	Death Less Initial Pathologic Diagnosis Date Calculated Day Value			days_to_death		3165475			
+tcga-melanoma.txt	Tumor+ Tumor Phenotype	19	Primary Neoplasm Melanoma Diagnosis Indicator			primary_neoplasm_melanoma_dx		3108462	MelanomaPrimaryTumor		hasDiagnosis
+tcga-melanoma.txt	OMIT	20	Primary Tumor Multiple Present Ind			primary_tumor_multiple_present_ind		64186			
+tcga-melanoma.txt	Tumor+ Tumor Phenotype	21	Tumor Disease Anatomic Site			tumor_tissue_site		3427536	MelanomaPrimaryTumor		hasBodySite
+tcga-melanoma.txt	OMIT	22	Primary Tumor Location Total Count			primary_anatomic_site_count		3427609			
+tcga-melanoma.txt	Tumor+ Tumor Phenotype	23	Breslow Depth Value			breslow_depth_value		2593055			
+tcga-melanoma.txt	Tumor+ Tumor Phenotype	24	Melanoma Specimen Clark Level Value			melanoma_clark_level_value		2593051			
+tcga-melanoma.txt	Tumor+ Tumor Phenotype	25	Melanoma Ulceration Indicator			melanoma_ulceration_indicator		3108478			
+tcga-melanoma.txt	OMIT	26	Malignant Neoplasm Mitotic Count Rate Square Millimeter Value			malignant_neoplasm_mitotic_count_rate		3119292			
+tcga-melanoma.txt	OMIT	27	Last Alive Less Initial Pathologic Diagnosis Date Calculated Day Value			days_to_initial_pathologic_diagnosis		3131740			
+tcga-melanoma.txt	OMIT	28	Diagnosis Age			age_at_initial_pathologic_diagnosis		2006657			
+tcga-melanoma.txt	OMIT	29	Year Cancer Initial Diagnosis Number			year_of_initial_pathologic_diagnosis		2896960			
+tcga-melanoma.txt	OMIT	30	American Joint Committee on Cancer Publication Version Type			system_version		2722309			
+tcga-melanoma.txt	OMIT	31	Neoplasm Disease Stage American Joint Committee on Cancer Code			pathologic_stage		3203222			
+tcga-melanoma.txt	Primary Site+Stage of Disease	32	American Joint Committee on Cancer Tumor Stage Code			pathologic_T		3045435	MelanomaCancerPhenotype		hasPathologicTClassification
+tcga-melanoma.txt	Primary Site+Stage of Disease	33	Neoplasm Disease Lymph Node Stage American Joint Committee on Cancer Code			pathologic_N		3203106	MelanomaCancerPhenotype		hasPathologicNClassification
+tcga-melanoma.txt	Primary Site+Stage of Disease	34	American Joint Committee on Cancer Metastasis Stage Code			pathologic_M		3045439	MelanomaCancerPhenotype		hasPathologicMClassification
+tcga-melanoma.txt	OMIT	35	Submitted Specimen Diagnosis Less Initial Pathologic Diagnosis Date Calculated Day Value			days_to_submitted_specimen_dx		3430945			
+tcga-melanoma.txt	OMIT	36	Tumor Disease Anatomic Site			tumor_tissue_site		3427536			
+tcga-melanoma.txt	OMIT	37	Melanoma Origin Skin Anatomic Site			melanoma_origin_skin_anatomic_site		3108474			
+tcga-melanoma.txt	OMIT	38	Prior Systemic Therapy Type			prior_systemic_therapy_type		3119700			
+tcga-melanoma.txt	OMIT	39	Adjuvant Postoperative Radiation Therapy Administered Ind-3			radiation_therapy		2005312			
+tcga-melanoma.txt	OMIT	40	Adjuvant Postoperative Pharmaceutical Therapy Administered Indicator			postoperative_rx_tx		3397567			
+tcga-melanoma.txt	OMIT	41	New Neoplasm Event Diagnosis Prior To Submitted Specimen Diagnosis Indicator			new_tumor_dx_prior_submitted_specimen_dx		3427563			
+tcga-melanoma.txt	OMIT	42	New Tumor Event Metastasis Anatomic Site			new_tumor_metastasis_anatomic_site		3430936			
+tcga-melanoma.txt	OMIT	43	New Tumor Event Metastasis Anatomic Site Other Specify Text			new_tumor_metastasis_anatomic_site_other_text		3427578			
+tcga-melanoma.txt	OMIT	44	New Tumor Event Metastasis Anatomic Site			new_tumor_metastasis_anatomic_site		3430936			
+tcga-melanoma.txt	OMIT	45	New Tumor Event Metastasis Anatomic Site Other Specify Text			new_tumor_metastasis_anatomic_site_other_text		3427578			
+tcga-melanoma.txt	OMIT	46	New Non Melanoma Event Histologic Type Text			new_non_melanoma_event_histologic_type_text		3427610			
+tcga-melanoma.txt	OMIT	47	OMIT			day_of_form_completion		2975716			
+tcga-melanoma.txt	OMIT	48	OMIT			month_of_form_completion		2975718			
+tcga-melanoma.txt	OMIT	49	OMIT			year_of_form_completion		2975720			
+tcga-melanoma.txt	OMIT	50	Radiation Therapy Begin Less Initial Pathologic Diagnosis Date Calculated Day Value			days_to_radiation_therapy_start		3008313			
+tcga-melanoma.txt	OMIT	51	Radiation Therapy End Less Initial Pathologic Diagnosis Date Calculated Day Value			days_to_radiation_therapy_end		3008333			
+tcga-melanoma.txt	OMIT	52	Radiation Therapy Total Dose Text			radiation_dosage		2721441			
+tcga-melanoma.txt	OMIT	53	Radiation Therapy Administered Dose UOM			units		61446			
+tcga-melanoma.txt	OMIT	54	Radiation Therapy Total Fractions Count			numfractions		61465			
+tcga-melanoma.txt	OMIT	55	Radiation Therapy Disease Location Category			anatomic_treatment_site		2793522			
+tcga-melanoma.txt	OMIT	56	Radiation Therapy Continue Occurrence Indicator			radiation_treatment_ongoing		2842745			
+tcga-melanoma.txt	OMIT	57	Current Treatment Study Best Response Type			measure_of_response		2857291			
+tcga-melanoma.txt	OMIT	58	OMIT			day_of_form_completion		2975716			
+tcga-melanoma.txt	OMIT	59	OMIT			month_of_form_completion		2975718			
+tcga-melanoma.txt	OMIT	60	OMIT			year_of_form_completion		2975720			
