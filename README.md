@@ -117,12 +117,12 @@ or using an IDE with Maven integration such as [IntelliJ](https://www.jetbrains.
 mvn clean package -Dmaven.test.skip=true
 ````
 	
-If you are using a binary installation of DeepPhe, you can start the pipelines by executing scripts from the command line:
+If you are using a binary installation of DeepPhe, you can run pipelines using a gui by executing scripts from the command line:
 ````
 bin/DocumentSummarizer
 bin/PhenotypeSummarizer
 ````
-
+There are example run configurations in ``data/pipeline/``, stored in `.piper_cli` files that can be loaded by the gui.
 	
 ## Load data to neo4j
 
