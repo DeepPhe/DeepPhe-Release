@@ -32,7 +32,7 @@ The three most common are:
 
 The DeepPhe root directory contains four Maven modules:
 1. deepphe-ctakes-cancer
-    - Code and resources to extend [cTAKES](ctakes.apache.org)
+    - Code and resources to extend [cTAKES](https://ctakes.apache.org)
 2. deepphe-distribution
     - Code and resources to create a binary installation
 3. deepphe-fhir
