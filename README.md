@@ -147,3 +147,9 @@ cd neo4j_home_directory
 ````
 
 Once the neo4j server is running, you should be able to access the Neo4j browser at http://localhost:7474/ and explore the generated neo4j database, execute Cypher queries and see results in tabular or graph form.
+
+
+## Errata
+When building DeepPhe from code, it uses the latest up-to-date cTAKES code.
+If strange errors are encountered that indicate a problem in cTAKES, you can use a version of cTAKES tagged at the time of the DeepPhe 0.1 release:
+[cTAKES for DeepPhe-Release](https://svn.apache.org/repos/asf/ctakes/tags/DeepPhe.checkpoint.v1/)
