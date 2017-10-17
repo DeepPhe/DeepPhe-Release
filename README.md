@@ -72,7 +72,7 @@ These settings include:
 - Ontology Uri (for non-default specification)
 - Sections Owl (for Summarization)
 
-Unless you are using a custom ontology, you only need to change the Input and Output directories.
+\* Unless you are using a custom ontology, you only need to change the Input and Output directories.
 
 The GUI will allow you to load different pipelines, load and save custom pipeline parameters, and run pipelines.
 See [Piper File Submitter GUI](https://cwiki.apache.org/confluence/display/CTAKES/Piper+File+Submitter+GUI) for more information.
@@ -99,7 +99,9 @@ These settings include:
 - TCGA ID Mapping File (for tcga mapping)
 - Sections Owl (for Summarization)
 
-Unless you are using a custom ontology, you only need to change the Input and Output directories.
+\* Unless you are using a custom ontology, you only need to change the Input and Output directories.
+
+Note that the Input Directory for Phenotype Summarization is the Output Directory from the [Document Summarization](#Document Summarization) pipeline.
 
 The GUI will allow you to load different pipelines, load and save custom pipeline parameters, and run pipelines.
 See [Piper File Submitter GUI](https://cwiki.apache.org/confluence/display/CTAKES/Piper+File+Submitter+GUI) for more information.
@@ -111,18 +113,27 @@ mvn compile -PstartBreastCancerPhe
 or using an IDE with Maven integration such as [IntelliJ](https://www.jetbrains.com/help/idea/maven.html#use_profiles_maven)
 
 
-## Building a binary zip file
+## Building a binary installation
 
 ````
 mvn clean package -Dmaven.test.skip=true
 ````
 	
+The package command will create compressed files in the ``deepphe-distribution/target/`` directory.  
+There are two compressed files containing binaries, one for Windows and another for Linux.  
+Unzipping the file appropriate for your operating system will create a complete binary installation of DeepPhe.
+
 If you are using a binary installation of DeepPhe, you can run pipelines using a gui by executing scripts from the command line:
 ````
 bin/DocumentSummarizer
 bin/PhenotypeSummarizer
 ````
-There are example run configurations in ``data/pipeline/``, stored in `.piper_cli` files that can be loaded by the gui.
+Each command will start a [Piper File Submitter GUI](https://cwiki.apache.org/confluence/display/CTAKES/Piper+File+Submitter+GUI) 
+set up for a [Document Summary pipeline](#Document Summarization) or [Phenotype Summary pipeline](#Phenotype Summarization).  
+Unlike using the maven profiles, the GUI is launched without example settings for [patientX](#deepphe-file-structure) or an ontology.
+You can load example settings using configuration files in the ``data/pipeline/`` [directory](#deepphe-file-structure) and modify them to fit your preferences.
+Configuration files have the extension `.piper_cli`.  You can save your custom configuration files for reuse.
+
 	
 ## Load data to neo4j
 
@@ -150,6 +161,6 @@ Once the neo4j server is running, you should be able to access the Neo4j browser
 
 
 ## Errata
-When building DeepPhe from code, it uses the latest up-to-date cTAKES code.
-If strange errors are encountered that indicate a problem in cTAKES, you can use a version of cTAKES tagged at the time of the DeepPhe 0.1 release:
+When building the DeepPhe code, it uses the latest up-to-date cTAKES libraries.
+If errors are encountered that indicate a problem in cTAKES, you can use a version of cTAKES tagged at the time of the DeepPhe 0.1 release:
 [cTAKES for DeepPhe-Release](https://svn.apache.org/repos/asf/ctakes/tags/DeepPhe.checkpoint.v1/)
