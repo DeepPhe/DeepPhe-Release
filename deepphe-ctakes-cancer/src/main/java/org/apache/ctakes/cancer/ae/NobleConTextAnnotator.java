@@ -1,11 +1,14 @@
 package org.apache.ctakes.cancer.ae;
 
 import edu.pitt.dbmi.nlp.noble.coder.model.Mention;
+import edu.pitt.dbmi.nlp.noble.ontology.IOntology;
+import edu.pitt.dbmi.nlp.noble.ontology.IOntologyException;
 import edu.pitt.dbmi.nlp.noble.terminology.Concept;
 import edu.pitt.dbmi.nlp.noble.terminology.TerminologyException;
 import edu.pitt.dbmi.nlp.noble.tools.ConText;
 import org.apache.ctakes.cancer.owl.OwlConstants;
 import org.apache.ctakes.core.ontology.OwlOntologyConceptUtil;
+import org.apache.ctakes.dictionary.lookup2.ontology.OwlConnectionFactory;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.Event;
 import org.apache.ctakes.typesystem.type.refsem.EventProperties;
@@ -20,22 +23,32 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 
 final public class NobleConTextAnnotator extends JCasAnnotator_ImplBase {
    static private final Logger LOGGER = Logger.getLogger( "ConTextAnnotator" );
 
 
-   private ConText context;
+   private ConText _context;
 
    @Override
    public void initialize( final UimaContext aContext ) throws ResourceInitializationException {
       super.initialize( aContext );
-      context = new ConText();
+      try {
+         final IOntology ontology = OwlConnectionFactory.getInstance().getDefaultOntology();
+         _context = new ConText( ontology );
+      } catch ( IOntologyException | FileNotFoundException multE ) {
+         LOGGER.error( multE.getMessage(), multE );
+      }
    }
 
    @Override
    public void process( final JCas jcas ) throws AnalysisEngineProcessException {
+      if ( _context == null ) {
+         LOGGER.warn( "Skipping Noble Context processing." );
+         return;
+      }
       LOGGER.info( "Assigning context-based Attributes ..." );
       final Collection<Sentence> sentences = JCasUtil.select( jcas, Sentence.class );
       if ( sentences == null || sentences.isEmpty() ) {
@@ -51,14 +64,15 @@ final public class NobleConTextAnnotator extends JCasAnnotator_ImplBase {
          }
 
          // create noble coder sentence object
-         final edu.pitt.dbmi.nlp.noble.coder.model.Sentence nobleSentence = createNobleSentence( ctakesSentence );
+         final edu.pitt.dbmi.nlp.noble.coder.model.Sentence nobleSentence
+               = new edu.pitt.dbmi.nlp.noble.coder.model.Sentence( ctakesSentence.getCoveredText() );
 
          // add Mentions to the noble coder sentence from cTAKES
          nobleSentence.setMentions( new ArrayList<>( mentionMap.keySet() ) );
 
          // run ConText on the sentence
          try {
-            context.process( nobleSentence );
+            _context.process( nobleSentence );
          } catch ( TerminologyException e ) {
             throw new AnalysisEngineProcessException( e );
          }
@@ -95,11 +109,6 @@ final public class NobleConTextAnnotator extends JCasAnnotator_ImplBase {
          mentions.put( m, ia );
       }
       return mentions;
-   }
-
-   static private edu.pitt.dbmi.nlp.noble.coder.model.Sentence createNobleSentence( final Sentence sentence ) {
-      return new edu.pitt.dbmi.nlp.noble.coder.model.Sentence( sentence.getCoveredText(),
-            sentence.getBegin(), edu.pitt.dbmi.nlp.noble.coder.model.Sentence.TYPE_PROSE );
    }
 
    static private void adjustAnnotationProperties( final JCas jcas,
