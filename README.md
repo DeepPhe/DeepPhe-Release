@@ -102,6 +102,7 @@ These settings include:
 \* Unless you are using a custom ontology, you only need to change the Input and Output directories.
 
 Note that the Input Directory for Phenotype Summarization is the Output Directory from the [Document Summarization](#Document Summarization) pipeline.
+Typically you use the same directory for Phenotype Summarization output.
 
 The GUI will allow you to load different pipelines, load and save custom pipeline parameters, and run pipelines.
 See [Piper File Submitter GUI](https://cwiki.apache.org/confluence/display/CTAKES/Piper+File+Submitter+GUI) for more information.
