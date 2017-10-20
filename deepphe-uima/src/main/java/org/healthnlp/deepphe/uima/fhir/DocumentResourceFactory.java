@@ -36,6 +36,7 @@ import org.hl7.fhir.instance.model.Procedure.ProcedureStatus;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -116,7 +117,8 @@ final public class DocumentResourceFactory {
     * @return -
     */
    public static Report getReport( JCas cas ) {
-      Report r = getReport( cTAKESUtils.getDocumentText( cas ) );
+//      Report r = getReport( cTAKESUtils.getDocumentText( cas ) );
+      Report r = createReport( cas );
 
       // oh, well no document title available
       String title;
@@ -179,11 +181,51 @@ final public class DocumentResourceFactory {
       return r;
    }
 
-   public static Patient getPatient( JCas cas ) {
-      Patient p = getPatient( cTAKESUtils.getDocumentText( cas ) );
-      // TODO: age and gender
+   static private final  Collection<String> DOC_TYPES = Arrays.asList( "SP", "RAD", "DS", "PGN", "NOTE" );
 
-      return p;
+   /**
+    * create a Report object from DocumentAnnotation
+    *
+    * @param jCas -
+    * @return -
+    */
+   public static Report createReport( final JCas jCas ) {
+      final String docText = jCas.getDocumentText();
+      Report r = new Report();
+      r.setText( docText );
+      // some hard-coded report type values
+      Map<String, String> header = FHIRUtils.getHeaderValues( docText );
+      String dt = header.get( FHIRUtils.DOCUMENT_HEADER_PRINCIPAL_DATE );
+      if ( dt != null ) {
+         r.setDate( FHIRUtils.getDate( dt ) );
+      } else {
+         r.setDate( java.sql.Date.valueOf( LocalDate.now() ) );
+      }
+      String type = header.get( FHIRUtils.DOCUMENT_HEADER_REPORT_TYPE );
+      if ( type == null ) {
+         final String id = DocumentIDAnnotationUtil.getDocumentID( jCas );
+         final String[] splits = id.split( "_" );
+         for ( String split : splits ) {
+            if ( DOC_TYPES.contains( split ) ) {
+               type = split;
+               break;
+            }
+         }
+      }
+      if ( type == null ) {
+         type = "NOTE";
+      }
+      r.setType( type );
+      return r;
+   }
+
+
+   public static Patient getPatient( JCas cas ) {
+//      Patient p = getPatient( cTAKESUtils.getDocumentText( cas ) );
+//      // TODO: age and gender
+//
+//      return p;
+      return createPatient( cas );
    }
 
    /**
@@ -222,6 +264,38 @@ final public class DocumentResourceFactory {
          return p;
       }
       return null;
+   }
+
+   public static Patient createPatient( JCas cas ) {
+      final String docText = cas.getDocumentText();
+      final Map<String, String> header = FHIRUtils.getHeaderValues( docText );
+      if ( header != null && !header.isEmpty() ) {
+         final String name = header.get( FHIRUtils.DOCUMENT_HEADER_PATIENT_NAME );
+         if ( name != null && !name.isEmpty() ) {
+            return createPatient( name, docText.indexOf( name ) );
+         }
+      }
+      final String name = DocumentIDAnnotationUtil.getDocumentIdPrefix( cas );
+      return createPatient( name, 0-name.length() );
+   }
+
+   /**
+    * get patient from the document
+    *
+    * @param name - patient name
+    * @param nameIndex of text
+    * @return fhir patient
+    */
+   public static Patient createPatient( final String name, final int nameIndex ) {
+      Patient p = new Patient();
+      p.setPatientName( name );
+      if ( nameIndex >= 0 ) {
+         p.addExtension( FHIRUtils.createMentionExtension( name, nameIndex, nameIndex + name.length() ) );
+      }
+      // register
+      cTAKESUtils.addResource( p );
+      // TODO: age and gender
+      return p;
    }
 
    /**
