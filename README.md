@@ -165,3 +165,17 @@ Once the neo4j server is running, you should be able to access the Neo4j browser
 When building the DeepPhe code, it uses the latest up-to-date cTAKES libraries.
 If errors are encountered that indicate a problem in cTAKES, you can use a version of cTAKES tagged at the time of the DeepPhe 0.1 release:
 [cTAKES for DeepPhe-Release](https://svn.apache.org/repos/asf/ctakes/tags/DeepPhe.checkpoint.v1/)
+
+To run multiple patients, use a single root directory with subdirectories, one per patient, named after each patient.  
+Files in patient directories should be prefixed with the patient name.
+For example:
+````
+reports/
+     patientX/
+          patientX_doc1_RAD.txt
+          patientX_doc2_SP.txt
+          patientX_doc3_NOTE.txt
+````
+
+Patient names should not contain the underscore _ character.
+Document file names may contain the underscore _ character.
