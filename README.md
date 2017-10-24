@@ -168,6 +168,7 @@ If errors are encountered that indicate a problem in cTAKES, you can use a versi
 
 To run multiple patients, use a single root directory with subdirectories, one per patient, named after each patient.  
 Files in patient directories should be prefixed with the patient name.
+Document types can be differentiated using a suffix of `_RAD _SP _DS _PGN` or `_NOTE`.
 For example:
 ````
 reports/
@@ -179,3 +180,4 @@ reports/
 
 Patient names should not contain the underscore _ character.
 Document file names may contain the underscore _ character.
+Specification of document type is not necessary, the default type is NOTE.
