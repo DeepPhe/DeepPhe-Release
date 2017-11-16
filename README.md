@@ -12,6 +12,11 @@ The following tools are recommended
 - [IntelliJ](https://www.jetbrains.com/idea/) IDE is suggested to run the pipeline
 - [Eclipse](https://eclipse.org/ide/) is another IDE that can be used to run the pipeline
 
+## Feedback
+- Please post questions and comments on the Issues tab at the top of the page.
+- Issues can be searched using the "Filters" tool.
+
+
 ## Obtaining the code
 
 There are several methods that can be used to obtain the DeepPhe code from GitHub.
@@ -192,3 +197,6 @@ reports/
 Patient names should not contain the underscore _ character.
 Document file names may contain the underscore _ character.
 Specification of document type is not necessary, the default type is NOTE.
+
+- Please post questions and comments on the Issues tab at the top of the page.
+- Issues can be searched using the "Filters" tool.
