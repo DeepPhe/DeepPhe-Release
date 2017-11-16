@@ -13,7 +13,7 @@ The following tools are recommended
 - [Eclipse](https://eclipse.org/ide/) is another IDE that can be used to run the pipeline
 
 ## Feedback
-- Please post questions and comments on the Issues tab at the top of the page.
+- Please post questions and comments on the [Issues tab](https://github.com/DeepPhe/DeepPhe-Release/issues) at the top of the page.
 - Issues can be searched using the "Filters" tool.
 
 
@@ -198,5 +198,5 @@ Patient names should not contain the underscore _ character.
 Document file names may contain the underscore _ character.
 Specification of document type is not necessary, the default type is NOTE.
 
-- Please post questions and comments on the Issues tab at the top of the page.
+- Please post questions and comments on the [Issues tab](https://github.com/DeepPhe/DeepPhe-Release/issues) at the top of the page.
 - Issues can be searched using the "Filters" tool.
