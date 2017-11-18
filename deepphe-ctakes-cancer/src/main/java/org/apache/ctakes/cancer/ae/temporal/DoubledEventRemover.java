@@ -1,8 +1,8 @@
 package org.apache.ctakes.cancer.ae.temporal;
 
-import org.apache.ctakes.core.cc.pretty.textspan.DefaultTextSpan;
-import org.apache.ctakes.core.cc.pretty.textspan.TextSpan;
 import org.apache.ctakes.core.pipeline.PipeBitInfo;
+import org.apache.ctakes.core.util.textspan.DefaultTextSpan;
+import org.apache.ctakes.core.util.textspan.TextSpan;
 import org.apache.ctakes.typesystem.type.refsem.Event;
 import org.apache.ctakes.typesystem.type.refsem.EventProperties;
 import org.apache.ctakes.typesystem.type.textsem.EventMention;

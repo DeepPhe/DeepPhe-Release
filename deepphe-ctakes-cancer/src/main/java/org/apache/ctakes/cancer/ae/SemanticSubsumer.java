@@ -1,9 +1,9 @@
 package org.apache.ctakes.cancer.ae;
 
 import org.apache.ctakes.cancer.owl.OwlConstants;
-import org.apache.ctakes.core.cc.pretty.textspan.DefaultTextSpan;
-import org.apache.ctakes.core.cc.pretty.textspan.TextSpan;
 import org.apache.ctakes.core.ontology.OwlOntologyConceptUtil;
+import org.apache.ctakes.core.util.textspan.DefaultTextSpan;
+import org.apache.ctakes.core.util.textspan.TextSpan;
 import org.apache.ctakes.typesystem.type.textsem.*;
 import org.apache.log4j.Logger;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
