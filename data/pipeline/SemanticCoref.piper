@@ -5,59 +5,49 @@ addLogged ClearNLPDependencyParserAE
 add StartFinishLogger LOGGER_NAME=Coreferences IS_START=true
 package org.apache.ctakes.cancer.ae.coref
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention
-add MarkableHeadTreeCreator
 addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
 addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.LabMention
-add MarkableHeadTreeCreator
 addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
 addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.MedicationMention
-add MarkableHeadTreeCreator
 addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
 addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.ProcedureMention
-add MarkableHeadTreeCreator
 addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
 addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.SignSymptomMention
-add MarkableHeadTreeCreator
 addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
 addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention
-add MarkableHeadTreeCreator
 addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
 addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.SeverityModifier
-add MarkableHeadTreeCreator
 addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
 addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.BodyLateralityModifier
-add MarkableHeadTreeCreator
 addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.BodySideModifier
-add MarkableHeadTreeCreator
 addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation
-add MarkableHeadTreeCreator
 addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
