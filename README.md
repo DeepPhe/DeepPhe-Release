@@ -200,3 +200,6 @@ Specification of document type is not necessary, the default type is NOTE.
 
 - Please post questions and comments on the [Issues tab](https://github.com/DeepPhe/DeepPhe-Release/issues) at the top of the page.
 - Issues can be searched using the "Filters" tool.
+
+##  Important License Notice
+This release of DeepPhe contains a calculation of overall stage using TNM stage values.  More information on this is available elsewhere.  For example, [This pdf](https://cancerstaging.org/references-tools/deskreferences/Documents/AJCC%20Breast%20Cancer%20Staging%20System.pdf).  Utilization of this functionality may require that you obtain a new license from the AJCC.
