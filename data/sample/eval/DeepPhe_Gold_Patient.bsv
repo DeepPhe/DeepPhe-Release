@@ -1,0 +1,1 @@
+*patientID|gender|menopausal status|para|gravida|abortus|BRCA1 status|BRCA2 status|height (in)|weight (lb)patientx|Female_Gender|Perimenopausal|||||||

@@ -1,0 +1,13 @@
+-cancer ID
+*patient ID		
+*body location	Breast_Cancer	hasBodySite
+body location laterality	BodySite	Laterality
+Temporality	Breast_Cancer	hasHistoricity
+clinical stage	Breast_Cancer	hasCancerStage
+clinical T classification	Breast_Cancer	hasGenericTClassification
+clinical N classification	Breast_Cancer	hasGenericNClassification
+clinical M classification	Breast_Cancer	hasGenericMClassification
+pathologic T classification	Breast_Cancer	hasPathologicTClassification
+pathologic N classification	Breast_Cancer	hasPathologicNClassification
+pathologic M classification	Breast_Cancer	hasPathologicMClassification
+

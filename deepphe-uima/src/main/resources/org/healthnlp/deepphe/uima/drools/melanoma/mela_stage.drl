@@ -1,0 +1,61 @@
+//created on: Apr 26, 2018
+package org.healthnlp.deepphe.uima.drools.melanoma
+
+import java.lang.Object;
+import java.util.List;
+import java.util.ArrayList;
+
+import org.healthnlp.deepphe.util.FHIRUtils;
+import org.healthnlp.deepphe.util.FHIRConstants;
+
+import org.healthnlp.deepphe.fact.Fact;
+import org.healthnlp.deepphe.fact.FactFactory;
+
+import org.healthnlp.deepphe.summary.*;
+import org.healthnlp.deepphe.uima.drools.Summarizer;
+
+// If there is a stage in the documents - use it, don't infer any
+rule "mela-Stage-from-FHIR"
+	salience 19999
+	no-loop true
+	when
+		$domain : Domain()
+		$record : MedicalRecord() 
+		not( Fact (category == FHIRConstants.HAS_CANCER_STAGE, documentType == FHIRConstants.RECORD_SUMMARY))
+		
+		$stages : Set() 
+		from collect (Fact (category == FHIRConstants.HAS_CANCER_STAGE, documentType != FHIRConstants.RECORD_SUMMARY))
+	then
+		for(Object obj : $stages){
+			String genericStage = ((Fact)obj).getName();
+//			genericStage = genericStage.replace("1", "I");
+//			genericStage = genericStage.replace("2", "II");
+//			genericStage = genericStage.replace("3", "III");
+//			genericStage = genericStage.replace("4", "IV");
+//			genericStage = genericStage+"_Skin_Melanoma";
+//			Fact stageF =  FactFactory.createFact(FHIRConstants.CONDITION, $domain.getOntologyURI()+"#"+genericStage);
+			Fact stageF =  FactFactory.createFact(FHIRConstants.CONDITION, genericStage);
+			List<Fact> provFacts = new ArrayList<Fact>();
+			provFacts.add(((Fact)obj)); 
+			stageF.addProvenanceFacts(provFacts); stageF.setDocumentType(FHIRConstants.RECORD_SUMMARY);
+		
+			modify($record){
+				getCancerSummary().addFact(FHIRConstants.HAS_CANCER_STAGE, stageF)
+			}
+			insert(stageF);		
+			System.out.print(".");
+		}
+		
+		if($stages.size() > 0 )
+			insert ("do_not_infer_stage");
+		
+end
+
+rule "mela-clean_do_not_infer_stage"
+	salience 1
+	no-loop true
+	when
+		$str : String(this == "do_not_infer_stage")
+	then
+		retract($str);
+end		

@@ -1,0 +1,100 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <parent>
+      <groupId>org.healthnlp</groupId>
+      <artifactId>deepphe</artifactId>
+      <version>0.2.0</version>
+   </parent>
+   <artifactId>deepphe-viz-neo4j</artifactId>
+   <name>deepphe-viz-neo4j</name>
+   <description>Cancer Deep Phenotype Extraction (DeepPhe) Project viz tool neo4j procedures</description>
+   <dependencies>
+      <!--  neo4j for ontology graph  -->
+      <dependency>
+         <groupId>org.healthnlp</groupId>
+         <artifactId>deepphe-neo4j</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/org.neo4j.procedure/apoc -->
+      <dependency>
+         <groupId>org.neo4j.procedure</groupId>
+         <artifactId>apoc</artifactId>
+         <version>${apoc.version}</version>
+      </dependency>
+
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>2.7</version>
+            <configuration>
+               <skip>true</skip>
+            </configuration>
+         </plugin>
+         <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.4</version>
+            <executions>
+               <execution>
+                  <id>bundle-project-sources</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>single</goal>
+                  </goals>
+                  <configuration>
+                     <descriptors>
+                        <descriptor>src/main/assembly/plugin.xml</descriptor>
+                     </descriptors>
+                     <!-- Tar package is only compatible with gnu tar, many files have more
+                         than 100 chars. Right now only javadoc files are too long. -->
+                     <tarLongFileMode>gnu</tarLongFileMode>
+
+                     <finalName>deepphe-viz-${project.version}</finalName>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+      <pluginManagement>
+         <plugins>
+            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+            <plugin>
+               <groupId>org.eclipse.m2e</groupId>
+               <artifactId>lifecycle-mapping</artifactId>
+               <version>1.0.0</version>
+               <configuration>
+                  <lifecycleMappingMetadata>
+                     <pluginExecutions>
+                        <pluginExecution>
+                           <pluginExecutionFilter>
+                              <groupId>
+                                 org.codehaus.mojo
+                              </groupId>
+                              <artifactId>
+                                 exec-maven-plugin
+                              </artifactId>
+                              <versionRange>
+                                 [1.2.1,)
+                              </versionRange>
+                              <goals>
+                                 <goal>exec</goal>
+                              </goals>
+                           </pluginExecutionFilter>
+                           <action>
+                              <execute></execute>
+                           </action>
+                        </pluginExecution>
+                     </pluginExecutions>
+                  </lifecycleMappingMetadata>
+               </configuration>
+            </plugin>
+         </plugins>
+      </pluginManagement>
+   </build>
+
+</project>

@@ -1,0 +1,177 @@
+//created on: Apr 25, 2018
+package org.healthnlp.deepphe.uima.drools.ov
+
+import java.lang.Object;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+
+import org.healthnlp.deepphe.util.FHIRUtils;
+import org.healthnlp.deepphe.util.FHIRConstants;
+
+import org.healthnlp.deepphe.fact.Fact;
+import org.healthnlp.deepphe.fact.FactFactory;
+import org.healthnlp.deepphe.fact.FactHelper;
+import org.healthnlp.deepphe.fact.BodySiteFact;
+
+import org.healthnlp.deepphe.summary.*;
+import org.healthnlp.deepphe.uima.drools.*;
+import org.healthnlp.deepphe.uima.drools.util.DroolsFunctions;
+
+import org.drools.core.spi.KnowledgeHelper;
+
+/******
+* According to:
+* https://www.dropbox.com/home/NCI%20U24%20Cancer%20IE/funded_project/deepphe_models/Models?preview=Ovarian_Cancer_Domain_Model_Validation_v3.xlsx
+* Jeremy: A Krukenberg tumor refers to a malignancy in the ovary that metastasized from a primary site - it's NOT a primary
+******/
+
+/*
+* Primary: Ovary | Fallopian_Tube | Peritoneal_Cavity | Endometrial_Cavity 
+* with body side. Exclude Krukenberg's tumor
+*/
+rule "primaryTumor"
+	salience 88897
+	no-loop true
+	when
+		$record : MedicalRecord()	
+		$domain : Domain()
+
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, 
+				$cSummaryId : summaryId)
+		
+		$tumorFact : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_BODY_SITE, 
+					$tumor_bs_name :name, documentType != FHIRConstants.RECORD_SUMMARY,
+					//rulesApplied not contains "primaryTumor", 
+					$tumor_ancestors : ancestors, $t_summaryId : summaryId,
+					($tumor_bs_name == "Ovary" || $tumor_bs_name == "Fallopian_Tube" ||
+					$tumor_bs_name == "Peritoneal_Cavity" || $tumor_bs_name == "Endometrial_Cavity"))
+							
+		not(Fact(summaryType == FHIRConstants.TUMOR_SUMMARY, documentType != FHIRConstants.RECORD_SUMMARY, 
+				category == FHIRConstants.HAS_DIAGNOSIS, (name matches ".*Krukenberg.*" || name matches ".*Metasta.*"),
+				 summaryId == $t_summaryId))
+	
+		$mt : MergedTumor(tumorSiteFactSet contains $tumorFact, tumorSummaryIdSet contains $t_summaryId,
+					readyForRetraction == false, rulesApplied not contains "primaryTumor")
+
+	then
+		DroolsFunctions.setTumorType($domain, $record, $cancerFact, $tumorFact, $mt, FHIRConstants.PRIMARY_TUMOR, 
+					"primaryTumor", true, drools );
+System.out.print(".");		
+//System.out.println("OV primaryTumor :"+$mt.getBodySite());
+end
+
+
+
+/*
+* Lymph node metastasis is regional if it's on the same side as primary.
+*/
+rule "regionalRecurrence-Lymph_Node_same_side"
+	salience 88876
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain()
+
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY,
+				$cSummaryId : summaryId)
+				
+		//primary tumor			
+		$pSite_tFact : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_TUMOR_TYPE, 
+					documentType == FHIRConstants.RECORD_SUMMARY, $t_summaryId: summaryId, 
+					name==FHIRConstants.PRIMARY_TUMOR)
+						
+		$pSide_tFact : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_BODY_MODIFIER, 
+					type == FHIRConstants.LATERALITY, documentType == FHIRConstants.RECORD_SUMMARY,
+					$sideName : name, summaryId == $t_summaryId)
+		
+		//rec tumor
+		$recTumor : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_BODY_SITE, 
+					$recTumorName : name, $rectAncestors : ancestors, documentType != FHIRConstants.RECORD_SUMMARY,
+					($recTumorName == "Lymph_Node" || $rectAncestors contains "Lymph_Node"), 
+					$recSummaryId : summaryId)//, rulesApplied not contains "regionalRecurrence-Lymph_Node_same_side")
+		$side_tFact : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_BODY_MODIFIER, 
+					type == FHIRConstants.LATERALITY, documentType != FHIRConstants.RECORD_SUMMARY,
+					name == $sideName, summaryId == $recSummaryId)
+					
+		$mt : MergedTumor(tumorSummaryIdSet contains $recSummaryId, bodySide == $sideName, 
+					tumorSiteFactSet contains $recTumor, readyForRetraction == false,
+					rulesApplied not contains "regionalRecurrence-Lymph_Node_same_side")
+	
+	then
+
+//System.out.println("\n in regionalRecurrence-Lymph_Node_same_side for Merged: "+$mt.getMergedTumorId());
+		modify($recTumor){	addRulesApplied("regionalRecurrence-Lymph_Node_same_side") }
+		
+		DroolsFunctions.setTumorType($domain, $record, $cancerFact, $recTumor, $mt, FHIRConstants.REGIONAL_METASTASIS, 
+					"regionalRecurrence-Lymph_Node_same_side", false, drools );
+		
+		
+		System.out.print(".");
+end
+
+/*
+* Lymph node metastasis is regional if there is a primary tumor without side.
+*/
+rule "regionalRecurrence-Lymph_Node_no_primary_side"
+	salience 88876
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain()
+
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY,
+				$cSummaryId : summaryId)
+		
+		//primary tumor			
+		$pSite_tFact : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_TUMOR_TYPE, 
+					documentType == FHIRConstants.RECORD_SUMMARY, $t_summaryId: summaryId, 
+					name==FHIRConstants.PRIMARY_TUMOR)
+		
+		IdMapper($oldSummaryId : oldSummaryId, newSummaryId == $t_summaryId)
+		//MergedTumor(tumorSiteFactSet contains $pSite_tFact, bodySide =="", readyForRetraction == false)
+					
+									
+		not(Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_BODY_MODIFIER, 
+					type == FHIRConstants.LATERALITY, documentType == FHIRConstants.RECORD_SUMMARY,
+					name != null, summaryId == $oldSummaryId))
+		
+		//rec tumor
+		$recTumor : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_BODY_SITE, 
+					$recTumorName : name, $rectAncestors : ancestors, documentType != FHIRConstants.RECORD_SUMMARY,
+					($recTumorName == "Lymph_Node" || $rectAncestors contains "Lymph_Node"), 
+					$recSummaryId : summaryId)//, rulesApplied not contains "regionalRecurrence-Lymph_Node_no_primary_side")
+					
+		$mt : MergedTumor(tumorSummaryIdSet contains $recSummaryId, 
+					tumorSiteFactSet contains $recTumor, readyForRetraction == false,
+					rulesApplied not contains "regionalRecurrence-Lymph_Node_no_primary_side")
+
+	then
+//System.out.println("\n in regionalRecurrence-Lymph_Node_NOOO_primary_side "+$mt.getBodySite());
+		modify($recTumor){	addRulesApplied("regionalRecurrence-Lymph_Node_no_primary_side") }
+		
+		DroolsFunctions.setTumorType($domain, $record, $cancerFact, $recTumor, $mt, FHIRConstants.REGIONAL_METASTASIS, 
+					"regionalRecurrence-Lymph_Node_no_primary_side", false, drools );
+		
+		System.out.print(".");
+end
+
+/*
+* All other are Metastatic
+*/
+rule "ov_meatastatic_tumor"
+	salience 88774
+	no-loop true
+	when
+		$record : MedicalRecord()	
+		$domain : Domain()	
+		$cancerFact : Fact() 
+
+		$mt : MergedTumor(readyForRetraction == false) 
+	then
+//System.out.println("OV_metastatic :"+$mt.getBodySite());
+		DroolsFunctions.setTumorType($domain, $record, $cancerFact, $mt.getTumorSiteFactSet().iterator().next(),
+					$mt, FHIRConstants.METASTATIC_TUMOR, "ov_meatastatic_tumor", false, drools );
+		
+		System.out.print(".");
+end

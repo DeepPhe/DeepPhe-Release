@@ -1,0 +1,185 @@
+//created on: Feb 19, 2018
+
+package org.healthnlp.deepphe.uima.drools.breast;
+
+import java.lang.Object;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+
+import org.healthnlp.deepphe.util.FHIRUtils;
+import org.healthnlp.deepphe.util.FHIRConstants;
+
+import org.healthnlp.deepphe.fact.Fact;
+import org.healthnlp.deepphe.fact.FactFactory;
+import org.healthnlp.deepphe.fact.FactHelper;
+import org.healthnlp.deepphe.fact.BodySiteFact;
+
+import org.healthnlp.deepphe.summary.*;
+import org.healthnlp.deepphe.uima.drools.*;
+import org.healthnlp.deepphe.uima.drools.util.DroolsFunctions;
+
+
+
+/*
+* primaryTumor-2 :
+* Olga: create TumorSummary here AND:
+* If tumors are on the same side and hitologicType is ductal or there is histologic type specified = >combine them as one "primary"
+* Tumors that are intraductal or ductal and Paget Disease are a single primary => 
+* If you have two tumors that are located within the same breast and both tumors have HistologicalType=Ductal 
+* and one or both of the tumors have Paget's Disease as a diagnosis, then you can merge the two tumors into one tumor with tumor type= "Primary".
+*/
+rule "brca-primaryTumor-ductal"
+	salience 88899
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain()
+
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, 
+				$cSummaryId : summaryId)
+	    
+		$site_Fact : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_BODY_SITE, 
+					documentType != FHIRConstants.RECORD_SUMMARY, $t_summaryId: summaryId,
+					$sFname : name, ($sFname == FHIRConstants.DOMAIN_BREAST || 
+					ancestors contains FHIRConstants.DOMAIN_BREAST))
+					
+	//	$side_tFact : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_BODY_MODIFIER, 
+	//				type == FHIRConstants.LATERALITY, documentType != FHIRConstants.RECORD_SUMMARY,
+	//				$sideName : name, summaryId == $t_summaryId)
+		$hist_tFact : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_HISTOLOGIC_TYPE, 
+					$name : name, ($name=="Ductal" || $name=="Lobular"), 
+					documentType != FHIRConstants.RECORD_SUMMARY, summaryId == $t_summaryId)
+					
+		$mt : MergedTumor(tumorSiteFactSet contains $site_Fact, $histologicType :histologicType, 
+					($histologicType =="Ductal" || $histologicType == "Lobular"), 
+					readyForRetraction == false)	
+	
+	then
+		DroolsFunctions.setTumorType($domain, $record, $cancerFact, $site_Fact, 
+			$mt, FHIRConstants.PRIMARY_TUMOR, "brca-primaryTumor-ductal", true, drools );
+		
+System.out.print(".");	
+//System.out.println(".\n brca-primary-ductal");
+
+end
+
+
+/* 
+*primaryTumor :
+* If you have a tumor located in the same organ (breast) as the cancer, then tumor type = "primary". 
+* ALSO secondPrimary1-1 :
+* If tumor 1 is located on the right side of the body and tumor 2 is on the left, then tumor 2 has tumor type primary tumor. 
+* ALSO secondPrimary1-2 : 
+* If tumor 1 is located on the left side of the body and tumor 2 is on the right, then tumor 2 has tumor type primary tumor. 
+*/
+rule "brca-primaryTumor"
+	salience 88897
+	no-loop true
+	when
+		$record : MedicalRecord()	
+		$domain : Domain()
+
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, 
+				$cSummaryId : summaryId)
+		
+		$site_Fact : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_BODY_SITE, 
+					$tumor_bs_name :name, documentType != FHIRConstants.RECORD_SUMMARY,
+					$t_summaryId : summaryId,
+					($tumor_bs_name==FHIRConstants.DOMAIN_BREAST || ancestors contains FHIRConstants.DOMAIN_BREAST))
+								
+		$mt : MergedTumor(tumorSiteFactSet contains $site_Fact, readyForRetraction == false)
+		
+	then
+		DroolsFunctions.setTumorType($domain, $record, $cancerFact, $site_Fact, 
+			$mt, FHIRConstants.PRIMARY_TUMOR, "brca-primaryTumor", true, drools );
+
+System.out.print(".");		
+//System.out.println("brca-primaryTumors\n");
+end
+
+/*
+* If there is a tumor located in the infraclavicular or axillary lymph node or children located 
+* on the same side of the body as the primary tumor, 
+* then the tumor(s) in the infraclavicular lymph nodes have a tumor type of regional recurrences 
+* OR
+* If there is a tumor located in the supraclavicular lymph node or children located on the same side of the body 
+* as the primary tumor, then the tumor(s) in the supraclavicular internal mammary/parasternal lymph nodes 
+* have a tumor type of regional recurrences 
+* OR
+* If there is a tumor located in the internal mammary/parasternal lymph node or children located on the same side of the body 
+* as the primary tumor, then the tumor(s) in the supraclavicular internal mammary/parasternal lymph nodes 
+* have a tumor type of regional recurrences 
+* OR
+* If there is a tumor located in the intramammary lymph node or children located on the same side of the body 
+* as the primary tumor, then the tumor(s) in the intramammary lymph nodes have a tumor type of regional recurrences 
+* SO:
+********************************************************************************************************
+* If there is a tumor located in the lymph node or children located on the same side of the body       * 
+* as the primary tumor, then the tumor(s) in the lymph nodes have a tumor type of regional recurrences *
+********************************************************************************************************
+*/
+rule "brca-regionalRecurrence"
+	salience 88876
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain()
+
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, 
+				$cSummaryId : summaryId)
+		
+		//rec tumor
+		$site_Fact : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_BODY_SITE, 
+					$recTumorName : name, $rectAncestors : ancestors, documentType != FHIRConstants.RECORD_SUMMARY,
+					($recTumorName == "Lymph_Node" || $rectAncestors contains "Lymph_Node"),
+					$recSummaryId : summaryId)
+		$side_tFact : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_BODY_MODIFIER, 
+					type == FHIRConstants.LATERALITY, documentType != FHIRConstants.RECORD_SUMMARY,
+					$sideName : name, summaryId == $recSummaryId)
+					
+		$mt : MergedTumor(tumorSiteFactSet contains $site_Fact, bodySide == $sideName, readyForRetraction == false)
+		//primary tumor			
+		$psite_Fact : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_TUMOR_TYPE, 
+					documentType == FHIRConstants.RECORD_SUMMARY, $t_summaryId: summaryId, 
+					name==FHIRConstants.PRIMARY_TUMOR)
+						
+		$pSide_tFact : Fact(summaryType==FHIRConstants.TUMOR_SUMMARY, category == FHIRConstants.HAS_BODY_MODIFIER, 
+					type == FHIRConstants.LATERALITY, documentType == FHIRConstants.RECORD_SUMMARY,
+					name == $sideName, summaryId == $t_summaryId)
+		
+	then
+//System.out.println("\n in brca-regionalRecurrence");
+		
+		DroolsFunctions.setTumorType($domain, $record, $cancerFact, $site_Fact, 
+			$mt, FHIRConstants.REGIONAL_METASTASIS, "brca-regionalRecurrence", false, drools );
+
+		System.out.print(".");
+end
+
+
+/*
+* distantRecurrence1:
+* Primary tumor located on the same side as a tumor in any other type of lymph nodes except for axillary, 
+* infraclavicular, supraclavicular internal mammary/parasternal, or intramammary are considered distant metastasis 
+* RECONSIDERED:
+* If tumor has any location other than primary or regional => it's distant 
+*/
+rule "brca-distantRecurrence"
+	salience 88870
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain()
+
+		$cancerFact : Fact()
+				
+		$mt : MergedTumor(readyForRetraction == false)
+		
+	then
+//System.out.println("brca-distantRecurrence");
+
+		DroolsFunctions.setTumorType($domain, $record, $cancerFact, $mt.getTumorSiteFactSet().iterator().next(), 
+			$mt, FHIRConstants.DISTANT_METASTASIS, "brca-distantRecurrence", false, drools );
+		System.out.print(".");
+end

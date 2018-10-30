@@ -1,0 +1,42 @@
+//////////////////////////////////////////////////////////////////////////
+//
+//       Threshold values for summary join, filter, etc.
+//                      Modify with care
+//
+//////////////////////////////////////////////////////////////////////////
+
+
+//  Set packages in which DeepPhe annotation engines are contained.
+package org.apache.ctakes.cancer.summary
+
+//     Use UseThresholdParameters=true to enable :
+//       AllCancerSiteThreshold
+//       CancerSiteThreshold
+//       AllCancerTumorThreshold
+//       CancerTumorThreshold
+
+set UseThresholdParameters=false
+
+
+//    Site -to- Tumor / Cancer relation thresholds
+
+set AllCancerSiteThreshold=0.0
+set CancerSiteThreshold=0.0
+set PrimarySiteThreshold=0.0
+set MetastasisSiteThreshold=0.0
+set GenericSiteThreshold=0.0
+
+
+//    Tumor / Cancer discovery thresholds
+
+set AllCancerTumorThreshold=0.0
+set CancerTumorThreshold=0.0
+set PrimaryTumorThreshold=0.0
+set MetastasisTumorThreshold=1.0
+set GenericTumorThreshold=0.0
+
+
+// CiSummaryInitializer places the above values in the pipeline.
+// Without it threshold values will be defaulted.
+
+add CiSummaryInitializer

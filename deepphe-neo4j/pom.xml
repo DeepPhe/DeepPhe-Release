@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <parent>
+      <groupId>org.healthnlp</groupId>
+      <artifactId>deepphe</artifactId>
+      <version>0.2.0</version>
+   </parent>
+   <artifactId>deepphe-neo4j</artifactId>
+   <name>deepphe-neo4j</name>
+   <description>Cancer Deep Phenotype Extraction (DeepPhe) Project neo4j utilities</description>
+   <dependencies>
+
+      <!--  neo4j for ontology graph  -->
+      <dependency>
+         <groupId>org.neo4j</groupId>
+         <artifactId>neo4j</artifactId>
+         <version>${neo4j.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.neo4j.test</groupId>
+         <artifactId>neo4j-harness</artifactId>
+         <version>${neo4j.version}</version>
+         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.neo4j.driver</groupId>
+         <artifactId>neo4j-java-driver</artifactId>
+         <version>1.6.2</version>
+         <scope>test</scope>
+      </dependency>
+
+       <dependency>
+         <groupId>log4j</groupId>
+         <artifactId>log4j</artifactId>
+         <version>1.2.17</version>
+      </dependency>
+
+   </dependencies>
+
+</project>

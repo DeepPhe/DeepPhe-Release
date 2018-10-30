@@ -1,0 +1,59 @@
+//////////////////////////////////////////////////////////////////////////
+//
+//       Commands and parameters to run the Deep Phenome v0.2.0 pipeline
+//          deals with entity attribute and relation discovery.
+//
+//       For more information on piper files see the Apache cTAKES wiki:
+//          https://cwiki.apache.org/confluence/display/CTAKES/Piper+Files
+//
+//       Modify with care.
+//
+//////////////////////////////////////////////////////////////////////////
+
+
+//  Set packages in which DeepPhe annotation engines are contained.
+package org.apache.ctakes.cancer.ae
+
+//  Assign such as negation and uncertainty using machine-learning models.
+load AttributeCleartkSubPipe
+
+//  Assign such as negation and uncertainty using context.
+set MaxRightScopeSize=12
+load NeContextsSubPipe
+
+//  Find modifiers for disease attributes such as negation and uncertainty and make appropriate assignments.
+add DiseaseAttributeFinder
+add ListEntryNegator
+
+//  Fix the Subject type (patient, family member) by section type.
+add SubjectSectionFixer
+
+//  Extract semantic modifiers.
+add ModifierExtractorAnnotator classifierJarPath=/org/apache/ctakes/relationextractor/models/modifier_extractor/model.jar
+
+//  Find phenotype attributes not declared in the ontology by special means.
+add PhenotypeFinder
+
+//  Set the section type in which each element was discovered to that element.
+add SetSegmentID
+
+//  Find temporal information:
+//       events
+//       times
+//       event-event relations
+//       event-time relations
+//       event time relative to document creation time
+load TemporalSubPipe
+add temporal.DoubledEventRemover
+//  Alert User that the (sometimes long) temporal information extraction phase is finished.
+add StartFinishLogger LOGGER_NAME=TemporalPipeline LOGGER_TASK="Extracting Temporal Information"
+
+//  Find relations declared in the ontology.
+add ByUriRelationFinder
+
+//  Find relations not declared in the ontology by special means.
+add NonGraphedRelationFinder
+
+//  Discover semantically-alike co-referent cancers, tumors and attributes.
+//    See the file SemanticCoref.piper for more information.
+load SemanticCoref

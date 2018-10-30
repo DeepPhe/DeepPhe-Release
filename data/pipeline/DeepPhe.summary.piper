@@ -1,0 +1,40 @@
+//////////////////////////////////////////////////////////////////////////
+//
+//       Commands and parameters to run the Deep Phenome v0.2.0 pipeline
+//          deals with summarization.
+//
+//       For more information on piper files see the Apache cTAKES wiki:
+//          https://cwiki.apache.org/confluence/display/CTAKES/Piper+Files
+//
+//       Modify with care.
+//
+//////////////////////////////////////////////////////////////////////////
+
+
+//  Set packages in which DeepPhe annotation engines are contained.
+package org.apache.ctakes.cancer.ae
+package org.healthnlp.deepphe.uima.ae
+package org.healthnlp.deepphe.uima.cc
+package org.healthnlp.deepphe.summary
+
+//  Tag the overall Episode for each document.
+add DocEpisodeTagger
+
+//  Load threshold values for summary creation.
+//    See the file SummaryThresholds.piper for more information.
+load SummaryThresholds
+
+//  Collect notes for a patient for later summarization.
+add patient.PatientNoteCollector
+
+//  Summarize the patient phenotype.
+add PatientSummarizer
+
+//  Write patient phenotypes to a bar-separated-value file for evaluation of the system.
+add MedicalRecordBsvWriter SubDirectory=EMR_EVAL
+
+//  Write patient phenotypes to the neo4j graph database.
+add Neo4jSummaryWriter
+
+//  Alert User that the pipeline is Finished.
+addLast FinishedLogger

@@ -1,0 +1,3 @@
+-geographically determined (yes/no)|*patient ID|-cancer link|*body location|body location laterality|body location clockface position|body location quadrant|Diagnosis|tumor type|cancer type|histologic type|tumor extent|er status interpretation|pr status interpretation|her2neu status interpretation|calcifications|
+|patientX|cancer_patientX_Breast_Current|Breast|Left|12_30_o_clock_position|Upper_Outer_Quadrant_of_the_Breast|Ductal_Breast_Carcinoma|PrimaryTumor|Carcinoma|Ductal||Negative|Negative|Negative|Absent|
+|patientX|cancer_patientX_Axillary_Lymph_Node_Current|Axillary_Lymph_Node|Left|||Breast_Carcinoma;Metastatic_Carcinoma|Regional_Metastasis|Carcinoma|Epithelial_Stromal|||||Absent|

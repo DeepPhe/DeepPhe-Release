@@ -1,0 +1,48 @@
+//////////////////////////////////////////////////////////////////////////
+//
+//       Commands and parameters to run the Deep Phenome v0.2.0 pipeline
+//          deals with entity discovery and filtering.
+//
+//       For more information on piper files see the Apache cTAKES wiki:
+//          https://cwiki.apache.org/confluence/display/CTAKES/Piper+Files
+//
+//       Modify with care.
+//
+//////////////////////////////////////////////////////////////////////////
+
+
+//  Set packages in which DeepPhe annotation engines are contained.
+package org.apache.ctakes.cancer.ae
+
+//  Tokenize by penn treebank rules.
+add TokenizerAnnotatorPTB
+
+// Tokenize multi-token types such as dates, fractions and measurements.
+add ContextDependentTokenizerAnnotator
+
+// A pproximate a document creation time using TimeAnnotation normalization.
+add DocTimeApproximator
+
+//  Tag word part of speech.
+addDescription POSTagger
+
+//  Add phrase chunkers.
+load ChunkerSubPipe
+
+//  Do not exclude words of any part of speech tag for dictionary lookup.
+set exclusionTags=""
+//  Use span of 2 for dictionary lookup.
+set minimumSpan=2
+//  Set the path to the xml file containing information for dictionary lookup configuration.
+set LookupXml=org/apache/ctakes/dictionary/lookup/fast/ncit_plus_16ab.xml
+//  Annotate concepts based upon default algorithms.
+add DefaultJCasTermAnnotator
+
+//  Connect to Neo4j graph database.
+add Neo4jConnector
+
+//  Filter various concepts using context.
+add MassFilter
+
+//  Filter Anatomic Sites using part of speech context.
+add FilterPrepositionalObjectSites

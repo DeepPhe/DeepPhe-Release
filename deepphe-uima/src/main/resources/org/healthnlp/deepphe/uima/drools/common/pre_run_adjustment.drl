@@ -1,0 +1,232 @@
+//created on: May 11, 2018
+package org.healthnlp.deepphe.uima.drools.common
+
+import org.healthnlp.deepphe.fact.BodySiteFact;
+
+//import org.apache.ctakes.cancer.uri.UriConstants;
+
+
+/**
+* Remove fact  with category "hasBodySiteModifier" if there is no fact "hasBodySite" with the same id
+*/
+rule "retract-modifier-without-parent"
+	salience 100000009
+	no-loop true
+	when
+		$tFact : Fact(documentType != FHIRConstants.RECORD_SUMMARY, summaryType == FHIRConstants.TUMOR_SUMMARY, 
+					 category == FHIRConstants.HAS_BODY_MODIFIER, $summaryId : summaryId)
+	    not(Fact(category == FHIRConstants.HAS_BODY_SITE, summaryId == $summaryId))
+	 then
+//System.out.println("retract-modifier-without-parent: $tFact: "+$tFact.getInfoDrools(false));
+		retract($tFact)
+end
+	
+
+/*
+* If there is a HAS_TNM_PREFIX mention in the document => make documentType as Pathologyreport
+*/
+rule "set-docType-PathReport"
+	salience 100000005
+	no-loop true
+	when
+		$pTNMF : Fact(name == FHIRConstants.PATHOLOGIC_TNM, category == FHIRConstants.HAS_TNM_PREFIX, 
+					$documentType : documentType, 
+					($documentType == null || $documentType != FHIRConstants.RECORD_SUMMARY),  
+					$documentId : documentIdentifier,
+					summaryType == FHIRConstants.TUMOR_SUMMARY, rulesApplied not contains "set-docType-PathReport")
+		
+		$tSumm : Set()
+		from collect (Fact (summaryType == FHIRConstants.TUMOR_SUMMARY, documentType != FHIRConstants.RECORD_SUMMARY, 
+					documentIdentifier == $documentId))			
+	then
+		modify($pTNMF){addRulesApplied("set-docType-PathReport")};
+		
+//System.out.println("set-docType-PathReport");
+		for(Object obj : $tSumm){
+			Fact objF = (Fact)obj;		
+			modify(objF) {
+				setDocumentType(FHIRConstants.PATHOLOGY_REPORT),
+				addRulesApplied("set-docType-PathReport")
+			}
+		}
+end
+
+/*
+* Create BodySiteFact with CancerSummaries for documents with bodySite TUMOR_SUMMARY facts.
+* Mimics behavior from V1, but creates CancerSummary ONLY if there is a bodySide TumorSummery Fact
+*/
+rule "make-up-CancerSummary-bodySite"
+	salience 100000004
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName)
+		$tFact : Fact(documentType != FHIRConstants.RECORD_SUMMARY, summaryType == FHIRConstants.TUMOR_SUMMARY, 
+					 category == FHIRConstants.HAS_BODY_SITE, $t_summaryId : summaryId)
+					
+		not(Fact(summaryType == FHIRConstants.CANCER_SUMMARY, 
+					category == FHIRConstants.HAS_BODY_SITE, documentType != FHIRConstants.RECORD_SUMMARY,
+					provenanceFacts contains $tFact))
+		$tSumm : Set()
+		from collect (Fact (summaryType == FHIRConstants.TUMOR_SUMMARY,  documentType != FHIRConstants.RECORD_SUMMARY,
+					summaryId == $t_summaryId))
+	   
+	then
+//System.out.println("**make-up-CancerSummary-bodySite $tFact.: "+$tFact.getInfoDrools(true));	
+		String newId = $record.getCancerSummary().getResourceIdentifier();
+		String docTitle = $tFact.getDocumentTitle();	
+		for(Object tObj: $tSumm){
+			Fact tF = (Fact)tObj;
+			Fact cf = FactFactory.createFact(tF, tF.getType(), $domain.getOntologyURI()+"#"+$domainName, 
+					FHIRConstants.CLINICAL_NOTE);
+			cf.setIdentifier(newId);
+			//cf.setSummaryId(FHIRConstants.CANCER_SUMMARY+"-"+docTitle);
+			cf.setSummaryId(tF.getSummaryId());
+			cf.setSummaryType(FHIRConstants.CANCER_SUMMARY);
+
+			cf.addProvenanceFact(tF);
+			cf.setDocumentIdentifier($tFact.getDocumentIdentifier());
+			cf.addContainerIdentifier(cf.getSummaryId());
+			insert(cf);	
+		}		
+			
+		System.out.print(".");
+end
+
+
+/*
+* Add Breast BodySite to CancerSummary if exists
+* use a bit higher salience than for Tumors
+*/
+rule "addCreateCancerSummary"
+	salience 1000003
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName)
+		$cFact : BodySiteFact(summaryType == FHIRConstants.CANCER_SUMMARY, documentType != FHIRConstants.RECORD_SUMMARY, 
+					 category == FHIRConstants.HAS_BODY_SITE, $cancer_bs_name : name, 
+					 $cancerId : identifier, $cSummaryId : summaryId)
+					
+		not(Fact(this != $cFact, summaryType == FHIRConstants.CANCER_SUMMARY, 
+					category == FHIRConstants.HAS_BODY_SITE, documentType == FHIRConstants.RECORD_SUMMARY))
+		not(IdMapper (oldId == $cancerId, oldSummaryId == $cSummaryId))
+	   
+	then
+	//System.out.println("addCreateCancerSummary");
+		String newId = FHIRConstants.CANCER_SUMMARY +"-"+$domainName;
+		Fact cf = FactFactory.createFact($cFact, $cFact.getType(), $domain.getOntologyURI()+"#"+$domainName, 
+		FHIRConstants.RECORD_SUMMARY);
+		cf.setIdentifier(newId);
+		cf.addProvenanceFact($cFact);
+		cf.setSummaryId(newId);
+		modify($record) {
+			getCancerSummary().setResourceIdentifier(newId)
+		}
+		insert(cf);
+		insert(new IdMapper($cancerId, newId, $cFact.getSummaryId(), cf.getSummaryId()));	
+		
+		System.out.print(".");
+end
+
+
+/*
+* Same as addCreateCancerSummary, but without CancerSummary creation here
+*/
+
+rule "addOtherToCancerSummary"
+	salience 1000002
+	no-loop true
+	when
+		$record : MedicalRecord()
+		$domain : Domain($domainName : domainName)
+		$cFact : BodySiteFact(summaryType == FHIRConstants.CANCER_SUMMARY, 
+					documentType != FHIRConstants.RECORD_SUMMARY, 
+					category == FHIRConstants.HAS_BODY_SITE, $cancer_bs_name : name, $cancerId : identifier,
+					$cSummaryId : summaryId)
+		$summaryFact : Fact(summaryType == FHIRConstants.CANCER_SUMMARY, category == FHIRConstants.HAS_BODY_SITE, 
+					documentType == FHIRConstants.RECORD_SUMMARY, $documentType : documentType,
+					$newId : identifier)
+		not(IdMapper (oldId == $cancerId, oldSummaryId == $cSummaryId))
+	then	
+	//System.out.println("in 	addOtherToCancerSummary");
+		$summaryFact.addProvenanceFact($cFact);
+
+		insert(new IdMapper($cancerId, $newId, $cSummaryId, $summaryFact.getSummaryId()));
+	
+		System.out.print(".");
+end
+
+/*
+rule "changeCetegoryToRecurrence"
+	salience 1000001
+	no-loop true
+	when
+		$dFact : Fact(name matches ".*Recurren.*", summaryType == FHIRConstants.TUMOR_SUMMARY,  
+			documentType != FHIRConstants.RECORD_SUMMARY, category == FHIRConstants.HAS_DIAGNOSIS, type != FHIRConstants.DIAGNOSIS)
+
+	then	
+		modify($dFact){ setCategory(FHIRConstants.HAS_RECURRENCE) }
+end
+*/
+
+
+/*
+* Melanoma for now. NOT for OV (UPMC).
+*/
+rule  "setRecurrentTumorType"
+		salience 88880
+	no-loop true
+	when
+		$record : MedicalRecord()	
+		$domain : Domain(domainName != FHIRConstants.DOMAIN_OVARIAN)	
+		$cancerFact : Fact(summaryType==FHIRConstants.CANCER_SUMMARY, documentType == FHIRConstants.RECORD_SUMMARY, 
+					$cSummaryId : summaryId)
+		
+	//	$tF : Fact(summaryType == FHIRConstants.TUMOR_SUMMARY, documentType != FHIRConstants.RECORD_SUMMARY, 
+	//			category == FHIRConstants.HAS_RECURRENCE, $deepOldSummaryId : summaryId)
+		
+		$tF : Fact(name matches ".*Recurren.*", summaryType == FHIRConstants.TUMOR_SUMMARY,  
+			documentType != FHIRConstants.RECORD_SUMMARY, category == FHIRConstants.HAS_DIAGNOSIS, 
+			type != FHIRConstants.DIAGNOSIS,  $deepOldSummaryId : summaryId)
+									
+		$mt : MergedTumor(tumorSummaryIdSet contains $deepOldSummaryId, readyForRetraction == false) 
+		
+	then
+
+		//add new tumor
+		Fact bsFact = $mt.getTumorSiteFactSet().iterator().next();
+		String newId = $mt.getTumorSummaryID();
+		BodySiteFact tf = (BodySiteFact)FactFactory.createFact(bsFact, FHIRConstants.BODY_SITE, 
+					$domain.getOntologyURI()+"#"+bsFact.getName(), FHIRConstants.RECORD_SUMMARY);
+		tf.addContainerIdentifier($cSummaryId); 
+		tf.setSummaryId(newId);
+		tf.setIdentifier(tf.getName()+"-"+newId);
+		tf.addProvenanceFact(bsFact);
+		tf.addRulesApplied("setRecurrentTumorType");
+		insert(new IdMapper(bsFact.getIdentifier(), tf.getIdentifier(), bsFact.getSummaryId(), newId));
+		insert(tf);
+////System.out.println("\n*** setRecurrentTumorType for diag: "+$tF.getName()+" newId: "+newId+"  tf: "+tf.getInfoDrools(false));
+		
+		Fact tumorTypeF = FactFactory.createTumorFactModifier($domain.getOntologyURI()+"#"+$tF.getName(), 
+						tf, $cancerFact, FHIRConstants.TUMOR_SUMMARY, FHIRConstants.HAS_TUMOR_TYPE, 
+						FHIRConstants.RECORD_SUMMARY, FHIRConstants.TUMOR_TYPE);
+											
+		tumorTypeF.setIdentifier(tumorTypeF.getName()+"-"+newId);
+		tumorTypeF.setSummaryId(newId);
+			
+		$mt.addBodyModifiersToRecordFact(tf, $cancerFact, $domain.getOntologyURI(), newId);
+	    
+		modify($record){
+			getCancerSummary().getTumorSummaryByIdentifier(newId).addFact(FHIRConstants.HAS_TUMOR_TYPE, tumorTypeF),
+			getCancerSummary().getTumorSummaryByIdentifier(newId).addFact(FHIRConstants.HAS_BODY_SITE, tf)
+		}	
+	
+		insert (tumorTypeF);
+		
+		FactHelper.addFactToSummary(tf, $record.getCancerSummary(), newId, $domain.getOntologyURI());		
+		$mt.setReadyForRetraction(true);
+		update ($mt);
+System.out.print(".");		
+end
+

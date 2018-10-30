@@ -1,0 +1,3 @@
+name: Breast_Cancer_cM0_TNM_Finding_v7|uri: http://ontologies.dbmi.pitt.edu/deepphe/nlpBreastCancer.owl#Breast_Cancer_cM0_TNM_Finding_v7|category: hasMClassification|type: Condition|id: Condition_Breast_Cancer_cM0_TNM_Finding_v7_1|patient id: PATIENT_Jane_Doe_1|document id: REPORT_doc2_1676726960|document tyoe: Progress Note|container ids: [CancerPhenotype_16841329]|ancestors: []
+
+name: Breast_Cancer_cM0_TNM_Finding_v7|uri: http://ontologies.dbmi.pitt.edu/deepphe/nlpBreastCancer.owl#Breast_Cancer_cM0_TNM_Finding_v7|category: hasMClassification|type: Condition|id: Condition_Breast_Cancer_cM0_TNM_Finding_v7_1|patient id: PATIENT_Jane_Doe_1|document id: REPORT_doc2_1676726960|document tyoe: Progress Note|container ids: [CancerPhenotype_15795311]|ancestors: []
