@@ -1,0 +1,10 @@
+resources/
+/target/
+/.settings/
+/.classpath
+/.project
+/resources/
+/target/
+/data/
+/bin/
+*.iml
