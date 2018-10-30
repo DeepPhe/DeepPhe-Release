@@ -4,7 +4,6 @@ import org.apache.ctakes.cancer.util.SpannedEntity;
 
 /**
  * Holds a spanned Type and spanned Value
- *
  * @author SPF , chip-nlp
  * @version %I%
  * @since 2/8/2016

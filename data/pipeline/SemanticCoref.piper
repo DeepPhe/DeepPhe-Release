@@ -1,54 +1,61 @@
-// Coreferences.   There are a lot of adds here, and a seedable coref call would be better.
+//////////////////////////////////////////////////////////////////////////
+//
+//       Coreferences are discovered for each semantic type independently.
+//                      Modify with care
+//
+//////////////////////////////////////////////////////////////////////////
 
 addLogged ClearNLPDependencyParserAE
 
 add StartFinishLogger LOGGER_NAME=Coreferences IS_START=true
 package org.apache.ctakes.cancer.ae.coref
+package org.apache.ctakes.coreference.concurrent
+
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention
-addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
-addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
+addDescription ThreadSafeMarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
+addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.LabMention
-addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
-addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
+addDescription ThreadSafeMarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
+addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.MedicationMention
-addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
-addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
+addDescription ThreadSafeMarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
+addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.ProcedureMention
-addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
-addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
+addDescription ThreadSafeMarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
+addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.SignSymptomMention
-addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
-addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
+addDescription ThreadSafeMarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
+addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.AnatomicalSiteMention
-addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
-addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
+addDescription ThreadSafeMarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
+addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.SeverityModifier
-addDescription MarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
-addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
+addDescription ThreadSafeMarkableSalienceAnnotator /org/apache/ctakes/temporal/ae/salience/model.jar
+addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.BodyLateralityModifier
-addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
+addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.BodySideModifier
-addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
+addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation
-addDescription MentionClusterCoreferenceAnnotator /org/apache/ctakes/coreference/models/mention-cluster/model.jar
+addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
 add HeldMarkableReplacer

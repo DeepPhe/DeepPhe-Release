@@ -1,8 +1,8 @@
 package org.apache.ctakes.cancer.phenotype;
 
 import org.apache.ctakes.cancer.phenotype.property.*;
-import org.apache.ctakes.core.ontology.UriAnnotationFactory;
-import org.apache.ctakes.dictionary.lookup2.concept.OwlConcept;
+import org.apache.ctakes.cancer.uri.UriAnnotationFactory;
+import org.apache.ctakes.cancer.uri.UriConstants;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
 import org.apache.ctakes.typesystem.type.relation.DegreeOfTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
@@ -16,12 +16,13 @@ import org.apache.uima.jcas.cas.FSArray;
 import java.util.Collections;
 
 import static org.apache.ctakes.typesystem.type.constants.CONST.MODIFIER_TYPE_ID_SEVERITY_CLASS;
+import static org.healthnlp.deepphe.neo4j.Neo4jConstants.DPHE_CODING_SCHEME;
 
 /**
  * Abstract for classes that should be used to create full neoplasm property instances.
  * An instance is defined as the collection of all property types and values associated with a single neoplasm.
  * Children of this factory exist for each property type, so full instance creation requires use of each.
- * <p>
+ *
  * Use of any {@code createPhenotype()} method will create:
  * <ul>
  * appropriate property type annotations
@@ -30,11 +31,11 @@ import static org.apache.ctakes.typesystem.type.constants.CONST.MODIFIER_TYPE_ID
  * degree-of relations between the property type annotations and the appropriate value annotations
  * test-for relations between property type annotations and the nearest provided test in the text
  * </ul>
- *
  * @author SPF , chip-nlp
  * @version %I%
  * @since 2/17/2016
  */
+@Deprecated
 abstract public class AbstractPhenotypeFactory<T extends Type, V extends Value, E extends IdentifiedAnnotation> {
 
    // TODO add <..., P extends Test, ...>
@@ -103,6 +104,7 @@ abstract public class AbstractPhenotypeFactory<T extends Type, V extends Value, 
                                       final Iterable<IdentifiedAnnotation> diagnosticTests );
 
 
+
    /**
     * Create an event mention based upon spanned property type and add it to the cas
     *
@@ -129,7 +131,7 @@ abstract public class AbstractPhenotypeFactory<T extends Type, V extends Value, 
       umlsConcept.setCui( cui == null ? "" : cui );
       umlsConcept.setTui( tui == null ? "" : tui );
       umlsConcept.setPreferredText( title == null ? "" : title );
-      umlsConcept.setCodingScheme( OwlConcept.URI_CODING_SCHEME );
+      umlsConcept.setCodingScheme( UriConstants.DPHE_SCHEME );
       umlsConcept.setCode( type.getUri() );
       final FSArray ontologyConcepts = new FSArray( jcas, 1 );
       ontologyConcepts.set( 0, umlsConcept );
@@ -142,7 +144,7 @@ abstract public class AbstractPhenotypeFactory<T extends Type, V extends Value, 
     * Create a sign/symptom and add it to the cas
     *
     * @param jcas              -
-    * @param eventUri          -
+    * @param eventUri -
     * @param windowStartOffset -
     * @param spannedProperty   -
     * @return the property as a event mention
@@ -196,7 +198,7 @@ abstract public class AbstractPhenotypeFactory<T extends Type, V extends Value, 
       umlsConcept.setCui( cui == null ? "" : cui );
       umlsConcept.setTui( tui == null ? "" : tui );
       umlsConcept.setPreferredText( title == null ? "" : title );
-      umlsConcept.setCodingScheme( OwlConcept.URI_CODING_SCHEME );
+      umlsConcept.setCodingScheme( DPHE_CODING_SCHEME );
       umlsConcept.setCode( value.getUri() );
       final FSArray ontologyConcepts = new FSArray( jcas, 1 );
       ontologyConcepts.set( 0, umlsConcept );

@@ -1,6 +1,0 @@
-// Output for the DeepPhe pipeline
-
-// For simple inspection we have html
-add pretty.html.HtmlTextWriter SubDirectory=HTML
-// For debugging we have plain old beloved xmi files
-add FileTreeXmiWriter SubDirectory=XMI

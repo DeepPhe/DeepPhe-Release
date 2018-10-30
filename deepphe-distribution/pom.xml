@@ -4,13 +4,18 @@
     <parent>
         <groupId>org.healthnlp</groupId>
         <artifactId>deepphe</artifactId>
-        <version>0.0.1</version>
+        <version>0.2.0</version>
     </parent>
     <artifactId>deepphe-distribution</artifactId>
     <name>deepphe-distribution</name>
     <description>deepphe-distribution</description>
 
     <dependencies>
+        <dependency>
+            <groupId>org.healthnlp</groupId>
+            <artifactId>deepphe-neo4j</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.healthnlp</groupId>
             <artifactId>deepphe-ctakes-cancer</artifactId>
@@ -26,19 +31,26 @@
             <artifactId>deepphe-uima</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.healthnlp</groupId>
+            <artifactId>deepphe-data</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
+               <version>2.7</version>
+               <configuration>
                     <skip>true</skip>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
+               <version>2.4</version>
+               <executions>
                     <execution>
                         <id>bundle-project-sources</id>
                         <phase>package</phase>
@@ -50,11 +62,11 @@
                                 <descriptor>src/main/assembly/bin.xml</descriptor>
                                 <descriptor>src/main/assembly/src.xml</descriptor>
                             </descriptors>
-                            <!-- Tar package is only compatible with gnu tar, many file have more
+                            <!-- Tar package is only compatible with gnu tar, many files have more
                                 than 100 chars. Right now only javadoc files are too long. -->
                             <tarLongFileMode>gnu</tarLongFileMode>
 
-                            <finalName>deephe-${project.version}</finalName>
+                            <finalName>deepphe-${project.version}</finalName>
                         </configuration>
                     </execution>
                 </executions>
@@ -90,48 +102,48 @@
             </plugin>
         </plugins>
         <pluginManagement>
-            <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>
-                                            org.codehaus.mojo
-                                        </groupId>
-                                        <artifactId>
-                                            exec-maven-plugin
-                                        </artifactId>
-                                        <versionRange>
-                                            [1.2.1,)
-                                        </versionRange>
-                                        <goals>
-                                            <goal>exec</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute></execute>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									org.codehaus.mojo
+        								</groupId>
+        								<artifactId>
+        									exec-maven-plugin
+        								</artifactId>
+        								<versionRange>
+        									[1.2.1,)
+        								</versionRange>
+        								<goals>
+        									<goal>exec</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<execute></execute>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
         </pluginManagement>
     </build>
 
     <profiles>
         <profile>
-            <id>startBreastCancer</id>
+            <id>startGui</id>
             <activation>
                 <property>
-                    <name>startBreastCancer</name>
+                    <name>startGui</name>
                 </property>
             </activation>
             <build>
@@ -145,6 +157,7 @@
                                 <!-- depends on other modules being on classpath -->
                                 <phase>compile</phase>
                                 <goals>
+                                    <!--  Use exec.  The java goal runs in the same jvm as maven, meaning we can't pass Xmx  -->
                                     <goal>exec</goal>
                                 </goals>
                             </execution>
@@ -157,23 +170,24 @@
                             <arguments>
                                 <argument>-classpath</argument>
                                 <classpath/>
-                                <argument>-Xmx3G</argument>
+                                <argument>-Xmx4G</argument>
                                 <argument>org.apache.ctakes.gui.pipeline.PiperRunnerGui</argument>
                                 <argument>-p</argument>
-                                <argument>data/pipeline/DocumentSummarizer.piper</argument>
+                                <argument>data/pipeline/DeepPhe.piper</argument>
                                 <argument>-c</argument>
-                                <argument>data/pipeline/BreastCancer.piper_cli</argument>
+                                <argument>data/pipeline/PatientX.piper_cli</argument>
                             </arguments>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
+
         <profile>
-            <id>startMelanoma</id>
+            <id>runPatientX</id>
             <activation>
                 <property>
-                    <name>startMelanoma</name>
+                    <name>runPatientX</name>
                 </property>
             </activation>
             <build>
@@ -187,6 +201,7 @@
                                 <!-- depends on other modules being on classpath -->
                                 <phase>compile</phase>
                                 <goals>
+                                    <!--  Use exec.  The java goal runs in the same jvm as maven, meaning we can't pass Xmx  -->
                                     <goal>exec</goal>
                                 </goals>
                             </execution>
@@ -199,101 +214,22 @@
                             <arguments>
                                 <argument>-classpath</argument>
                                 <classpath/>
-                                <argument>-Xmx3G</argument>
-                                <argument>org.apache.ctakes.gui.pipeline.PiperRunnerGui</argument>
+                                <argument>-Xmx4G</argument>
+                                <argument>org.apache.ctakes.core.pipeline.PiperFileRunner</argument>
                                 <argument>-p</argument>
-                                <argument>data/pipeline/DocumentSummarizer.piper</argument>
-                                <argument>-c</argument>
-                                <argument>data/pipeline/Melanoma.piper_cli</argument>
+                                <argument>data/pipeline/DeepPhe.piper</argument>
+                                <argument>-d</argument>
+                                <argument>Breast</argument>
+                                <argument>-i</argument>
+                                <argument>data/sample/reports</argument>
+                                <argument>-o</argument>
+                                <argument>../output/sample/reports</argument>
                             </arguments>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
-        <profile>
-            <id>startBreastCancerPhe</id>
-            <activation>
-                <property>
-                    <name>startBreastCancerPhe</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.2.1</version>
-                        <executions>
-                            <execution>
-                                <!-- depends on other modules being on classpath -->
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <executable>java</executable>
-                            <includeProjectDependencies>true</includeProjectDependencies>
-                            <includePluginDependencies>true</includePluginDependencies>
-                            <workingDirectory>${project.parent.basedir}</workingDirectory>
-                            <arguments>
-                                <argument>-classpath</argument>
-                                <classpath/>
-                                <argument>-Xmx3G</argument>
-                                <argument>org.apache.ctakes.gui.pipeline.PiperRunnerGui</argument>
-                                <argument>-p</argument>
-                                <argument>data/pipeline/Phenotype.piper</argument>
-                                <argument>-c</argument>
-                                <argument>data/pipeline/BreastCancerPhe.piper_cli</argument>
-                            </arguments>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>startMelanomaPhe</id>
-            <activation>
-                <property>
-                    <name>startMelanomaPhe</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.2.1</version>
-                        <executions>
-                            <execution>
-                                <!-- depends on other modules being on classpath -->
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <executable>java</executable>
-                            <includeProjectDependencies>true</includeProjectDependencies>
-                            <includePluginDependencies>true</includePluginDependencies>
-                            <workingDirectory>${project.parent.basedir}</workingDirectory>
-                            <arguments>
-                                <argument>-classpath</argument>
-                                <classpath/>
-                                <argument>-Xmx3G</argument>
-                                <argument>org.apache.ctakes.gui.pipeline.PiperRunnerGui</argument>
-                                <argument>-p</argument>
-                                <argument>data/pipeline/Phenotype.piper</argument>
-                                <argument>-c</argument>
-                                <argument>data/pipeline/MelanomaPhe.piper_cli</argument>
-                            </arguments>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+
     </profiles>
 </project>

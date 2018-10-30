@@ -6,7 +6,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.jcas.JCas;
 
-import static org.apache.ctakes.cancer.util.MarkableHolder.getMarkables;
+import static org.apache.ctakes.core.coref.MarkableHolder.getMarkables;
 
 /**
  * @author SPF , chip-nlp

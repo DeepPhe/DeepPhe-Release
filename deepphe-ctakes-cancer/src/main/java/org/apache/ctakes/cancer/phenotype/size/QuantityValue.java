@@ -1,6 +1,5 @@
 package org.apache.ctakes.cancer.phenotype.size;
 
-import org.apache.ctakes.cancer.owl.OwlConstants;
 import org.apache.ctakes.cancer.phenotype.property.Value;
 
 import java.util.logging.Logger;
@@ -57,11 +56,8 @@ public class QuantityValue implements Value {
     * {@inheritDoc}
     */
    @Override
-//   public String getUri() {
-//      return OwlConstants.CONTEXT_OWL + "#" + NUMERIC_VALUE_URI;
-//   }
    public String getUri() {
-      return OwlConstants.QUANTITY_URI;
+      return "Property_or_Attribute";
    }
 
    /**

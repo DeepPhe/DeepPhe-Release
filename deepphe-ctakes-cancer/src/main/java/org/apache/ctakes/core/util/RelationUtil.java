@@ -1,14 +1,18 @@
 package org.apache.ctakes.core.util;
 
 
+import org.apache.ctakes.neo4j.Neo4jOntologyConceptUtil;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.LocationOfTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.log4j.Logger;
+import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.healthnlp.deepphe.neo4j.RelationConstants;
+import org.healthnlp.deepphe.neo4j.UriConstants;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
@@ -26,9 +30,29 @@ final public class RelationUtil {
 
    static private final Logger LOGGER = Logger.getLogger( "RelationUtil" );
 
+   static public <T extends IdentifiedAnnotation> Map<T, Collection<BinaryTextRelation>> getRelatedAsFirst(
+         final JCas jCas,
+         final Collection<T> annotations, final String relationName ) {
+      final Collection<BinaryTextRelation> relations
+            = JCasUtil.select( jCas, BinaryTextRelation.class ).stream()
+                      .filter( r -> r.getCategory().equals( relationName ) )
+                      .collect( Collectors.toList() );
+      if ( relations.isEmpty() ) {
+         return Collections.emptyMap();
+      }
+      final Map<T, Collection<BinaryTextRelation>> relatedMap = new HashMap<>();
+      for ( T annotation : annotations ) {
+         final Collection<BinaryTextRelation> related = getRelationsAsFirst( relations, annotation );
+         if ( related != null && !related.isEmpty() ) {
+            relatedMap.put( annotation, related );
+         }
+      }
+      return relatedMap;
+   }
+
 
    /**
-    * @param relations  relations of interest
+    * @param relations            relations of interest
     * @param annotation identified annotation of interest
     * @return all identified annotations in the given relations related to the given annotation as the first argument
     */
@@ -39,12 +63,13 @@ final public class RelationUtil {
             .filter( r -> r.getArg2().getArgument().equals( annotation ) )
             .map( r -> r.getArg1().getArgument() )
             .filter( IdentifiedAnnotation.class::isInstance )
-            .map( a -> (IdentifiedAnnotation) a )
+            .map( a -> (IdentifiedAnnotation)a )
             .collect( Collectors.toList() );
    }
 
    /**
-    * @param relations  relations of interest
+    *
+    * @param relations relations of interest
     * @param annotation identified annotation of interest
     * @return all identified annotations in the given relations related to the given annotation as the second argument
     */
@@ -55,12 +80,12 @@ final public class RelationUtil {
             .filter( r -> r.getArg1().getArgument().equals( annotation ) )
             .map( r -> r.getArg2().getArgument() )
             .filter( IdentifiedAnnotation.class::isInstance )
-            .map( a -> (IdentifiedAnnotation) a )
+            .map( a -> (IdentifiedAnnotation)a )
             .collect( Collectors.toList() );
    }
 
    /**
-    * @param relations  relations of interest
+    * @param relations            relations of interest
     * @param annotation identified annotation of interest
     * @return all identified annotations in the given relations related to the given annotation
     */
@@ -107,6 +132,13 @@ final public class RelationUtil {
     */
    static private IdentifiedAnnotation getRelated( final BinaryTextRelation relation,
                                                    final IdentifiedAnnotation annotation ) {
+      if ( relation == null
+           || relation.getArg1() == null
+           || relation.getArg1().getArgument() == null
+           || relation.getArg2() == null
+           || relation.getArg2().getArgument() == null ) {
+         return null;
+      }
       Annotation argument = null;
       if ( relation.getArg1().getArgument().equals( annotation ) ) {
          argument = relation.getArg2().getArgument();
@@ -119,8 +151,54 @@ final public class RelationUtil {
       return null;
    }
 
+
+   /**
+    * @param relation   relation of interest
+    * @param annotation some annotation that might be in the relation
+    * @return the target annotation in the relation if the first is present
+    */
+   static public IdentifiedAnnotation getTarget( final BinaryTextRelation relation,
+                                                 final IdentifiedAnnotation annotation ) {
+      if ( !relation.getArg1()
+                    .getArgument()
+                    .equals( annotation ) ) {
+         return null;
+      }
+      final Annotation argument = relation.getArg2()
+                                          .getArgument();
+      if ( argument != null && IdentifiedAnnotation.class.isInstance( argument ) ) {
+         return (IdentifiedAnnotation)argument;
+      }
+      return null;
+   }
+
+   static private Map.Entry<BinaryTextRelation, IdentifiedAnnotation> getRelationTargetEntry( final BinaryTextRelation relation,
+                                                                                              final IdentifiedAnnotation annotation ) {
+      final IdentifiedAnnotation related = getTarget( relation, annotation );
+      if ( related == null ) {
+         return null;
+      }
+      return new AbstractMap.SimpleEntry<>( relation, related );
+   }
+
    /**
     * @param relations  relations of interest
+    * @param annotation identified annotation of interest
+    * @return all identified annotations in the given relations related to the given annotation
+    */
+   static public Map<BinaryTextRelation, IdentifiedAnnotation> getRelatedTargetsMap(
+         final Collection<BinaryTextRelation> relations,
+         final IdentifiedAnnotation annotation ) {
+      final Map<BinaryTextRelation, IdentifiedAnnotation> map = new HashMap<>();
+      relations.stream()
+               .map( r -> getRelationTargetEntry( r, annotation ) )
+               .filter( Objects::nonNull )
+               .forEach( e -> map.put( e.getKey(), e.getValue() ) );
+      return map;
+   }
+
+   /**
+    * @param relations            relations of interest
     * @param annotation identified annotation of interest
     * @return all relations in the given relations where the first argument is the given annotation
     */
@@ -133,7 +211,7 @@ final public class RelationUtil {
    }
 
    /**
-    * @param relations  relations of interest
+    * @param relations            relations of interest
     * @param annotation identified annotation of interest
     * @return all relations in the given relations where the second argument is the given annotation
     */
@@ -142,8 +220,9 @@ final public class RelationUtil {
          final IdentifiedAnnotation annotation ) {
       return relations.stream()
             .filter( r -> r.getArg2().getArgument().equals( annotation ) )
-            .collect( Collectors.toList() );
+            .collect( Collectors.toList());
    }
+
 
 
    /**
@@ -151,55 +230,281 @@ final public class RelationUtil {
     * or if none then nearest following candidate in the same sentence
     *
     * @param jcas            ye olde ...
-    * @param candidates      all candidates of a type in a paragraph
-    * @param mainAnnotations all primary annotations of a type that has a relation in a paragraph
-    * @return a map of candidates and the primary annotations for those candidates
+    * @param sources      all candidate owners of a type in a paragraph.  Should be the things BEFORE
+    * @param targets all candidate attributes of a type that has a relation in a paragraph.  Should be the things AFTER
+    * @param onlyOneTarget true if the attribute owner should only have one of the provided attributes
+    * @return a map of owners and their attributes
     */
-   static public Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> createCandidateMap(
+   static public Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> createSourceTargetMap(
          final JCas jcas,
-         final List<IdentifiedAnnotation> candidates, final List<IdentifiedAnnotation> mainAnnotations ) {
-      if ( candidates.isEmpty() ) {
+         final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
+         final List<IdentifiedAnnotation> sources,
+         final List<IdentifiedAnnotation> targets,
+         final boolean onlyOneTarget ) {
+      if ( sources.isEmpty() || targets.isEmpty() ) {
          return Collections.emptyMap();
       }
-      final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> candidateMap = new HashMap<>( candidates.size() );
-      int nextJ = mainAnnotations.size() - 1;
-      for ( int i = candidates.size() - 1; i >= 0; i-- ) {
-         final IdentifiedAnnotation candidate = candidates.get( i );
-         final int candidateBegin = candidate.getBegin();
-         final Collection<IdentifiedAnnotation> candidateMains = new HashSet<>();
-         for ( int j = nextJ; j >= 0; j-- ) {
-            final IdentifiedAnnotation main = mainAnnotations.get( j );
-            final int mainEnd = main.getEnd();
-            if ( mainEnd > candidateBegin && !candidate.equals( main ) ) {
-               // main is after or overlapping candidate, so add
-               candidateMains.add( main );
-               if ( j == 0 ) {
-                  // End of mains, set nextJ below zero
-                  nextJ = -1;
+      final boolean haveOnlyOne = sources.size() == 1 && targets.size() == 1;
+      final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> sourceTargets
+            = new HashMap<>( sources.size() );
+
+      final Collection<Sentence> targetSentences = new ArrayList<>();
+      for ( IdentifiedAnnotation target : targets ) {
+         targetSentences.clear();
+         IdentifiedAnnotation bestSource = null;
+         for ( IdentifiedAnnotation source : sources ) {
+            if ( source.equals( target ) ) {
+               continue;
+            }
+            if ( onlyOneTarget && sourceTargets.containsKey( source ) ) {
+               continue;
+            }
+            if ( source.getBegin() > target.getEnd() ) {
+               if ( haveOnlyOne ) {
                   break;
                }
-            } else {
-               nextJ = j;
-               break;
+               if ( !onlyOneTarget ) {
+                  if ( bestSource == null ) {
+                     if ( targetSentences.isEmpty() ) {
+                        targetSentences.addAll( coveringSentences.get( target ) );
+                     }
+                     final Collection<Sentence> sourceSentences = new ArrayList<>( coveringSentences.get( source ) );
+                     sourceSentences.retainAll( targetSentences );
+                     if ( !sourceSentences.isEmpty() ) {
+                        bestSource = source;
+                     }
+                  }
+                  break;
+               }
+               if ( bestSource != null ) {
+                  break;
+               }
+            }
+            bestSource = source;
+         }
+         if ( bestSource != null ) {
+            sourceTargets.computeIfAbsent( bestSource, a -> new ArrayList<>() ).add( target );
+         }
+      }
+      return sourceTargets;
+   }
+
+   static public Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> createSourceTargetMap(
+           final JCas jcas,
+           final List<IdentifiedAnnotation> sources,
+           final List<IdentifiedAnnotation> targets,
+           final boolean onlyOneTarget ) {
+      if ( sources.isEmpty() || targets.isEmpty() ) {
+         return Collections.emptyMap();
+      }
+      final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences
+              = JCasUtil.indexCovering( jcas, IdentifiedAnnotation.class, Sentence.class );
+      final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> sourceTargets
+              = new HashMap<>( sources.size() );
+
+      for ( IdentifiedAnnotation target : targets ) {
+         IdentifiedAnnotation bestSource = null;
+         for ( IdentifiedAnnotation source : sources ) {
+            final Collection<Sentence> targetSentences = new ArrayList<>( coveringSentences.get( target ) );
+            if ( source.equals( target ) ) {
+               continue;
+            }
+            if ( onlyOneTarget && sourceTargets.containsKey( source ) ) {
+               continue;
+            }
+            if ( source.getBegin() > target.getEnd() ) {
+               if ( !onlyOneTarget ) {
+                  if ( bestSource == null ) {
+                     targetSentences.retainAll( coveringSentences.get( source ) );
+                     if ( !targetSentences.isEmpty() ) {
+                        bestSource = source;
+                     }
+                  }
+                  break;
+               }
+               if ( bestSource != null ) {
+                  break;
+               }
+            }
+            bestSource = source;
+         }
+         if ( bestSource != null ) {
+            sourceTargets.computeIfAbsent( bestSource, a -> new ArrayList<>() ).add( target );
+         }
+      }
+      return sourceTargets;
+   }
+
+   static public Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> createReverseAttributeMap(
+         final JCas jcas,
+         final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
+         final List<IdentifiedAnnotation> attributeOwners,
+         final List<IdentifiedAnnotation> attributes,
+         final boolean onlyOneOwner ) {
+      if ( attributeOwners.isEmpty() || attributes.isEmpty() ) {
+         return Collections.emptyMap();
+      }
+      final Collection<IdentifiedAnnotation> modifiers
+            = Neo4jOntologyConceptUtil.getAnnotationsByUriBranch( jcas, UriConstants.BODY_MODIFIER );
+      attributeOwners.removeAll( modifiers );
+      if ( attributeOwners.isEmpty() || attributes.isEmpty() ) {
+         return Collections.emptyMap();
+      }
+      final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> ownerMap = new HashMap<>( attributeOwners
+            .size() );
+      for ( IdentifiedAnnotation owner : attributeOwners ) {
+         if ( onlyOneOwner && ownerMap.containsKey( owner ) ) {
+            continue;
+         }
+         final Collection<Sentence> ownerSentences = coveringSentences.get( owner );
+
+         final Collection<IdentifiedAnnotation> sentenceAttributes = new ArrayList<>();
+         for ( IdentifiedAnnotation attribute : attributes ) {
+            if ( owner.equals( attribute ) ) {
+               continue;
+            }
+            final Collection<Sentence> attributeSentences = coveringSentences.get( attribute );
+            attributeSentences.retainAll( ownerSentences );
+            if ( !attributeSentences.isEmpty() ) {
+               sentenceAttributes.add( attribute );
             }
          }
-         if ( !candidateMains.isEmpty() ) {
-            candidateMap.put( candidate, candidateMains );
+         final Collection<IdentifiedAnnotation> assignedAttributes = new ArrayList<>( attributes.size() );
+         IdentifiedAnnotation bestAttribute = null;
+         for ( IdentifiedAnnotation attribute : sentenceAttributes ) {
+            if ( attribute.getBegin() > owner.getEnd() ) {
+               if ( bestAttribute == null ) {
+                  bestAttribute = attribute;
+               }
+               break;
+            }
+            bestAttribute = attribute;
+         }
+         if ( bestAttribute != null ) {
+            ownerMap.computeIfAbsent( owner, a -> new ArrayList<>() ).add( bestAttribute );
+            assignedAttributes.add( bestAttribute );
+            continue;
+         }
+         // get best attribute by those in preceding sentences
+         for ( IdentifiedAnnotation attribute : attributes ) {
+            if ( owner.equals( attribute ) || assignedAttributes.contains( attribute ) ) {
+               continue;
+            }
+            if ( attribute.getBegin() > owner.getEnd() ) {
+               break;
+            }
+            bestAttribute = attribute;
+         }
+         if ( bestAttribute != null ) {
+            ownerMap.computeIfAbsent( owner, a -> new ArrayList<>() ).add( bestAttribute );
          }
       }
-      if ( nextJ >= 0 ) {
-         // some primary annotation(s) before property.  Get the last one and test for same sentence
-         final IdentifiedAnnotation main = mainAnnotations.get( nextJ );
-         final IdentifiedAnnotation firstCandidate = candidates.get( 0 );
-         // TODO SubOptimal.  Use uimafit JCasUtil map covering (er whutevr) for Sentence to Annotation
-         if ( !firstCandidate.equals( main ) && org.apache.uima.fit.util.JCasUtil.selectCovering( jcas, Sentence.class, main )
-               .equals( org.apache.uima.fit.util.JCasUtil.selectCovering( jcas, Sentence.class, firstCandidate ) ) ) {
-            final Collection<IdentifiedAnnotation> candidateMains = candidateMap.computeIfAbsent( firstCandidate, s -> new HashSet<>( 1 ) );
-            candidateMains.add( main );
-         }
-      }
-      return candidateMap;
+      return ownerMap;
    }
+
+
+
+   static public Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> getBestMatches(
+         final JCas jcas,
+         final List<IdentifiedAnnotation> matchables,
+         final List<IdentifiedAnnotation> toMatches,
+         final boolean onlyOneMatch,
+         final boolean sentenceFirst ) {
+      if ( matchables.isEmpty() || toMatches.isEmpty() ) {
+         return Collections.emptyMap();
+      }
+      final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences
+            = JCasUtil.indexCovering( jcas, IdentifiedAnnotation.class, Sentence.class );
+      final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> matchMap = new HashMap<>( matchables
+            .size() );
+      // for each attribute, get the best owner
+      for ( IdentifiedAnnotation toMatch : toMatches ) {
+         IdentifiedAnnotation bestMatchable = null;
+         final Collection<Sentence> allToMatchSentences = new ArrayList<>( coveringSentences.get( toMatch ) );
+         // if same-sentence owner-attribute relations are preferred, check the sentence first.
+         if ( sentenceFirst ) {
+            bestMatchable = getBestSameSentenceMatch( coveringSentences,
+                  allToMatchSentences, toMatch, onlyOneMatch, matchMap.keySet() );
+            if ( bestMatchable != null ) {
+               LOGGER.warn( "Best Matchable " + bestMatchable.getCoveredText() + " to Match " + toMatch.getCoveredText() );
+            }
+         }
+         // if there was no same-sentence best owner, get the nearest preceding owner
+         if ( bestMatchable == null ) {
+            for ( IdentifiedAnnotation matchable : matchables ) {
+               if ( matchable.equals( toMatch ) ) {
+                  continue;
+               }
+               if ( onlyOneMatch && matchMap.containsKey( matchable ) ) {
+                  continue;
+               }
+               // owner is after attribute.  Only consider valid if in the same sentence.
+               if ( matchable.getBegin() > toMatch.getEnd() ) {
+                  if ( !onlyOneMatch ) {
+                     if ( bestMatchable == null && !sentenceFirst ) {
+                        final Collection<Sentence> toMatchSentences = new ArrayList<>( allToMatchSentences );
+                        toMatchSentences.retainAll( coveringSentences.get( matchable ) );
+                        if ( !toMatchSentences.isEmpty() ) {
+                           bestMatchable = matchable;
+                        }
+                     }
+                     break;
+                  }
+                  if ( bestMatchable != null ) {
+                     break;
+                  }
+               }
+               bestMatchable = matchable;
+            }
+         }
+
+         if ( bestMatchable != null ) {
+            LOGGER.error(
+                  "   Assigning Best Matchable " + bestMatchable.getCoveredText() + " " + bestMatchable.getBegin() + "," + bestMatchable.getEnd()
+                  + " to Match " + toMatch.getCoveredText() + " " + toMatch.getBegin() + "," + toMatch.getEnd() );
+            matchMap.computeIfAbsent( bestMatchable, a -> new ArrayList<>() ).add( toMatch );
+         }
+      }
+      return matchMap;
+   }
+
+
+   static private IdentifiedAnnotation getBestSameSentenceMatch( final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
+                                                                 final Collection<Sentence> allToMatchSentences,
+                                                                 final IdentifiedAnnotation toMatch,
+                                                                 final boolean onlyOneMatch,
+                                                                 final Collection<IdentifiedAnnotation> alreadyMatched
+                                                                 ) {
+      final Collection<IdentifiedAnnotation> sentenceMatchables
+            = coveringSentences.entrySet().stream()
+                               .filter( e -> e.getValue().equals( allToMatchSentences ) )
+                               .map( Map.Entry::getKey )
+                               .sorted( Comparator.comparingInt( Annotation::getBegin ) )
+                               .collect( Collectors.toList() );
+      if ( sentenceMatchables.isEmpty() ) {
+         return null;
+      }
+      int bestDistance = Integer.MAX_VALUE;
+      IdentifiedAnnotation bestMatch = null;
+      for ( IdentifiedAnnotation matchable : sentenceMatchables ) {
+         if ( matchable.equals( toMatch ) ) {
+            continue;
+         }
+         if ( onlyOneMatch && alreadyMatched.contains( matchable ) ) {
+            continue;
+         }
+         final int abToOb = Math.abs( toMatch.getBegin() - matchable.getBegin() );
+         final int aeToOb = Math.abs( toMatch.getEnd() - matchable.getBegin() );
+         final int abToOe = Math.abs( toMatch.getBegin() - matchable.getEnd() );
+         final int aeToOe = Math.abs( toMatch.getEnd() - matchable.getEnd() );
+         final int distance = Math.min( Math.min( abToOb, aeToOb ), Math.min( abToOe, aeToOe ) );
+         if ( distance < bestDistance ) {
+            bestMatch = matchable;
+         }
+      }
+      return bestMatch;
+   }
+
 
    /**
     * @param jCas     ye olde ...
@@ -212,7 +517,7 @@ final public class RelationUtil {
                                                     final IdentifiedAnnotation argument,
                                                     final IdentifiedAnnotation target,
                                                     final String name ) {
-      if ( name.equals( "hasBodySite" ) ) {
+      if ( name.equals( RelationConstants.DISEASE_HAS_PRIMARY_ANATOMIC_SITE ) ) {
          return createRelation( jCas, new LocationOfTextRelation( jCas ), argument, target, name );
       }
       return createRelation( jCas, new BinaryTextRelation( jCas ), argument, target, name );

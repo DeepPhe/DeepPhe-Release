@@ -1,6 +1,5 @@
 package org.apache.ctakes.cancer.phenotype.size;
 
-import org.apache.ctakes.cancer.owl.OwlConstants;
 import org.apache.ctakes.cancer.phenotype.property.DefaultProperty;
 import org.apache.ctakes.cancer.phenotype.property.SpannedType;
 import org.apache.ctakes.cancer.phenotype.property.SpannedValue;
@@ -15,8 +14,6 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 final class Quantity extends DefaultProperty<QuantityUnit, QuantityValue> {
 
-   //   static final String QUANTITY_URI = OwlOntologyConceptUtil.CONTEXT_OWL + "#DimensionalMeasurement";
-   static final String QUANTITY_URI = OwlConstants.QUANTITY_URI;
 
    private final String _unitText;
 

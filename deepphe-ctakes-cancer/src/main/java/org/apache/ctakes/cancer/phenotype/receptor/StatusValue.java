@@ -1,7 +1,7 @@
 package org.apache.ctakes.cancer.phenotype.receptor;
 
-import org.apache.ctakes.cancer.owl.OwlConstants;
 import org.apache.ctakes.cancer.phenotype.property.Value;
+import org.apache.ctakes.cancer.uri.UriConstants;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,13 +12,13 @@ import java.util.regex.Pattern;
  * @since 8/19/2015
  */
 enum StatusValue implements Value {
-   POSITIVE( "Positive", "Positive", "3\\+|\\+?pos(?:itive)?|\\+(?:pos)?" ),
-   NEGATIVE( "Negative", "Negative", "0\\+|1\\+|-?neg(?:ative)?|-(?:neg)?" ),
-   UNKNOWN( "Unknown", "Unknown", "(?:2\\+|unknown|indeterminate|equivocal|borderline|(?:not assessed)|\\bN/?A\\b)" );
-   //   http://ontologies.dbmi.pitt.edu/deepphe/nlpBreastCancer.owl#Equivocal
+   POSITIVE( "Positive", UriConstants.POSITIVE, "3\\+|\\+?pos(?:itive)?|\\+(?:pos)?" ),
+   NEGATIVE( "Negative", UriConstants.NEGATIVE, "0\\+|1\\+|-?neg(?:ative)?|-(?:neg)?" ),
+   UNKNOWN( "Unknown", UriConstants.UNKNOWN, "(?:2\\+|unknown|indeterminate|equivocal|borderline|(?:not assessed)|\\bN/?A\\b)" );
    final private String _title;
    final private String _uri;
    final private Pattern _pattern;
+
 
 
    StatusValue( final String title, final String uri, final String regex ) {
@@ -32,7 +32,7 @@ enum StatusValue implements Value {
    }
 
    public String getUri() {
-      return OwlConstants.CANCER_OWL + "#" + _uri;
+      return _uri;
    }
 
    public Matcher getMatcher( final CharSequence lookupWindow ) {

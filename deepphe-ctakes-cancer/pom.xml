@@ -4,13 +4,36 @@
     <parent>
         <groupId>org.healthnlp</groupId>
         <artifactId>deepphe</artifactId>
-        <version>0.0.1</version>
+        <version>0.2.0</version>
     </parent>
     <artifactId>deepphe-ctakes-cancer</artifactId>
     <name>deepphe-ctakes-cancer</name>
     <description>Cancer Deep Phenotype Extraction (DeepPhe) Project</description>
     <dependencies>
+        <!--  Also Removes: ctakes-preprocessor, drug-ner, (most importantly) ytex  -->
+        <!--  Previous tarz was 1,305,695 KB  (1.3 GB)  -->
+        <!--  Current tarz is     351,259 KB  (0.3 GB)  -->
+
         <!--  ctakes-coreference includes almost everything we want including temporal.  -->
+        <dependency>
+            <groupId>org.apache.ctakes</groupId>
+            <artifactId>ctakes-utils</artifactId>
+            <version>${ctakes.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-queries</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-queryparser</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-analyzers-common</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>org.apache.ctakes</groupId>
             <artifactId>ctakes-coreference</artifactId>
@@ -82,13 +105,67 @@
             <version>2.0.0</version>
         </dependency>
 
-        <!--  NobleTools for owl  -->
+        <!--  neo4j for ontology graph  -->
+        <!--<dependency>-->
+        <!--<groupId>org.neo4j</groupId>-->
+        <!--<artifactId>neo4j</artifactId>-->
+        <!--<version>${neo4j.version}</version>-->
+        <!--</dependency>-->
+
+        <!--  neo4j for ontology graph  -->
         <dependency>
-            <groupId>edu.pitt.dbmi.nlp</groupId>
-            <artifactId>NobleTools</artifactId>
-            <version>1.0</version>
+            <groupId>org.healthnlp</groupId>
+            <artifactId>deepphe-neo4j</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
+        <!--  hapi for fhir  -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-dstu3</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+        <!--<dependency>-->
+        <!--<groupId>net.sourceforge.owlapi</groupId>-->
+        <!--<artifactId>owlapi-distribution</artifactId>-->
+        <!--<version>5.1.0</version>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash;  NobleTools for owl  &ndash;&gt;-->
+        <!--<dependency>-->
+        <!--<groupId>edu.pitt.dbmi.nlp</groupId>-->
+        <!--<artifactId>NobleTools</artifactId>-->
+        <!--<version>1.0</version>-->
+        <!--</dependency>-->
+
+       <dependency>
+          <groupId>com.rubiconproject.oss</groupId>
+          <artifactId>jchronic</artifactId>
+          <version>0.2.8</version>
+       </dependency>
+
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.uima</groupId>
+                <artifactId>jcasgen-maven-plugin</artifactId>
+                <version>2.9.0</version>
+                <executions>
+                    <execution>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <typeSystemIncludes>
+                                <typeSystemInclude>src/main/resources/org/apache/ctakes/**/types/TypeSystem.xml</typeSystemInclude>
+                            </typeSystemIncludes>
+                            <limitToProject>true</limitToProject>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

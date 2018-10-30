@@ -1,9 +1,7 @@
 package org.apache.ctakes.cancer.phenotype.property;
 
 
-import edu.pitt.dbmi.nlp.noble.ontology.IClass;
-import org.apache.ctakes.core.ontology.OwlOntologyConceptUtil;
-import org.apache.ctakes.dictionary.lookup2.ontology.OwlParserUtil;
+import org.apache.ctakes.neo4j.Neo4jOntologyConceptUtil;
 
 import java.util.regex.Matcher;
 
@@ -15,24 +13,15 @@ import java.util.regex.Matcher;
 public interface Type {
 
    String getTitle();
-   // Can use the ontology:  iClass.getConcept().getPreferredTerm()
 
    String getUri();
 
    default <T extends Value> String getCui( final T value ) {
-      final IClass iClass = OwlOntologyConceptUtil.getIClass( getUri() );
-      if ( iClass == null ) {
-         return null;
-      }
-      return OwlParserUtil.getCui( iClass );
+      return Neo4jOntologyConceptUtil.getCui( getUri() );
    }
 
    default String getTui() {
-      final IClass iClass = OwlOntologyConceptUtil.getIClass( getUri() );
-      if ( iClass == null ) {
-         return null;
-      }
-      return OwlParserUtil.getTui( iClass );
+      return "";
    }
 
    Matcher getMatcher( final CharSequence lookupWindow );

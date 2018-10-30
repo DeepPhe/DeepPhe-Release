@@ -1,22 +1,18 @@
 package org.healthnlp.deepphe.uima.cc;
 
-import org.apache.ctakes.core.cc.AbstractOutputFileWriter;
 import org.apache.log4j.Logger;
-import org.apache.uima.jcas.JCas;
-import org.healthnlp.deepphe.fhir.Patient;
-import org.healthnlp.deepphe.fhir.Report;
-import org.healthnlp.deepphe.fhir.fact.Fact;
-import org.healthnlp.deepphe.fhir.summary.CancerSummary;
-import org.healthnlp.deepphe.fhir.summary.MedicalRecord;
-import org.healthnlp.deepphe.fhir.summary.PatientSummary;
-import org.healthnlp.deepphe.uima.fhir.PhenotypeResourceFactory;
+import org.healthnlp.deepphe.fact.Fact;
+import org.healthnlp.deepphe.summary.CancerSummary;
+import org.healthnlp.deepphe.summary.MedicalRecord;
+import org.healthnlp.deepphe.summary.MedicalRecordWriter;
+import org.healthnlp.deepphe.summary.PatientSummary;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class SummaryTextWriter extends AbstractOutputFileWriter {
+public class SummaryTextWriter extends MedicalRecordWriter {
 
    static private final Logger LOGGER = Logger.getLogger( "SummaryTextWriter" );
 
@@ -26,21 +22,12 @@ public class SummaryTextWriter extends AbstractOutputFileWriter {
     * {@inheritDoc}
     */
    @Override
-   public void writeFile( final JCas jCas, final String outputDir,
-                          final String documentId, final String fileName ) throws IOException {
-      LOGGER.info( "Writing Summary Files for " + documentId + " ..." );
+   protected void writeMedicalRecord( final MedicalRecord record, final String outputDir ) throws IOException {
+      final String patientName = record.getSimplePatientName();
+      LOGGER.info( "Writing Summary Files for " + patientName + " ..." );
 
-      final Patient patient = PhenotypeResourceFactory.loadPatient( jCas );
-      final String patientName = patient != null ? patient.getPatientName() : "unknown";
-
-      for ( Report report : PhenotypeResourceFactory.loadReports( jCas ) ) {
-         saveText( report.getSummaryText(), new File( outputDir, patientName + File.separator + report.getTitle() + ".txt" ) );
-      }
 
       final StringBuilder summary = new StringBuilder();
-
-      final MedicalRecord record = PhenotypeResourceFactory.loadMedicalRecord( jCas );
-
       final PatientSummary patientSummary = record.getPatientSummary();
       if ( patientSummary != null ) {
          summary.append( patientSummary.getSummaryText() ).append( BREAK );
@@ -73,11 +60,11 @@ public class SummaryTextWriter extends AbstractOutputFileWriter {
       if ( !file.getParentFile().exists() ) {
          file.getParentFile().mkdirs();
       }
-      BufferedWriter w = new BufferedWriter( new FileWriter( file ) );
-      LOGGER.info( "Writing Summary data data to " + file.getAbsolutePath() + " ..." );
-      w.write( text + "\n" );
-      w.close();
-      LOGGER.info( "Finished." );
+      try ( BufferedWriter w = new BufferedWriter( new FileWriter( file ) ) ) {
+         LOGGER.info( "Writing Summary data data to " + file.getAbsolutePath() + " ..." );
+         w.write( text + "\n" );
+         LOGGER.info( "Finished." );
+      }
    }
 
 }

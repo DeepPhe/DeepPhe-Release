@@ -1,13 +1,19 @@
 package org.apache.ctakes.cancer.phenotype.size;
 
-import org.apache.ctakes.cancer.util.SpanOffsetComparator;
+import org.apache.ctakes.cancer.uri.UriAnnotationFactory;
+import org.apache.ctakes.cancer.uri.UriConstants;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.log4j.Logger;
 import org.apache.uima.jcas.JCas;
+import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author SPF , chip-nlp
@@ -27,20 +33,20 @@ final public class SizeFinder {
    static private final String FRONT_REGEX = "(?:\\b|\\(|\\[|\\{)";
    static private final String BACK_REGEX = "(?:\\b|,|\\.|\\?|!|\\)|\\]|\\})";
    static private final String DIM_REGEX = "\\s*(?:x|\\*)\\s*";
-   static private final String UNIT_REGEX = "\\s*(?:\\bmm|cm\\b)";
+   static private final String UNIT_REGEX = "\\s*(?:mm|cm)";
    static private final String ONE_D_REGEX = FRONT_REGEX + VALUE_REGEX
-         + UNIT_REGEX + BACK_REGEX;
+                                             + UNIT_REGEX + BACK_REGEX;
    static private final String TWO_D_REGEX = FRONT_REGEX + VALUE_REGEX
-         + DIM_REGEX + VALUE_REGEX
-         + UNIT_REGEX + BACK_REGEX;
+                                             + DIM_REGEX + VALUE_REGEX
+                                             + UNIT_REGEX + BACK_REGEX;
    static private final String THREE_D_REGEX = FRONT_REGEX + VALUE_REGEX
-         + DIM_REGEX + VALUE_REGEX
-         + DIM_REGEX + VALUE_REGEX
-         + UNIT_REGEX + BACK_REGEX;
+                                               + DIM_REGEX + VALUE_REGEX
+                                               + DIM_REGEX + VALUE_REGEX
+                                               + UNIT_REGEX + BACK_REGEX;
 
    static private final String FULL_REGEX = FRONT_REGEX + VALUE_REGEX
          + "(?:" + DIM_REGEX + VALUE_REGEX + "){0,2}+"
-         + UNIT_REGEX + BACK_REGEX;
+                                            + UNIT_REGEX + BACK_REGEX;
 
    static private final Pattern FULL_VALUE_PATTERN
          = Pattern.compile( VALUE_REGEX + "(?:" + DIM_REGEX + VALUE_REGEX + "){0,2}+" );
@@ -49,64 +55,115 @@ final public class SizeFinder {
 
 
    static private final String[] SIZE_STOP_WORD_ARRAY = { "distance", "from", "superior", "inferior", "anterior", "posterior" };
-   static private final Collection<String> SIZE_STOP_WORDS;
-
-   static {
-      SIZE_STOP_WORDS = Arrays.asList( SIZE_STOP_WORD_ARRAY );
-   }
-
+   static private final int STOP_DISTANCE = 15;
 
    static public void addSentenceSizes( final JCas jcas, final Sentence sentence ) {
       final String sentenceText = sentence.getCoveredText().toLowerCase();
-      final boolean hasStop = SIZE_STOP_WORDS.stream().anyMatch( sentenceText::contains );
-      if ( hasStop ) {
-         return;
-      }
-      final Collection<Quantity> quantities = getQuantities( sentenceText );
-      if ( quantities.isEmpty() ) {
-         return;
-      }
+      final Collection<Integer> stopIndices = Arrays.stream( SIZE_STOP_WORD_ARRAY )
+            .map( sentenceText::indexOf )
+            .filter( i -> i >= 0 )
+            .collect( Collectors.toList() );
       final int windowStartOffset = sentence.getBegin();
-      for ( Quantity quantity : quantities ) {
-         SizePhenotypeFactory.getInstance().createPhenotype( jcas, windowStartOffset, quantity );
-      }
-   }
-
-   static List<Quantity> getQuantities( final String lookupWindow ) {
-      if ( lookupWindow.length() < 3 ) {
-         return Collections.emptyList();
-      }
-      final List<Quantity> quantities = new ArrayList<>();
-      final Matcher fullMatcher = FULL_PATTERN.matcher( lookupWindow );
+      final Matcher fullMatcher = FULL_PATTERN.matcher( sentenceText );
       while ( fullMatcher.find() ) {
-         final String matchWindow = lookupWindow.substring( fullMatcher.start(), fullMatcher.end() );
-         for ( QuantityUnit unitType : QuantityUnit.values() ) {
-            final Matcher unitMatcher = unitType.getMatcher( matchWindow );
-            if ( unitMatcher.find() ) {
-               final int unitStart = fullMatcher.start() + unitMatcher.start();
-               final int unitEnd = fullMatcher.start() + unitMatcher.end();
-               final String unit = matchWindow.substring( unitMatcher.start(), unitMatcher.end() );
-               final SpannedQuantityUnit spannedUnit = new SpannedQuantityUnit( unitType, unitStart, unitEnd );
-               int bestStart = fullMatcher.end();
-               int bestEnd = fullMatcher.start();
-               final Matcher valueMatcher = FULL_VALUE_PATTERN.matcher( matchWindow );
-               while ( valueMatcher.find() ) {
-                  final int valueStart = fullMatcher.start() + valueMatcher.start();
-                  final int valueEnd = fullMatcher.start() + valueMatcher.end();
-                  bestStart = Math.min( bestStart, valueStart );
-                  bestEnd = Math.max( bestEnd, valueEnd );
-               }
-               final QuantityValue value = new QuantityValue( lookupWindow.substring( bestStart, bestEnd ) );
-               final Quantity quantity
-                     = new Quantity( spannedUnit, new SpannedQuantityValue( value, bestStart, bestEnd ), unit );
-               quantities.add( quantity );
+         boolean skip = false;
+         for ( int stopIndex : stopIndices ) {
+            if ( Math.abs( fullMatcher.start() + (fullMatcher.end() - fullMatcher.start()) / 2 - stopIndex ) < STOP_DISTANCE ) {
+               skip = true;
                break;
             }
          }
+         if ( !skip ) {
+            UriAnnotationFactory.createIdentifiedAnnotations( jcas,
+                  windowStartOffset + fullMatcher.start(),
+                  windowStartOffset + fullMatcher.end(), UriConstants.SIZE,
+                  sentenceText.substring( fullMatcher.start(), fullMatcher.end() ) );
+         }
       }
-      quantities.sort( SpanOffsetComparator.getInstance() );
-      return quantities;
    }
+
+
+static public final class SizeFinderTester {
+   static private final String MULTIPLE_MENTION_SENTENCE_1 = "INVASIVE DUCTAL CARCINOMA, 2.1 CM LEFT BREAST_URI;";
+   static private final String MULTIPLE_MENTION_SENTENCE_2 = " DUCTAL CARCINOMA IN SITU, 900mm. RIGHT BREAST_URI 12:00.";
+   static private final String MULTIPLE_MENTION_SENTENCE_3 = "  Total Tumor size 1.4x1.9 cm";
+   static private final String MULTIPLE_MENTION_SENTENCE_4 = "INVASIVE DUCTAL CARCINOMA, 2.8 * 1.4 * 1.9 mm";
+
+   static private final String MULTIPLE_MENTION_SENTENCE_5
+         = "INVASIVE DUCTAL CARCINOMA, 2.8*1.4*1.9 mm, DUCTAL CARCINOMA IN SITU (2cm).";
+
+   static private final String SENTENCE_4 = "There are three contrast enhancing lesions in the right parietal lobe,"
+         + " the largest measuring 0.9 cm, suggestive of metastatic tumor.";
+
+   public SizeFinderTester() {}
+
+   @Test
+   public void testCapUnitMention() {
+      final Matcher fullMatcher = FULL_PATTERN.matcher( MULTIPLE_MENTION_SENTENCE_1 );
+      int count = 0;
+      while ( fullMatcher.find() ) {
+         System.out.println( MULTIPLE_MENTION_SENTENCE_1.substring( fullMatcher.start(), fullMatcher.end() ) );
+         count++;
+      }
+      assertEquals( "Expect one Cancer Size in " + MULTIPLE_MENTION_SENTENCE_1, 1, count );
+   }
+
+   @Test
+   public void testNoTimeMention() {
+      final Matcher fullMatcher = FULL_PATTERN.matcher( MULTIPLE_MENTION_SENTENCE_2 );
+      int count = 0;
+      while ( fullMatcher.find() ) {
+         System.out.println( MULTIPLE_MENTION_SENTENCE_2.substring( fullMatcher.start(), fullMatcher.end() ) );
+         count++;
+      }
+      assertEquals( "Expect one Cancer Size in " + MULTIPLE_MENTION_SENTENCE_2, 1, count );
+   }
+
+
+   @Test
+   public void testSingleMention() {
+      final Matcher fullMatcher = FULL_PATTERN.matcher( SENTENCE_4 );
+      int count = 0;
+      while ( fullMatcher.find() ) {
+         System.out.println( SENTENCE_4.substring( fullMatcher.start(), fullMatcher.end() ) );
+         count++;
+      }
+      assertEquals( "Expect one Cancer Size in " + SENTENCE_4, 1, count );
+   }
+
+   @Test
+   public void testDoubleMention() {
+      final Matcher fullMatcher = FULL_PATTERN.matcher( MULTIPLE_MENTION_SENTENCE_3 );
+      int count = 0;
+      while ( fullMatcher.find() ) {
+         System.out.println( MULTIPLE_MENTION_SENTENCE_3.substring( fullMatcher.start(), fullMatcher.end() ) );
+         count++;
+      }
+      assertEquals( "Expect one Cancer Size in " + MULTIPLE_MENTION_SENTENCE_3, 1, count );
+   }
+
+   @Test
+   public void testTripleMention() {
+      final Matcher fullMatcher = FULL_PATTERN.matcher( MULTIPLE_MENTION_SENTENCE_4 );
+      int count = 0;
+      while ( fullMatcher.find() ) {
+         System.out.println( MULTIPLE_MENTION_SENTENCE_4.substring( fullMatcher.start(), fullMatcher.end() ) );
+         count++;
+      }
+      assertEquals( "Expect one Cancer Size in " + MULTIPLE_MENTION_SENTENCE_4, 1, count );
+   }
+
+   @Test
+   public void testTripleAndMention() {
+      final Matcher fullMatcher = FULL_PATTERN.matcher( MULTIPLE_MENTION_SENTENCE_5 );
+      int count = 0;
+      while ( fullMatcher.find() ) {
+         System.out.println( MULTIPLE_MENTION_SENTENCE_5.substring( fullMatcher.start(), fullMatcher.end() ) );
+         count++;
+      }
+      assertEquals( "Expect two Cancer Sizes in " + MULTIPLE_MENTION_SENTENCE_5, 2, count );
+   }
+}
 
 
 }

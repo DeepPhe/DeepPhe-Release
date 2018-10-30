@@ -1,8 +1,8 @@
 package org.apache.ctakes.cancer.phenotype.size;
 
-import org.apache.ctakes.cancer.owl.OwlConstants;
 import org.apache.ctakes.cancer.phenotype.AbstractPhenotypeFactory;
 import org.apache.ctakes.cancer.phenotype.property.SpannedProperty;
+import org.apache.ctakes.cancer.uri.UriConstants;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation;
 import org.apache.log4j.Logger;
@@ -26,6 +26,7 @@ import static org.apache.ctakes.typesystem.type.constants.CONST.NE_TYPE_ID_PHENO
  * @version %I%
  * @since 2/8/2016
  */
+@Deprecated
 final public class SizePhenotypeFactory
       extends AbstractPhenotypeFactory<QuantityUnit, QuantityValue, MeasurementAnnotation> {
 
@@ -53,21 +54,8 @@ final public class SizePhenotypeFactory
                                                  final SpannedProperty<QuantityUnit, QuantityValue> size,
                                                  final Iterable<IdentifiedAnnotation> neoplasms,
                                                  final Iterable<IdentifiedAnnotation> diagnosticTests ) {
-      // quantity is a little different from the other phenotypes in that it has a value and unit
       final MeasurementAnnotation fullMeasurement
-            = createPropertyEventMention( jcas, OwlConstants.SIZE_URI, windowStartOffset, size );
-//      // value
-//      final Modifier valueModifier = createValueModifier( jcas, windowStartOffset, size );
-//      createEventMentionDegree( jcas, fullMeasurement, valueModifier );
-//      // unit
-//      final String typeUri = size.getSpannedType().getType().getUri();
-//      final int typeSpanBegin = size.getSpannedType().getStartOffset();
-//      final int typeSpanEnd = size.getSpannedType().getEndOffset();
-//      final Modifier unitModifier = createValueModifier( jcas, typeUri, typeSpanBegin, typeSpanEnd );
-//      createEventMentionDegree( jcas, fullMeasurement, unitModifier );
-      // and so forth
-//      createEventMentionNeoplasm( jcas, windowStartOffset, size, fullMeasurement, neoplasms );
-//      createEventMentionIndicator( jcas, windowStartOffset, size, fullMeasurement, diagnosticTests );
+            = createPropertyEventMention( jcas, UriConstants.SIZE, windowStartOffset, size );
       return fullMeasurement;
    }
 

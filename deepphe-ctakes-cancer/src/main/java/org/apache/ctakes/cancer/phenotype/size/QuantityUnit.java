@@ -1,6 +1,5 @@
 package org.apache.ctakes.cancer.phenotype.size;
 
-import org.apache.ctakes.cancer.owl.OwlConstants;
 import org.apache.ctakes.cancer.phenotype.property.Type;
 import org.apache.ctakes.cancer.phenotype.property.Value;
 
@@ -13,9 +12,8 @@ import java.util.regex.Pattern;
  * @since 2/29/2016
  */
 enum QuantityUnit implements Type {
-   //   CENTIMETER( "centimeter", "Centimeter", "cm" ),
-//   MILLIMETER( "millimeter", "Unit_of_Length", "mm" );
-   MEASUREMENT( "Unit", "Unit_of_Length", "(?:\\bcm|mm\\b)" ); // or OwlOntologyConceptUtil.CONTEXT_OWL + "#" + "Unit"
+      CENTIMETER( "centimeter", "Centimeter", "cm" ),
+   MILLIMETER( "millimeter", "Millimeter", "mm" );
 
 
    final private String _title;
@@ -41,8 +39,7 @@ enum QuantityUnit implements Type {
     */
    @Override
    public String getUri() {
-      // TODO move to context.  Doesn't make sense to have it in brca
-      return OwlConstants.BREAST_CANCER_OWL + "#" + _uri;
+      return _uri;
    }
 
    /**

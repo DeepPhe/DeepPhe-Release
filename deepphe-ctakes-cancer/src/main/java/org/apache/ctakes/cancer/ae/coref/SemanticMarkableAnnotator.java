@@ -1,7 +1,9 @@
 package org.apache.ctakes.cancer.ae.coref;
 
-import org.apache.ctakes.cancer.util.MarkableHolder;
+import org.apache.ctakes.core.coref.MarkableHolder;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
+import org.apache.ctakes.dependency.parser.util.DependencyUtility;
+import org.apache.ctakes.typesystem.type.syntax.ConllDependencyNode;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textsem.Markable;
 import org.apache.log4j.Logger;
@@ -11,6 +13,7 @@ import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import java.util.Map;
@@ -23,7 +26,7 @@ import java.util.stream.Collectors;
  * @version %I%
  * @since 10/18/2016
  */
-// TODO swap this out for owl uri roots
+// TODO swap this out for new semantic types
 final public class SemanticMarkableAnnotator extends JCasAnnotator_ImplBase {
 
    static private final Logger LOGGER = Logger.getLogger( "SemanticMarkableAnnotator" );
@@ -54,11 +57,18 @@ final public class SemanticMarkableAnnotator extends JCasAnnotator_ImplBase {
       final String documentId = DocumentIDAnnotationUtil.getDocumentID( jCas );
       final Map<Markable, IdentifiedAnnotation> markables
             = JCasUtil.select( jCas, _annotationClass ).stream()
-            .filter( a -> a.getCoveredText().length() > 1 )
-            .collect( Collectors.toMap( a -> new Markable( jCas, a.getBegin(), a.getEnd() ), Function.identity() ) );
+                      .filter( a -> a.getCoveredText().length() > 1 )
+                      .filter( a -> isHeadNodeOk( jCas, a ) )
+                      .collect( Collectors.toMap( a -> new Markable( jCas, a.getBegin(), a.getEnd() ), Function.identity() ) );
       // add markables to cas, add them to MarkableHolder
       markables.keySet().forEach( Markable::addToIndexes );
       MarkableHolder.addMarkables( documentId, markables );
    }
+
+   static private boolean isHeadNodeOk( final JCas jCas, final Annotation annotation ) {
+      final ConllDependencyNode head = DependencyUtility.getNominalHeadNode( jCas, annotation );
+      return head != null && head.getPostag() != null;
+   }
+
 
 }

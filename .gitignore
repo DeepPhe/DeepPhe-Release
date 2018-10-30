@@ -24,3 +24,20 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+/bin
+/target/
+/.idea/
+/.settings/
+/DeepPhe.iml
+/.classpath
+/.project
+/deepphe-ctakes-cancer/deepphe-ctakes-cancer.iml
+/deepphe-demo/deepphe-demo.iml
+/deepphe-fhir/deepphe-fhir.iml
+/deepphe-i2b2/deepphe-i2b2.iml
+/deepphe-uima/deepphe-uima.iml
+/deepphe-workbench/deepphe-workbench.iml
+/deepphe-uima/testdb
+/deepphe-viz/project/.sbtserver
+/deepphe.iml
+/output_graph

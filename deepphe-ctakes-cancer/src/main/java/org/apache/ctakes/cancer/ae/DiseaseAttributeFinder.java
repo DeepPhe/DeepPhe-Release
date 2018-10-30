@@ -27,8 +27,11 @@ final public class DiseaseAttributeFinder extends JCasAnnotator_ImplBase {
    static private final Logger LOGGER = Logger.getLogger( "DiseaseAttributeFinder" );
 
    private interface AttributeKey {
-      boolean matches( final String text );
+      Pattern getPattern();
+      default Pattern compile( final String regex ) { return Pattern.compile( regex, Pattern.CASE_INSENSITIVE ); }
+      default boolean matches( final String text ) { return getPattern().matcher( text ).find(); }
    }
+
 
    private enum GenericKey implements AttributeKey {
       EVALUATE( "evaluat" ),
@@ -40,13 +43,9 @@ final public class DiseaseAttributeFinder extends JCasAnnotator_ImplBase {
       GENERALLY( "generally" );
 
       private final Pattern __pattern;
-
+      public Pattern getPattern() { return __pattern; }
       GenericKey( final String regex ) {
-         __pattern = Pattern.compile( regex, Pattern.CASE_INSENSITIVE );
-      }
-
-      public boolean matches( final String text ) {
-         return __pattern.matcher( text ).find();
+         __pattern = compile( regex );
       }
    }
 
@@ -54,13 +53,9 @@ final public class DiseaseAttributeFinder extends JCasAnnotator_ImplBase {
       IF( "\\bif\\b" );
 
       private final Pattern __pattern;
-
+      public Pattern getPattern() { return __pattern; }
       ConditionalKey( final String regex ) {
-         __pattern = Pattern.compile( regex, Pattern.CASE_INSENSITIVE );
-      }
-
-      public boolean matches( final String text ) {
-         return __pattern.matcher( text ).find();
+         __pattern = compile( regex );
       }
    }
 
@@ -80,13 +75,9 @@ final public class DiseaseAttributeFinder extends JCasAnnotator_ImplBase {
       VERSUS( "\\bv(?:ersu)?s.?\\b" );
 
       private final Pattern __pattern;
-
+      public Pattern getPattern() { return __pattern; }
       UncertainKey( final String regex ) {
-         __pattern = Pattern.compile( regex, Pattern.CASE_INSENSITIVE );
-      }
-
-      public boolean matches( final String text ) {
-         return __pattern.matcher( text ).find();
+         __pattern = compile( regex );
       }
    }
 
@@ -139,7 +130,7 @@ final public class DiseaseAttributeFinder extends JCasAnnotator_ImplBase {
       if ( generics.isEmpty() && conditionals.isEmpty() && uncertains.isEmpty() ) {
          return;
       }
-      wordTokens.sort( ( t1, t2 ) -> t1.getBegin() - t2.getBegin() );
+      wordTokens.sort( Comparator.comparingInt( WordToken::getBegin ) );
       // set attributes for diseases
       for ( IdentifiedAnnotation annotation : annotations ) {
          final Pair<Integer> bounds = getAnnotationBounds( annotation, wordTokens );

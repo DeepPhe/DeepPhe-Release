@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<kmodule
-        xmlns="http://jboss.org/kie/6.0.0/kmodule">
-
+<kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <kbase name="BREAST" packages="org.healthnlp.deepphe.uima.drools.breast,org.healthnlp.deepphe.uima.drools.common">
+    </kbase>
+    <kbase name="MELANOMA" packages="org.healthnlp.deepphe.uima.drools.melanoma,org.healthnlp.deepphe.uima.drools.common">
+    </kbase>
+    <kbase name="OVARIAN" packages="org.healthnlp.deepphe.uima.drools.ov,org.healthnlp.deepphe.uima.drools.common">
+    </kbase>
 </kmodule>

@@ -1,11 +1,7 @@
 package org.apache.ctakes.cancer.ae;
 
 
-import org.apache.ctakes.cancer.owl.OwlConstants;
-import org.apache.ctakes.cancer.owl.OwlUriResolver;
 import org.apache.ctakes.cancer.phenotype.receptor.StatusFinder;
-import org.apache.ctakes.cancer.phenotype.size.SizeFinder;
-import org.apache.ctakes.cancer.phenotype.stage.StageFinder;
 import org.apache.ctakes.cancer.phenotype.tnm.TnmFinder;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.log4j.Logger;
@@ -27,6 +23,9 @@ final public class PhenotypeFinder extends JCasAnnotator_ImplBase {
 
    static private final Logger LOGGER = Logger.getLogger( "PhenotypeFinder" );
 
+   // TODO refactor to use new uri constants and api
+
+
    /**
     * Finds and Adds phenotypes size, tnm, stage, receptor status to cas
     * {@inheritDoc}
@@ -37,15 +36,10 @@ final public class PhenotypeFinder extends JCasAnnotator_ImplBase {
       final Collection<Sentence> sentences = JCasUtil.select( jCas, Sentence.class );
       for ( Sentence sentence : sentences ) {
          // Size
-         SizeFinder.addSentenceSizes( jCas, sentence );
-         // TNM
-         TnmFinder.getInstance().findTnms( jCas, sentence );
-         // Stage
-         StageFinder.getInstance().findStages( jCas, sentence );
+//         SizeFinder.addSentenceSizes( jCas, sentence );
+         TnmFinder.addTnms( jCas, sentence );
          // Receptor Status.  Only for brca
-         if ( OwlUriResolver.getBaseUri().equals( OwlConstants.BREAST_CANCER_OWL ) ) {
-            StatusFinder.addReceptorStatuses( jCas, sentence );
-         }
+         StatusFinder.addReceptorStatuses( jCas, sentence );
       }
       LOGGER.info( "Finished Processing" );
    }

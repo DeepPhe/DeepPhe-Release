@@ -1,7 +1,6 @@
 package org.apache.ctakes.cancer.ae.section;
 
 
-import org.apache.ctakes.cancer.util.SectionHolder;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.log4j.Logger;

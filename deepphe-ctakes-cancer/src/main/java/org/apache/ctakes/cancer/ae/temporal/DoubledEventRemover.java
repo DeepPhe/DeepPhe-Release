@@ -16,6 +16,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.function.Consumer;
 
 
@@ -30,9 +31,12 @@ import java.util.function.Consumer;
       dependencies = PipeBitInfo.TypeProduct.EVENT,
       role = PipeBitInfo.Role.ANNOTATOR
 )
+@Deprecated
 final public class DoubledEventRemover extends JCasAnnotator_ImplBase {
 
    static private final Logger LOGGER = Logger.getLogger( "DoubledEventRemover" );
+
+   // TODO Move to ctakes !!!  Check HtmlWriter and extract best / most exact
 
    /**
     * {@inheritDoc}
@@ -64,16 +68,18 @@ final public class DoubledEventRemover extends JCasAnnotator_ImplBase {
       };
       JCasUtil.select( jCas, EventMention.class ).forEach( splitEvents );
 
+      final Collection<EventMention> removals = new HashSet<>();
       for ( EventMention high : highEvents ) {
          final TextSpan highSpan = new DefaultTextSpan( high, 0 );
          for ( EventMention pure : pureEvents ) {
             final TextSpan pureSpan = new DefaultTextSpan( pure, 0 );
             if ( highSpan.overlaps( pureSpan ) ) {
                copyProperties( high, pure );
-               pure.removeFromIndexes( jCas );
+               removals.add( pure );
             }
          }
       }
+      removals.forEach( jCas::removeFsFromIndexes );
       LOGGER.info( "Finished." );
    }
 

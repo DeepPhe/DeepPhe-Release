@@ -14,8 +14,8 @@ import static org.apache.ctakes.typesystem.type.constants.CONST.NE_TYPE_ID_FINDI
 /**
  * Singleton that should be used to create full neoplasm receptor status property instances.
  * An instance is defined as the collection of all property types and values associated with a single neoplasm.
- * <p>
- * <p>
+ *
+ *
  * Use of any {@code createPhenotype()} method will create:
  * <ul>
  * Receptor Status type annotations
@@ -24,11 +24,11 @@ import static org.apache.ctakes.typesystem.type.constants.CONST.NE_TYPE_ID_FINDI
  * degree-of relations between the Receptor Status type annotations and the appropriate value annotations
  * test-for relations between Receptor Status type annotations and the nearest provided test in the text
  * </ul>
- *
  * @author SPF , chip-nlp
  * @version %I%
  * @since 12/6/2015
  */
+@Deprecated
 final public class StatusPhenotypeFactory
       extends AbstractPhenotypeFactory<StatusType, StatusValue, SignSymptomMention> {
 
@@ -58,8 +58,6 @@ final public class StatusPhenotypeFactory
       final SignSymptomMention eventMention = createTypeEventMention( jcas, windowStartOffset, status );
       final Modifier valueModifier = createValueModifier( jcas, windowStartOffset, status );
       createEventMentionDegree( jcas, eventMention, valueModifier );
-//      createEventMentionNeoplasm( jcas, windowStartOffset, status, eventMention, neoplasms );
-//      createEventMentionIndicator( jcas, windowStartOffset, status, eventMention, diagnosticTests );
       return eventMention;
    }
 

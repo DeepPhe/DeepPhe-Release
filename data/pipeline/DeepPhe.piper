@@ -1,98 +1,29 @@
-// This file contains commands and parameters to run the Deep Phenome pipeline
-
-// Add general ctakes cancer package.  Child packages need to be specified if required.
-package org.apache.ctakes.cancer
-package org.apache.ctakes.cancer.ae
-package org.apache.ctakes.cancer.owl
-
-cli ontologyUri=u
-add OwlUriResolver
-
-// Add a sectionizer that handles sections particular to Pitt notes.
-package org.apache.ctakes.cancer.ae.section
-cli sectionsOwl=w
-
-// Restrict Roots once the ontology has been loaded the first time
-add OwlRootRestrictor
-add PittSectionizer sectionRootURIs=http://blulab.chpc.utah.edu/ontologies/v2/Schema.owl#DocumentSection
+//////////////////////////////////////////////////////////////////////////
+//
+//       Commands and parameters to run the Deep Phenome v0.2.0 pipeline
+//       for a Cancer specified using the -d (Domain) command line parameter.
+//
+//       For more information on piper files see the Apache cTAKES wiki:
+//          https://cwiki.apache.org/confluence/display/CTAKES/Piper+Files
+//
+//       Modify with care.
+//
+//////////////////////////////////////////////////////////////////////////
 
 
-// The Pitt header contains metadata.
-add PittHeaderAnnotator
-// Remove from the CAS sections that should not be parsed by following AEs.
-add SectionRemover
+//  Use the command-line parameter -d to specify the Domain to use during processing.
+//  Valid values for DeepPhe v0.2.0 are "Breast", "Melanoma" and "Ovarian".
+cli Domain=d
 
-// CleartkAnnotator has some iffy isTraining determination, so set exact intention to not training
-set isTraining=false
-// The sentence detector needs our custom model path, otherwise default values are used.
-addLogged SentenceDetectorAnnotatorBIO classifierJarPath=/org/apache/ctakes/core/sentdetect/model.jar
 
-// By default, paragraphs are parsed using empty lines as separators and Part #:
-add ParagraphAnnotator PARAGRAPH_TYPES_PATH=org/apache/ctakes/cancer/paragraph/ParagraphRegex.bsv
-// Fix sentences so that no sentence spans across two or more paragraphs.
-add ParagraphSentenceFixer
+//  Load the piper file that contains configuration, document reading and large item discovery.
+load DeepPhe.document.piper
 
-// Use regular expressions created for the Pitt notes to discover formatted lists and tables.
-add ListAnnotator LIST_TYPES_PATH=org/apache/ctakes/cancer/list/CancerListRegex.bsv
-// Fix sentences so that no sentence spans across two or more list entries.
-add ListSentenceFixer
+//  Load the piper file that contains entity extraction.
+load DeepPhe.entity.piper
 
-// Now we can finally tokenize, tag parts of speech and chunk using adjusted sentences.
-add TokenizerAnnotatorPTB
-add ContextDependentTokenizerAnnotator
-add POSTagger
+//  Load the piper file that contains entity attribute and relation extraction.
+load DeepPhe.attribute.piper
 
-//load ChunkerSubPipe.piper
-add Chunker
-add adjuster.ChunkAdjuster ChunkPattern=NP,NP IndexOfTokenToInclude=1
-add adjuster.ChunkAdjuster ChunkPattern=NP,PP,NP IndexOfTokenToInclude=2
-
-// OWL ontology dictionary lookup.
-// This is the same as the default list except that "IN" is not excluded
-// http://www.clips.ua.ac.be/pages/mbsp-tags
-set exclusionTags="VB,VBD,VBG,VBN,VBP,VBZ,CC,CD,DT,EX,LS,MD,PDT,POS,PP,PP$,PRP,PRP$,RP,TO,WDT,WP,WPS,WRB"
-// path to the xml file containing information for dictionary lookup configuration.
-cli LookupXml=l
-add DefaultJCasTermAnnotator
-add MassFilter
-
-// Attributes.
-addLogged ContextAnnotator MaxRightScopeSize=12
-set ContextAnalyzerClass=org.apache.ctakes.necontexts.status.StatusContextAnalyzer
-set ContextHitConsumerClass=org.apache.ctakes.necontexts.status.StatusContextHitConsumer
-set MaxLeftScopeSize=10 MaxRightScopeSize=10
-addLogged ContextAnnotator
-add DiseaseAttributeFinder
-add ListEntryNegator
-add NobleConTextAnnotator
-add SubjectSectionFixer
-
-// Temporal.
-addDescription EventAnnotator
-addLogged BackwardsTimeAnnotator classifierJarPath=/org/apache/ctakes/temporal/ae/timeannotator/model.jar
-addLogged DocTimeRelAnnotator classifierJarPath=/org/apache/ctakes/temporal/ae/doctimerel/model.jar
-add temporal.DoubledEventRemover
-
-add ModifierExtractorAnnotator classifierJarPath=/org/apache/ctakes/relationextractor/models/modifier_extractor/model.jar
-// Find phenotypes by non- dictionary lookup means.
-add PhenotypeFinder
-// Find relations declared in the ontology.
-add OwlRelationFinder
-// Find relations not declared in the ontology.
-add NonOwlRelationFinder
-
-// Subsume semantically alike products of the paragraph location fixer and the dictionary lookup.
-add SemanticSubsumer
-
-// Semantic Coreferences require a lot of calls.  For readability it has its own piper.
-load data/pipeline/SemanticCoref.piper
-
-// Output.
-load data/pipeline/DeepPheOut.piper
-
-// Add removed Sections and Clean up cache after the pipeline is completed.
-addLast SectionReAdder
-addLast UriCacheClearer
-
-// Finish.
-addLast StartFinishLogger LOGGER_NAME=Pipeline IS_START=false
+//  Load the piper file that contains summarization.
+load DeepPhe.summary.piper

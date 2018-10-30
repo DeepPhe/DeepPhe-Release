@@ -1,49 +1,49 @@
+
 <assembly
-        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-    <id>bin</id>
-    <formats>
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+	<id>bin</id>
+	<formats>
         <format>tar.gz</format>
-        <format>zip</format>
-    </formats>
+		<format>zip</format>
+	</formats>
 
-    <includeBaseDirectory>true</includeBaseDirectory>
-    <baseDirectory>/deepphe-${project.version}</baseDirectory>
+	<includeBaseDirectory>true</includeBaseDirectory>
+	<baseDirectory>/deepphe-${project.version}</baseDirectory>
 
-    <dependencySets>
-        <dependencySet>
-            <includes>
-                <include>org.healthnlp:deepphe-ctakes-cancer</include>
-                <include>org.healthnlp:deepphe-fhir</include>
-                <include>org.healthnlp:deepphe-uima</include>
-            </includes>
+	<dependencySets>
+		<dependencySet>
+			<includes>
+				<include>org.healthnlp:deepphe-neo4j</include>
+				<include>org.healthnlp:deepphe-ctakes-cancer</include>
+				<include>org.healthnlp:deepphe-fhir</include>
+				<include>org.healthnlp:deepphe-uima</include>
+				<include>org.healthnlp:deepphe-data</include>
+			</includes>
 
-            <unpack>false</unpack>
-            <useProjectArtifact>false</useProjectArtifact>
-            <useTransitiveFiltering>true</useTransitiveFiltering>
-            <fileMode>644</fileMode>
-            <directoryMode>755</directoryMode>
-            <outputDirectory>lib</outputDirectory>
-        </dependencySet>
-    </dependencySets>
+			<unpack>false</unpack>
+			<useProjectArtifact>false</useProjectArtifact>
+			<useTransitiveFiltering>true</useTransitiveFiltering>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+			<outputDirectory>lib</outputDirectory>
+		</dependencySet>
+	</dependencySets>
 
-    <fileSets>
-        <fileSet>
-            <directory>../deepphe-uima/lib</directory>
-            <outputDirectory>lib</outputDirectory>
-            <includes>
-                <include>dphere.jar</include>
-                <include>modgen.jar</include>
-                <include>owlapi-distribution-4.0.1.jar</include>
-            </includes>
+	<fileSets>
+		<fileSet>
+			<directory>../data</directory>
+			<fileMode>755</fileMode>
+			<directoryMode>755</directoryMode>
+			<outputDirectory>data</outputDirectory>
         </fileSet>
-        <fileSet>
-            <directory>../data</directory>
-            <fileMode>755</fileMode>
-            <directoryMode>755</directoryMode>
-            <outputDirectory>data</outputDirectory>
-        </fileSet>
+		<fileSet>
+			<directory>../resources</directory>
+			<fileMode>755</fileMode>
+			<directoryMode>755</directoryMode>
+			<outputDirectory>resources</outputDirectory>
+		</fileSet>
         <fileSet>
             <directory>../deepphe-ctakes-cancer/src/main/resources</directory>
             <fileMode>755</fileMode>
@@ -62,21 +62,21 @@
             <directoryMode>755</directoryMode>
             <outputDirectory>resources</outputDirectory>
         </fileSet>
-        <fileSet>
-            <directory>src/main/bin</directory>
-            <fileMode>755</fileMode>
-            <directoryMode>755</directoryMode>
-            <outputDirectory>bin</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>../</directory>
-            <outputDirectory/>
-            <fileMode>644</fileMode>
-            <directoryMode>755</directoryMode>
-            <includes>
-                <include>README.md</include>
-                <include>LICENSE</include>
-            </includes>
-        </fileSet>
-    </fileSets>
+		<fileSet>
+			<directory>src/main/bin</directory>
+			<fileMode>755</fileMode>
+			<directoryMode>755</directoryMode>
+			<outputDirectory>bin</outputDirectory>
+		</fileSet>				
+		<fileSet>
+			<directory>../</directory>
+			<outputDirectory/>
+			<fileMode>644</fileMode>
+			<directoryMode>755</directoryMode>
+			<includes>
+				<include>README.md</include>
+				<include>LICENSE</include>
+			</includes>
+		</fileSet>
+	</fileSets>
 </assembly>

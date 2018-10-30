@@ -1,7 +1,7 @@
 package org.apache.ctakes.cancer.phenotype.size;
 
-import org.apache.ctakes.cancer.owl.OwlConstants;
 import org.apache.ctakes.cancer.phenotype.property.AbstractPropertyUtil;
+import org.apache.ctakes.cancer.uri.UriConstants;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.log4j.Logger;
 
@@ -77,16 +77,14 @@ final public class SizePropertyUtil extends AbstractPropertyUtil<QuantityUnit, Q
     */
    @Override
    public String getValueUri( final String valueText ) {
-//      return QuantityValue.NUMERIC_VALUE_URI;
-      return OwlConstants.QUANTITY_URI;
+      return "Property_or_Attribute";
    }
 
    /**
     * @return the uri acting as parent to all individual tnm property uris
     */
    static public String getParentUri() {
-//      return Quantity.QUANTITY_URI;
-      return OwlConstants.SIZE_URI;
+      return UriConstants.SIZE;
    }
 
 

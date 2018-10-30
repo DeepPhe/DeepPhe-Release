@@ -1,7 +1,7 @@
 package org.apache.ctakes.cancer.phenotype.property;
 
 
-import org.apache.ctakes.core.ontology.OwlOntologyConceptUtil;
+import org.apache.ctakes.neo4j.Neo4jOntologyConceptUtil;
 import org.apache.ctakes.typesystem.type.relation.DegreeOfTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.log4j.Logger;
@@ -14,14 +14,13 @@ import java.util.regex.Matcher;
 
 /**
  * Abstract class with Utilities to interact with neoplasm property annotations, mostly by uri.
- * <p>
+ *
  * Specific Property-type implementation singletons should be used to:
  * <ul>
  * test that an annotation is of the desired property {@link #isCorrectProperty(IdentifiedAnnotation)}
  * get the property type uri from text {@link #getTypeUri(String)}
  * get the property value uri from text {@link #getValueUri(String)}
- * </ul>
- *
+ *</ul>
  * @author SPF , chip-nlp
  * @version %I%
  * @since 2/8/2016
@@ -48,7 +47,7 @@ abstract public class AbstractPropertyUtil<T extends Type, V extends Value> {
     * @return true if the annotation is of the correct property according to URI match
     */
    protected boolean isCorrectProperty( final IdentifiedAnnotation annotation, final T[] types ) {
-      final Collection<String> uris = OwlOntologyConceptUtil.getUris( annotation );
+      final Collection<String> uris = Neo4jOntologyConceptUtil.getUris( annotation );
       for ( String uri : uris ) {
          for ( T type : types ) {
             if ( uri.equals( type.getUri() ) ) {
@@ -79,7 +78,7 @@ abstract public class AbstractPropertyUtil<T extends Type, V extends Value> {
             continue;
          }
          final Annotation argument2 = degree.getArg2().getArgument();
-         final Collection<String> uris = OwlOntologyConceptUtil.getUris( (IdentifiedAnnotation) argument2 );
+         final Collection<String> uris = Neo4jOntologyConceptUtil.getUris( (IdentifiedAnnotation)argument2 );
          final V value = getUriValue( uris );
          if ( value != null ) {
             return value;
@@ -109,8 +108,8 @@ abstract public class AbstractPropertyUtil<T extends Type, V extends Value> {
          final Matcher valueMatcher = value.getMatcher( valueText );
          if ( valueMatcher.find() ) {
             if ( bestValue == null
-                  || (valueMatcher.end() - valueMatcher.start() > bestEnd - bestBegin)
-                  || (valueMatcher.start() < bestBegin) ) {
+                 || (valueMatcher.end() - valueMatcher.start() > bestEnd - bestBegin)
+                 || (valueMatcher.start() < bestBegin) ) {
                bestValue = value;
                bestBegin = valueMatcher.start();
                bestEnd = valueMatcher.end();
@@ -122,6 +121,7 @@ abstract public class AbstractPropertyUtil<T extends Type, V extends Value> {
       }
       return bestValue.getUri();
    }
+
 
 
    /**

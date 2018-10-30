@@ -1,8 +1,8 @@
 package org.apache.ctakes.cancer.ae;
 
-import org.apache.ctakes.cancer.owl.OwlConstants;
-import org.apache.ctakes.cancer.owl.UriAnnotationCache;
+import org.apache.ctakes.cancer.uri.UriConstants;
 import org.apache.ctakes.core.util.RelationUtil;
+import org.apache.ctakes.neo4j.Neo4jOntologyConceptUtil;
 import org.apache.ctakes.typesystem.type.relation.LocationOfTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.log4j.Logger;
@@ -39,11 +39,12 @@ final public class DistancedRemover extends JCasAnnotator_ImplBase {
          LOGGER.info( "Finished Processing" );
          return;
       }
-      final Collection<String> neoplasmUris = Arrays.asList( OwlConstants.NEOPLASM_URIS );
+      final Collection<String> neoplasmUris = Arrays.asList( UriConstants.NEOPLASM );
       final Collection<IdentifiedAnnotation> neoplasms = neoplasmUris.stream()
-            .map( u -> UriAnnotationCache.getInstance().getBranchAnnotations( jcas, u ) )
-            .flatMap( Collection::stream )
-            .collect( Collectors.toSet() );
+                                                                     .map( u -> Neo4jOntologyConceptUtil
+                                                                           .getAnnotationsByUriBranch( jcas, u ) )
+                                                                     .flatMap( Collection::stream )
+                                                                     .collect( Collectors.toSet() );
       if ( neoplasms.isEmpty() ) {
          LOGGER.info( "Finished Processing" );
          return;

@@ -1,6 +1,6 @@
 package org.apache.ctakes.cancer.ae.coref;
 
-import org.apache.ctakes.cancer.util.MarkableHolder;
+import org.apache.ctakes.core.coref.MarkableHolder;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.apache.log4j.Logger;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;

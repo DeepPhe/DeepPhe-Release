@@ -2,8 +2,10 @@
 /.settings/
 /.classpath
 /.project
+/src/main/java/org/healthnlp/deepphe/uima/types/*.java
 /neo4jtestdb/
 /testdb/
 /metadata/
 /bin/
 *.iml
+/cTAKES.error.log

@@ -1,9 +1,6 @@
 package org.apache.ctakes.cancer.phenotype.stage;
 
 
-import org.apache.ctakes.cancer.owl.OwlConstants;
-import org.apache.ctakes.cancer.phenotype.PhenotypeConcept;
-import org.apache.ctakes.cancer.phenotype.PhenotypeUtil;
 import org.apache.ctakes.core.util.Pair;
 import org.apache.ctakes.core.util.regex.RegexSpanFinder;
 import org.apache.ctakes.typesystem.type.textsem.SignSymptomMention;
@@ -42,12 +39,8 @@ public enum StageFinder {
 
 
    private final Object LOCK = new Object();
-   private final Map<String, PhenotypeConcept> _synonyms = new HashMap<>();
 
    StageFinder() {
-      synchronized (LOCK) {
-         PhenotypeUtil.buildUriSynonyms( OwlConstants.CANCER_STAGE_URI, _synonyms, 3 );
-      }
    }
 
    public Collection<SignSymptomMention> findStages( final JCas jcas, final AnnotationFS lookupWindow ) {
@@ -63,13 +56,6 @@ public enum StageFinder {
             final String matchWindow = lookupWindowText.substring( fullSpan.getValue1(), fullSpan.getValue2() );
             if ( matchWindow.trim().isEmpty() ) {
                continue;
-            }
-            synchronized (LOCK) {
-               final SignSymptomMention stage
-                     = PhenotypeUtil.findPhenotype( jcas, _synonyms, matchWindow, windowStartOffset + fullSpan.getValue1() );
-               if ( stage != null ) {
-                  stages.add( stage );
-               }
             }
          }
       } catch ( IllegalArgumentException iaE ) {

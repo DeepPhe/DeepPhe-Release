@@ -17,12 +17,12 @@ NOTTINGHAM GRADE 3.
 C.	NO DEFINITE LYMPHOVASCULAR INVASION IDENTIFIED.
 D.	SURGICAL MARGINS ARE NEGATIVE.
 E.	TUMOR IS ESTROGEN RECEPTOR NEGATIVE, PROGESTERONE RECEPTOR NEGATIVE,
-HER-2/NEU NEGATIVE WITHA KI-67 INDEX OF 45%.
-F.	NO EVIDIENCE OF IN-SITU COMPONENT SEEN.
+HER-2/NEU NEGATIVE WITH A KI-67 INDEX OF 45%.
+F.	NO EVIDENCE OF IN-SITU COMPONENT SEEN.
 PART 2: AXILLARY LYMPH NODES, LEFT, BIOPSY
 A. TWO OUT OF TEN AXILLARY LYMPH NODES POSITIVE FOR METASTATIC 
 CARCINOMA (2/10).
-B. LARGEST METATSTATIC TUMOR MEASURES 2.5 CM IN GREASTEST DIMENSION.
+B. LARGEST METASTATIC TUMOR MEASURES 2.5 CM IN GREATEST DIMENSION.
 C. NO EXTRACAPSULAR EXTENSION IS IDENTIFIED.
 
 COMMENT:
@@ -36,7 +36,7 @@ My signature is attestation that I have personally reviewed the submitted
 material(s) and the final diagnosis reflects that evaluation.
 
 GROSS DESCRIPTION:
-The specimen is received fixed, labeled with the patient' s name, initials, 
+The specimen is received fixed, labeled with the patient's name, initials,
 medical record number and "left radical modified breast mastectomy". 
 
 CASE SYNOPSIS:
@@ -44,7 +44,7 @@ SYNOPTIC - PRIMARY INVASIVE CARCINOMA OF BREAST
 LATERALITY:      Left
 PROCEDURE:      Modified radical mastectomy
 LOCATION:      Upper outer quadrant
-Clock position: 10:30
+Clock position: 12:30
 SIZE OF TUMOR:      Maximum dimension invasive component:  13 mm
 MULTICENTRICITY/MULTIFOCALITY OF INVASIVE FOCI:
 No

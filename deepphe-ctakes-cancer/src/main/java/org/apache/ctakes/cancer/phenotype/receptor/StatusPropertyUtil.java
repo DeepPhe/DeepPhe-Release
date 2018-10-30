@@ -7,18 +7,17 @@ import org.apache.log4j.Logger;
 
 /**
  * Singleton class with Utilities to interact with neoplasm Receptor Status property annotations, mostly by uri.
- * <p>
+ *
  * should be used to:
  * <ul>
  * test that an annotation is of the desired property {@link #isCorrectProperty(IdentifiedAnnotation)}
  * get the property type uri from text {@link #getTypeUri(String)}
  * get the property value uri from text {@link #getValueUri(String)}
- * </ul>
- * <p>
+ *</ul>
+ *
  * In addition there are static methods to:
  * <ul>
  * </ul>
- *
  * @author SPF , chip-nlp
  * @version %I%
  * @since 12/6/2015

@@ -2,7 +2,6 @@ package org.apache.ctakes.cancer.util;
 
 /**
  * A Spanned Entity (mention or other) with offsets for the beginning and ending location within text
- *
  * @author SPF , chip-nlp
  * @version %I%
  * @since 8/20/2015

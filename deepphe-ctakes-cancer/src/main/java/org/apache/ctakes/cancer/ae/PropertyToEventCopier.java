@@ -15,6 +15,8 @@ final public class PropertyToEventCopier extends JCasAnnotator_ImplBase {
 
    static private final Logger LOGGER = Logger.getLogger( "PropertyToEventCopier" );
 
+   // TODO move to ctakes
+
    /**
     * {@inheritDoc}
     */
@@ -22,7 +24,7 @@ final public class PropertyToEventCopier extends JCasAnnotator_ImplBase {
    public void process( final JCas jcas ) throws AnalysisEngineProcessException {
       LOGGER.info( "Copying Mention properties to Events ..." );
       for ( EventMention mention : JCasUtil.select( jcas, EventMention.class ) ) {
-         // get temporal event mentions and not dictinoary-derived subclasses
+         // get temporal event mentions and not dictionary-derived subclasses
          // find either an exact matching span, or an end-matching span with the smallest overlap
          if ( mention.getClass().equals( EventMention.class ) ) {
             EventMention bestCovering = null;
@@ -44,7 +46,6 @@ final public class PropertyToEventCopier extends JCasAnnotator_ImplBase {
             }
             if ( bestCovering != null ) {
                mention.setPolarity( bestCovering.getPolarity() );
-               //            mention.getEvent().getProperties().setPolarity(bestCovering.getPolarity());
                mention.setUncertainty( bestCovering.getUncertainty() );
             }
          }
