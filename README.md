@@ -2,7 +2,7 @@ DeepPhe
 =======
 
 # Cancer Deep Phenotype Extraction (DeepPhe) Project
-## Introduction
+## Introduction v0.2.0
 
 This documentation describes v0.2.0 of
 * the base DeepPhe system, which analyzes documents and produces information about Cancers and Tumors
