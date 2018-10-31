@@ -14,13 +14,15 @@ PRGDIR=`dirname "$PRG"`
 
 # Only set DEEPPHE_HOME if not already set
 [ -z "$DEEPPHE_HOME" ] && DEEPPHE_HOME=`cd "$PRGDIR/.." >/dev/null; pwd`
-SPLASH=resources/org/healthnlp/cancer/image/healthnlp_cancer.png
 
+CLASS_PATH=$DEEPPHE_HOME/resources/:$DEEPPHE_HOME/data/:$DEEPPHE_HOME/lib/*
 PIPE_RUNNER=org.apache.ctakes.gui.pipeline.PiperRunnerGui
 PIPER_FILE=data/pipeline/DeepPhe.piper
-# PIPER_CLI=PatientX.piper_cli
 
 cd $DEEPPHE_HOME
 
-# java -cp $DEEPPHE_HOME/data/:$DEEPPHE_HOME/lib/* -Xms512M -Xmx3g -splash:$SPLASH $PIPE_RUNNER -p $PIPER_FILE -c $PIPER_CLI "$@"
-java -cp $DEEPPHE_HOME/data/:$DEEPPHE_HOME/lib/* -Xms512M -Xmx3g -splash:$SPLASH $PIPE_RUNNER -p $PIPER_FILE "$@"
+java -cp $CLASS_PATH -Xms512M -Xmx3g $PIPE_RUNNER -p $PIPER_FILE "$@"
+# rather than check uname and try to account for emulators etc., just check for failure and retry.
+if [ $? != 0 ]; then
+   java -cp ${CLASS_PATH//\//\\} -Xms512M -Xmx3g $PIPE_RUNNER -p $PIPER_FILE "$@"
+fi
