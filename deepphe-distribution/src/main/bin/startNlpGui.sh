@@ -17,4 +17,4 @@ PRGDIR=`dirname "$PRG"`
 
 cd $DEEPPHE_HOME
 #  org/apache/ctakes/cancer/pipeline/DeepPhe.piper
-java -cp $DEEPPHE_HOME/data/:$DEEPPHE_HOME/lib/* -Xms512M -Xmx3g org.apache.ctakes.gui.pipeline.PiperRunnerGui -p org/apache/ctakes/cancer/pipeline/DeepPhe.piper "$@"
+java -cp $DEEPPHE_HOME/data/:$DEEPPHE_HOME/lib/* -Xms512M -Xmx3g org.apache.ctakes.gui.pipeline.PiperRunnerGui -p data/pipeline//DeepPhe.piper "$@"
