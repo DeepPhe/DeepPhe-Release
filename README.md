@@ -42,6 +42,8 @@ Refer to that agreement for information about requesting the use of the Software
 
 DeepPhe includes portions of the HemOnc.org ontology. Refer to [HemOnc.org](https://hemonc.org/wiki/Ontology) regarding the licensing of the HemOnc.org ontology.
 
+DeepPhe includes portions of the [NCI Thesaurus](https://ncit.nci.nih.gov/ncitbrowser/) (NCIt).
+
 ## Contact / Help
 _Please drop us a note if you obtain the code, by posting to the [DeepPhe group]( https://groups.google.com/forum/#!forum/deepphe)_.  Metrics on downloads and usage could help us with funding future enhancements.
 
