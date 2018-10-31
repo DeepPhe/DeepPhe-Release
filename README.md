@@ -50,6 +50,14 @@ DeepPhe includes portions of the HemOnc.org ontology. Refer to [HemOnc.org](http
 
 DeepPhe includes portions of the [NCI Thesaurus](https://ncit.nci.nih.gov/ncitbrowser/) (NCIt).
 
+The viz plugin (refer to deepphe-viz-neo4j) has a dependency on [apoc](https://github.com/neo4j-contrib/neo4j-apoc-procedures/blob/3.2/LICENSE).
+
+Other licenses for your reference  
+    &nbsp;&nbsp; - [Apache cTAKES&#8482;](https://ctakes.apache.org/license.html)  
+    &nbsp;&nbsp; - [jchronic](https://github.com/samtingleff/jchronic/blob/master/LICENSE)  
+    &nbsp;&nbsp; - [Neo4j](https://neo4j.com/docs/license/)  
+    &nbsp;&nbsp; - [Drools](https://www.drools.org/code/license.html)  
+
 ## Contact / Help
 _Please drop us a note if you obtain the code, by posting to the [DeepPhe group]( https://groups.google.com/forum/#!forum/deepphe)_.  Metrics on downloads and usage could help us with funding future enhancements.
 
