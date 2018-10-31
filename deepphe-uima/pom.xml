@@ -12,19 +12,6 @@
    </parent>
    <dependencies>
 
-      <!--<dependency>-->
-      <!--<groupId>org.eclipse.jetty</groupId>-->
-      <!--<artifactId>jetty-server</artifactId>-->
-      <!--<version>9.2.10.v20150310</version>-->
-      <!--</dependency>-->
-
-      <!--<dependency>-->
-      <!--<groupId>javax.servlet</groupId>-->
-      <!--<artifactId>servlet-api</artifactId>-->
-      <!--<version>2.5</version>-->
-      <!--<scope>provided</scope>-->
-      <!--</dependency>-->
-
       <dependency>
          <groupId>org.healthnlp</groupId>
          <artifactId>deepphe-fhir</artifactId>
@@ -32,22 +19,6 @@
       </dependency>
 
 
-      <!-- Dependencies that still need to be uploaded to Maven Central; when
-   done, the dependency versions should be moved into the parent pom -->
-      <dependency>
-         <groupId>dphere</groupId>
-         <artifactId>dphere</artifactId>
-         <version>1</version>
-         <scope>system</scope>
-         <systemPath>${project.basedir}/lib/dphere.jar</systemPath>
-      </dependency>
-      <dependency>
-         <groupId>org.healthnlp</groupId>
-         <artifactId>modgen</artifactId>
-         <version>20151021</version>
-         <scope>system</scope>
-         <systemPath>${project.basedir}/lib/modgen.jar</systemPath>
-      </dependency>
       <dependency>
          <groupId>org.drools</groupId>
          <artifactId>drools-compiler</artifactId>
@@ -55,28 +26,6 @@
       </dependency>
 
 
-      <!--<dependency>-->
-      <!--<groupId>org.apache.lucene</groupId>-->
-      <!--<artifactId>lucene-core</artifactId>-->
-      <!--<version>${luceneVersion}</version>-->
-      <!--</dependency>-->
-
-
-      <!--<dependency>-->
-      <!--<groupId>org.jmock</groupId>-->
-      <!--<artifactId>jmock-junit4</artifactId>-->
-      <!--<version>2.8.1</version>-->
-      <!--</dependency>-->
-      <!--<dependency>-->
-      <!--<groupId>org.jmock</groupId>-->
-      <!--<artifactId>jmock-legacy</artifactId>-->
-      <!--<version>2.8.1</version>-->
-      <!--</dependency>-->
-      <!--<dependency>-->
-      <!--<groupId>org.objenesis</groupId>-->
-      <!--<artifactId>objenesis</artifactId>-->
-      <!--<version>2.2</version>-->
-      <!--</dependency>-->
 
    </dependencies>
 
@@ -88,16 +37,6 @@
          </activation>
          <build>
             <plugins>
-            <!-- 
-               <plugin>
-                  <groupId>org.jacoco</groupId>
-                  <artifactId>jacoco-maven-plugin</artifactId>
-                   <version>${jacoco.version}</version>
-   				  <excludes>
-				      <exclude>**com.steadystate*</exclude>
-				   </excludes>
-               </plugin>	
-                -->   
                <plugin>
                   <groupId>org.apache.uima</groupId>
                   <artifactId>jcasgen-maven-plugin</artifactId>
