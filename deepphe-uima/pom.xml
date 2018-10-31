@@ -19,15 +19,6 @@
       </dependency>
 
 
-      <!-- Dependencies that still need to be uploaded to Maven Central; when
-   done, the dependency versions should be moved into the parent pom -->
-      <dependency>
-         <groupId>org.healthnlp</groupId>
-         <artifactId>modgen</artifactId>
-         <version>20151021</version>
-         <scope>system</scope>
-         <systemPath>${project.basedir}/lib/modgen.jar</systemPath>
-      </dependency>
       <dependency>
          <groupId>org.drools</groupId>
          <artifactId>drools-compiler</artifactId>
