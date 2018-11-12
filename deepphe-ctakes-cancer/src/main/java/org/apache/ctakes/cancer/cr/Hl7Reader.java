@@ -439,30 +439,30 @@ final public class Hl7Reader extends AbstractFileTreeReader {
       return obxText + (nteText.isEmpty() ? "" : "\n\n") + nteText + "\n";
    }
 
-   /**
-    * Writes a plain text file for each hl7 file
-    *
-    * @param args input root directory ; output root directory
-    */
-   public static void main( final String... args ) {
-      final File rootDir = new File( args[ 0 ] );
-      final File outDir = new File( args[ 1 ] );
-      final List<File> files = new Hl7Reader().getDescendentFiles( rootDir, Arrays.asList( ANNOTATION_SUFFIX, ANNOTATION_SUFFIX.toUpperCase() ) );
-      for ( File file : files ) {
-         try {
-            final String text = readFileText( file );
-            final Collection<String> outLines = Arrays.asList( text.split( "\\n" ) );
-            final String name = file.getPath().substring( rootDir.getPath().length() );
-            final File outFile = new File( outDir, name + ".txt" );
-            outFile.getParentFile().mkdirs();
-            final Path outPath = outFile.toPath();
-            Files.write( outPath, outLines, StandardOpenOption.CREATE );
-         } catch ( IOException ioE ) {
-            LOGGER.error( ioE.getMessage(), ioE );
-            System.exit( 1 );
-         }
-      }
-   }
+//   /**
+//    * Writes a plain text file for each hl7 file
+//    *
+//    * @param args input root directory ; output root directory
+//    */
+//   public static void main( final String... args ) {
+//      final File rootDir = new File( args[ 0 ] );
+//      final File outDir = new File( args[ 1 ] );
+//      final List<File> files = new Hl7Reader().getDescendentFiles( rootDir, Arrays.asList( ANNOTATION_SUFFIX, ANNOTATION_SUFFIX.toUpperCase() ) );
+//      for ( File file : files ) {
+//         try {
+//            final String text = readFileText( file );
+//            final Collection<String> outLines = Arrays.asList( text.split( "\\n" ) );
+//            final String name = file.getPath().substring( rootDir.getPath().length() );
+//            final File outFile = new File( outDir, name + ".txt" );
+//            outFile.getParentFile().mkdirs();
+//            final Path outPath = outFile.toPath();
+//            Files.write( outPath, outLines, StandardOpenOption.CREATE );
+//         } catch ( IOException ioE ) {
+//            LOGGER.error( ioE.getMessage(), ioE );
+//            System.exit( 1 );
+//         }
+//      }
+//   }
 
 
 }
