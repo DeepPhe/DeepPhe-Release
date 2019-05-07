@@ -2,6 +2,7 @@ package org.healthnlp.deepphe.fact;
 
 import org.apache.ctakes.cancer.concept.instance.ConceptInstance;
 import org.apache.ctakes.cancer.uri.UriConstants;
+import org.apache.ctakes.cancer.uri.UriUtil;
 import org.apache.ctakes.neo4j.Neo4jConnectionFactory;
 import org.apache.log4j.Logger;
 import org.healthnlp.deepphe.neo4j.SearchUtil;
@@ -84,7 +85,7 @@ public class BodySiteFact extends Fact {
       if (bodyModifierUris==null) {
          return false;
       }
-      return UriConstants.isUri(modifier.getUri(), bodyModifierUris);
+      return UriUtil.containsUri(modifier.getUri(), bodyModifierUris);
 
    }
 
@@ -172,7 +173,7 @@ public class BodySiteFact extends Fact {
 
 
    static public boolean isBodySide( final Fact modifier ) {
-      return UriConstants.isUri( modifier.getUri(), UriConstants.LEFT, UriConstants.RIGHT, UriConstants.BILATERAL );
+      return UriUtil.containsUri( modifier.getUri(), UriConstants.LEFT, UriConstants.RIGHT, UriConstants.BILATERAL );
    }
 
    public FactList getModifiers() {

@@ -24,7 +24,7 @@ public class MedicalRecord implements DpheElement {
     static private final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass().getSimpleName());
 
     private PatientSummary patientSummary;
-    private CancerSummary cancerSummary;
+   private final List<CancerSummary> _cancerSummaries = new ArrayList<>();
     private Collection<TumorSummary> tumorSummaries = new ArrayList<TumorSummary>();
     // TODO Patients can have more than one cancer summary.
     private Collection<EpisodeSummary> _refinedEpisodeSummaries;
@@ -43,8 +43,8 @@ public class MedicalRecord implements DpheElement {
       patientSummary.setPatientIdentifier( patientId );
    }
 
-    public void addNote(final JCas jCas) {
-        addNoteSummary(new NoteSummary(jCas));
+    public void addNote( final JCas jCas, final boolean forDrools ) {
+        addNoteSummary( new NoteSummary( jCas, forDrools ) );
     }
 
     public String getPatientName() {
@@ -73,9 +73,7 @@ public class MedicalRecord implements DpheElement {
         if (patientSummary != null) {
             sb.append(patientSummary.getSummaryText()).append("\n");
         }
-        if (cancerSummary != null) {
-            sb.append(cancerSummary.getSummaryText());
-        }
+       _cancerSummaries.forEach( s ->  sb.append( s.getSummaryText() ).append( "\n" ) );
         return sb.toString();
     }
 
@@ -115,24 +113,47 @@ public class MedicalRecord implements DpheElement {
         this.patientSummary = patientSummary;
     }
 
+    @Deprecated
     public CancerSummary getCancerSummary() {
-        return cancerSummary;
+       if ( _cancerSummaries.isEmpty() ) {
+          return null;
+       }
+       return _cancerSummaries.get( 0 );
+    }
+
+    public Collection<CancerSummary> getCancerSummaries() {
+       return _cancerSummaries;
     }
 
     /**
      * link a cancer summary for Drools to use. Do not add any facts to the cancer summary
-     * @param cancerSummary
+     * @param cancerSummary -
      */
+    @Deprecated
     public void setCancerSummaryWithoutFacts(CancerSummary cancerSummary) {
-        this.cancerSummary = cancerSummary;
+       addCancerSummaryWithoutFacts( cancerSummary );
     }
 
+    @Deprecated
     public void setCancerSummary(CancerSummary cancerSummary) {
-        this.cancerSummary = cancerSummary;
-        copyAllNoteFacts(cancerSummary);  // copy all facts from all notes (NoteSummary's) to the cancer summary
+       addCancerSummary( cancerSummary );
     }
 
-    /**
+   /**
+    * link a cancer summary for Drools to use. Do not add any facts to the cancer summary
+    * @param cancerSummary -
+    */
+   public void addCancerSummaryWithoutFacts( final CancerSummary cancerSummary ) {
+      _cancerSummaries.add( cancerSummary );
+   }
+
+   public void addCancerSummary( final CancerSummary cancerSummary ) {
+      _cancerSummaries.add( cancerSummary );
+      copyAllNoteFacts( cancerSummary );  // copy all facts from all notes (NoteSummary's) to the cancer summary
+   }
+
+
+   /**
      * Add just to the medical record, not to any CancerSummary
      *
      * @param summary
@@ -169,44 +190,44 @@ public class MedicalRecord implements DpheElement {
 
     }
 
-    public void moveCancerFactToTumor(NoteSummary noteSummary, Fact f) {
-        if (f.getSummaryType() == null) {
-            LOGGER.warn("Found a fact with " + f.getSummaryType() + " for Summary Type. Unexpected.");
-        } else if (CancerSummary.class.getSimpleName().equals(f.getSummaryType())){
-            LOGGER.warn("Found a fact with " + f.getSummaryType() + " for Summary Type. No longer expect this");
-        } else if (PatientSummary.class.getSimpleName().equals(f.getSummaryType())){
-            LOGGER.warn("Found a fact with " + f.getSummaryType() + " for Summary Type. No longer expect this");
-        }
-        if (f.getSummaryType() == null || CancerSummary.class.getSimpleName().equals(f.getSummaryType())) {
-
-            if (noteSummary.getTumorSummaries() == null || noteSummary.getTumorSummaries().isEmpty()) {
-                LOGGER.error("No TumorSummary for NoteSummary: " + noteSummary.getId() + "  NoteSummary details: " + noteSummary);
-                return;
-            }
-
-            for (TumorSummary tumorSummary: noteSummary.getTumorSummaries()){
-                cancerSummary.addTumorWithoutAddingFacts(tumorSummary); // Drools uses medicalRecord.getCancerSummary().getTumorSummaryByIdentifier(tsId) which needs cancerSummary.getTumors() to show this tumor
-                noteSummary.addTumorSummary(tumorSummary);
-                this.addTumorSummary(tumorSummary);
-                tumorSummary.tagAsTumorSummaryFact(f); // doesn't change value if already set
-            }
-        }
-    }
-
-    public void moveCancerFactsToTumors() {
-        for (NoteSummary noteSummary : getNoteSummaries()) {
-            Map<String, FactList> content = noteSummary.getContent();
-            for (Map.Entry<String, FactList> entry : content.entrySet()) {
-                FactList factlist = entry.getValue();
-                for (Fact fact : factlist) {
-                    moveCancerFactToTumor(noteSummary, fact);
-                    for (Fact cf : fact.getContainedFacts()) {
-                        moveCancerFactToTumor(noteSummary, cf);
-                    }
-                }
-            }
-        }
-    }
+//    public void moveCancerFactToTumor(NoteSummary noteSummary, Fact f) {
+//        if (f.getSummaryType() == null) {
+//            LOGGER.warn("Found a fact with " + f.getSummaryType() + " for Summary Type. Unexpected.");
+//        } else if (CancerSummary.class.getSimpleName().equals(f.getSummaryType())){
+//            LOGGER.warn("Found a fact with " + f.getSummaryType() + " for Summary Type. No longer expect this");
+//        } else if (PatientSummary.class.getSimpleName().equals(f.getSummaryType())){
+//            LOGGER.warn("Found a fact with " + f.getSummaryType() + " for Summary Type. No longer expect this");
+//        }
+//        if (f.getSummaryType() == null || CancerSummary.class.getSimpleName().equals(f.getSummaryType())) {
+//
+//            if (noteSummary.getTumorSummaries() == null || noteSummary.getTumorSummaries().isEmpty()) {
+//                LOGGER.error("No TumorSummary for NoteSummary: " + noteSummary.getId() + "  NoteSummary details: " + noteSummary);
+//                return;
+//            }
+//
+//            for (TumorSummary tumorSummary: noteSummary.getTumorSummaries()){
+//                cancerSummary.addTumorWithoutAddingFacts(tumorSummary); // Drools uses medicalRecord.getCancerSummary().getTumorSummaryByIdentifier(tsId) which needs cancerSummary.getTumors() to show this tumor
+//                noteSummary.addTumorSummary(tumorSummary);
+//                this.addTumorSummary(tumorSummary);
+//                tumorSummary.tagAsTumorSummaryFact(f); // doesn't change value if already set
+//            }
+//        }
+//    }
+//
+//    public void moveCancerFactsToTumors() {
+//        for (NoteSummary noteSummary : getNoteSummaries()) {
+//            Map<String, FactList> content = noteSummary.getContent();
+//            for (Map.Entry<String, FactList> entry : content.entrySet()) {
+//                FactList factlist = entry.getValue();
+//                for (Fact fact : factlist) {
+//                    moveCancerFactToTumor(noteSummary, fact);
+//                    for (Fact cf : fact.getContainedFacts()) {
+//                        moveCancerFactToTumor(noteSummary, cf);
+//                    }
+//                }
+//            }
+//        }
+//    }
 
    public Collection<NoteSummary> getNoteSummaries() {
       if ( _reports == null ) {

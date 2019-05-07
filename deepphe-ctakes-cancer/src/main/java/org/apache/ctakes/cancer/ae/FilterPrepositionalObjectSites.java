@@ -84,9 +84,6 @@ final public class FilterPrepositionalObjectSites extends JCasAnnotator_ImplBase
         for (Annotation toRmv: toRemove.keySet()) {
             Collection<AnatomicalSiteMention> leaving = toRemove.get(toRmv);
             LOGGER.info("Removing anatomic site " + toStringInclText(toRmv)+ ",");
-            for (Annotation a: leaving) {
-                LOGGER.info("  leaving site(s) " + toStringInclText(a));
-            }
             toRmv.removeFromIndexes();
         }
 
@@ -95,7 +92,7 @@ final public class FilterPrepositionalObjectSites extends JCasAnnotator_ImplBase
 
     // include the covered text
     private String toStringInclText(Annotation anno) {
-        return anno + "\n   coveredText: " + anno.getCoveredText(); // without a trailing newline
+       return anno.getCoveredText();
     }
 
     /**

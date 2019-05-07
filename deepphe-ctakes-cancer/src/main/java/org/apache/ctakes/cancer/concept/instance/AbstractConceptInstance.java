@@ -4,6 +4,7 @@ package org.apache.ctakes.cancer.concept.instance;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 /**
@@ -13,10 +14,12 @@ import java.util.stream.Collectors;
  */
 abstract public class AbstractConceptInstance implements ConceptInstance {
 
+   static private AtomicLong _ID_NUM = new AtomicLong( 0 );
+
+   private final long _unique_id_num;
    private final String _uri;
    private final String _patientId;
    private Map<String,Collection<ConceptInstance>> _related;
-   private Map<String,Collection<ConceptInstance>> _reverseRelated;
    // TODO What we should actually do is create a map of annotations to some DocInfo object,
    // which contains patientId, docId, date, etc.
    private Map<IdentifiedAnnotation, Date> _documentDates;
@@ -28,6 +31,7 @@ abstract public class AbstractConceptInstance implements ConceptInstance {
     * @param patientId -
     */
    AbstractConceptInstance( final String patientId, final String uri ) {
+      _unique_id_num = _ID_NUM.incrementAndGet();
       _patientId = patientId;
       _uri = uri;
       _date = new Date();
@@ -88,7 +92,7 @@ abstract public class AbstractConceptInstance implements ConceptInstance {
     */
    @Override
    public String getId() {
-      return getPatientId() + '_' + getJoinedDocumentId() + '_' + getSemanticGroup() + '_' + hashCode();
+      return getPatientId() + '_' + getUri() + '_' + _unique_id_num;
    }
 
    /**
@@ -118,6 +122,19 @@ abstract public class AbstractConceptInstance implements ConceptInstance {
    @Override
    public String getDocumentId( final IdentifiedAnnotation annotation ) {
       return _documentIds.get( annotation );
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public Map<String,Collection<IdentifiedAnnotation>> getDocAnnotations() {
+      final Map<String,Collection<IdentifiedAnnotation>> docAnnotations = new HashMap<>();
+      for ( Map.Entry<IdentifiedAnnotation,String> annotationDoc : _documentIds.entrySet() ) {
+         docAnnotations.computeIfAbsent( annotationDoc.getValue(), d -> new ArrayList<>() )
+                       .add( annotationDoc.getKey() );
+      }
+      return docAnnotations;
    }
 
    /**
@@ -167,37 +184,6 @@ abstract public class AbstractConceptInstance implements ConceptInstance {
       }
    }
 
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   final public void clearReverseRelations() {
-      if ( _reverseRelated != null ) {
-         _reverseRelated.clear();
-      }
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   final public Map<String,Collection<ConceptInstance>> getReverseRelated() {
-      return _reverseRelated != null ? _reverseRelated : Collections.emptyMap();
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   final public void addReverseRelated( final String type, final ConceptInstance related ) {
-      if ( related == null ) {
-         return;
-      }
-      if ( _reverseRelated == null ) {
-         _reverseRelated = new HashMap<>();
-      }
-      _reverseRelated.computeIfAbsent( type, c -> new HashSet<>() ).add( related );
-   }
 
    /**
     * {@inheritDoc}
@@ -212,9 +198,7 @@ abstract public class AbstractConceptInstance implements ConceptInstance {
     */
    @Override
    public boolean equals( final Object other ) {
-      return other instanceof ConceptInstance
-             && ((ConceptInstance) other).getAnnotations().size() == getAnnotations().size()
-             && ((ConceptInstance) other).getAnnotations().containsAll( getAnnotations() );
+      return other.toString().equals( toString() );
    }
 
    /**
@@ -222,7 +206,7 @@ abstract public class AbstractConceptInstance implements ConceptInstance {
     */
    @Override
    public int hashCode() {
-      return getAnnotations().hashCode();
+      return toString().hashCode();
    }
 
 }

@@ -191,7 +191,8 @@ public class FHIRConstants {
    public static final String DISTANT_METASTASIS = "Distant_Metastasis";
    public static final String LOCAL_RECURRENCE = "LocalRecurrence";
    public static final String REGIONAL_METASTASIS = "Regional_Metastasis";
-   public static final String METASTATIC_TUMOR = "Metastatic_Tumor";
+//   public static final String METASTATIC_TUMOR = "Metastatic_Tumor";
+   public static final String METASTATIC_TUMOR = "Secondary_Neoplasm";
 
    public static final String HAS_CANCER_CELL_LINE = "hasCancerCellLine";
    public static final String HAS_COMPOSITION_ATTIBUTE = "hasCompositionAttribute";

@@ -210,13 +210,55 @@ final public class SearchUtil {
       return Collections.emptyList();
    }
 
+   static public Collection<Node> getChildClassNodes( final GraphDatabaseService graphDb,
+                                                      final String parentUri ) {
+      try ( Transaction tx = graphDb.beginTx() ) {
+         final Node parentNode = getLabeledNode( graphDb, Neo4jConstants.CLASS_LABEL, parentUri );
+         if ( parentNode == null ) {
+            tx.success();
+            LOGGER.debug( "getChildClassNodes(..) : No Node exists for URI " + parentUri );
+            return Collections.emptyList();
+         }
+         final Collection<Node> childNodes = new ArrayList<>();
+         for ( Relationship relation : parentNode.getRelationships( Direction.INCOMING, IS_A_RELATION ) ) {
+            childNodes.add( relation.getOtherNode( parentNode ) );
+         }
+         tx.success();
+         return childNodes;
+      } catch ( MultipleFoundException mfE ) {
+         LOGGER.error( parentUri + " : " + mfE.getMessage(), mfE );
+      }
+      return Collections.emptyList();
+   }
+
+   static public Collection<Node> getParentClassNodes( final GraphDatabaseService graphDb,
+                                                      final String childUri ) {
+      try ( Transaction tx = graphDb.beginTx() ) {
+         final Node parentNode = getLabeledNode( graphDb, Neo4jConstants.CLASS_LABEL, childUri );
+         if ( parentNode == null ) {
+            tx.success();
+            LOGGER.debug( "getParentClassNodes(..) : No Node exists for URI " + childUri );
+            return Collections.emptyList();
+         }
+         final Collection<Node> childNodes = new ArrayList<>();
+         for ( Relationship relation : parentNode.getRelationships( Direction.OUTGOING, IS_A_RELATION ) ) {
+            childNodes.add( relation.getOtherNode( parentNode ) );
+         }
+         tx.success();
+         return childNodes;
+      } catch ( MultipleFoundException mfE ) {
+         LOGGER.error( childUri + " : " + mfE.getMessage(), mfE );
+      }
+      return Collections.emptyList();
+   }
+
 
    /**
     * \
     *
     * @param graphDb graph database service.  Passed manually so that it can be injected with procedure calls.
     * @param rootUri -
-    * @return -
+    * @return all uris down to the final leaves
     */
    static public Collection<String> getBranchUris( final GraphDatabaseService graphDb, final String rootUri ) {
       try ( Transaction tx = graphDb.beginTx() ) {
@@ -245,8 +287,8 @@ final public class SearchUtil {
 
    /**
     * @param graphDb graph database service.  Passed manually so that it can be injected with procedure calls.
-    * @param leafUri
-    * @return
+    * @param leafUri -
+    * @return all uris back to the root (Thing)
     */
    static public Collection<String> getRootUris( final GraphDatabaseService graphDb, final String leafUri ) {
       if ( leafUri == null || leafUri.isEmpty() ) {
@@ -333,6 +375,40 @@ final public class SearchUtil {
       return Collections.emptyList();
    }
 
+   static public Collection<String> getBranchUrisWithAttribute( final GraphDatabaseService graphDb,
+                                                                final String rootUri,
+                                                                final String attributeName,
+                                                                final String value ) {
+      // See https://neo4j.com/docs/java-reference/current/#tutorial-traversal
+      try ( Transaction tx = graphDb.beginTx() ) {
+         final Node branchRoot = SearchUtil.getClassNode( graphDb, rootUri );
+         if ( branchRoot == null ) {
+            LOGGER.debug( "getBranchUrisWithAttribute(..) : No Class exists for URI " + rootUri );
+            tx.success();
+            return Collections.emptyList();
+         }
+         final TraversalDescription traverser = Neo4jTraverserFactory.getInstance()
+                                                                     .getBranchTraverser( graphDb, IS_A_PROP );
+         final Collection<String> targetRoots
+               = traverser.traverse( branchRoot )
+                          .nodes()
+                          .stream()
+                          .filter( n -> n.getProperty( attributeName, "" ).equals( value ) )
+                          .map( n -> n.getProperty( NAME_KEY ) )
+                          .map( Object::toString )
+                          .distinct()
+                          .collect( Collectors.toList() );
+         tx.success();
+         return targetRoots.stream()
+                           .map( u -> SearchUtil.getBranchUris( graphDb, u ) )
+                           .flatMap( Collection::stream )
+                           .distinct()
+                           .collect( Collectors.toList() );
+      } catch ( MultipleFoundException mfE ) {
+         LOGGER.error( rootUri + " , " + attributeName + " " + value + " : " + mfE.getMessage(), mfE );
+      }
+      return Collections.emptyList();
+   }
 
    /**
     * @param graphDb graph database service.  Passed manually so that it can be injected with procedure calls.
@@ -407,25 +483,25 @@ final public class SearchUtil {
 
    /**
     * @param graphDb graph database service.  Passed manually so that it can be injected with procedure calls.
-    * @param dPheUri -
+    * @param uri -
     * @return neo4j Classes for the given URI.  Classes are mention types, not mentions discovered in text.
     */
-   static public Node getClassNode( final GraphDatabaseService graphDb, final String dPheUri ) {
-      return getLabeledNode( graphDb, CLASS_LABEL, dPheUri );
+   static public Node getClassNode( final GraphDatabaseService graphDb, final String uri ) {
+      return getLabeledNode( graphDb, CLASS_LABEL, uri );
    }
 
 
    /**
     * @param graphDb graph database service.  Passed manually so that it can be injected with procedure calls.
-    * @param dPheUri -
+    * @param uri -
     * @return neo4j Objects for the given URI.  Classes are mention types, not mentions discovered in text.
     */
-   static public Node getObjectNode( final GraphDatabaseService graphDb, final String dPheUri ) {
-      return getLabeledNode( graphDb, OBJECT_LABEL, dPheUri );
+   static public Node getObjectNode( final GraphDatabaseService graphDb, final String uri ) {
+      return getLabeledNode( graphDb, OBJECT_LABEL, uri );
    }
 
-   static public ResourceIterator<Node> getClassNodes( final GraphDatabaseService graphDb, final String dPheUri ) {
-      return getLabeledNodes( graphDb, CLASS_LABEL, dPheUri );
+   static public ResourceIterator<Node> getClassNodes( final GraphDatabaseService graphDb, final String uri ) {
+      return getLabeledNodes( graphDb, CLASS_LABEL, uri );
    }
 
    /**
@@ -446,9 +522,9 @@ final public class SearchUtil {
    }
 
    static public ResourceIterator<Node> getLabeledNodes( final GraphDatabaseService graphDb, final Label label,
-                                                         final String dPheUri ) {
+                                                         final String uri ) {
       try ( Transaction tx = graphDb.beginTx() ) {
-         final ResourceIterator<Node> nodes = graphDb.findNodes( label, NAME_KEY, dPheUri );
+         final ResourceIterator<Node> nodes = graphDb.findNodes( label, NAME_KEY, uri );
          tx.success();
          return nodes;
       } catch ( MultipleFoundException mfE ) {

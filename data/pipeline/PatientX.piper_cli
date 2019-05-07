@@ -21,16 +21,3 @@
 
 -o=../../output/sample/reports
 
-
-// Domain.  The command line parameter is '-d'.
-// The following line specifies that DeepPhe rules for Breast Cancer should be used.
-// Valid values for DeepPhe v0.2.0 are "Breast", "Melanoma" and "Ovarian".
-
--d=Breast
-
-
-// Eval directory.  The command line parameter is '-e'.
-// The following line specifies that DeepPhe output for Breast Cancer evaluation should be used.
-// If the Domain setting value is "Breast", "Melanoma" or "Ovarian" then this setting is unnecessary.
-
--e=data/breast

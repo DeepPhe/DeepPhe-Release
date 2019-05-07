@@ -1,36 +1,22 @@
-# IDE
-*.iml
-.idea/
-
-# Compiled class file
-*.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.ear
-*.zip
-*.tar.gz
-*.rar
-target/
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
 /bin
 /target/
 /.idea/
 /.settings/
+/DeepPhe.iml
 /.classpath
 /.project
+/deepphe-ctakes-cancer/deepphe-ctakes-cancer.iml
+/deepphe-demo/deepphe-demo.iml
+/deepphe-fhir/deepphe-fhir.iml
+/deepphe-i2b2/deepphe-i2b2.iml
+/deepphe-uima/deepphe-uima.iml
+/deepphe-workbench/deepphe-workbench.iml
+/deepphe-uima/testdb
 /deepphe-viz/project/.sbtserver
+/deepphe.iml
+/MyDocSum.piper
+*.iml
+/git.Pull.manual.history.txt
 /output_graph
-/resources
+/deepphe-neo4j/target/
+/deepphe-viz-neo4j/target/

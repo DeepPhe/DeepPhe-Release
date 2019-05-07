@@ -122,9 +122,13 @@ public class MedicalRecordBsvWriter extends MedicalRecordWriter {
       final String patient = record.getPatientName();
       File cancerFile = new File(outputDir, EVAL_CANCER_FILE);
 
-      if ( !sourceCancerSummary.isEmpty() ) {
+      if ( sourceCancerSummary != null && !sourceCancerSummary.isEmpty() ) {
 
          writeCancerSummary(cancerMapping, cancerFile, sourceCancerSummary, patient);
+         File file = new File( outputDir, EVAL_TUMOR_FILE );
+         for (TumorSummary tumorSummary : sourceCancerSummary.getTumors()) {
+            writeTumorSummary(tumorMapping, file, tumorSummary, patient);
+         }
 
       } else {
 
@@ -132,11 +136,6 @@ public class MedicalRecordBsvWriter extends MedicalRecordWriter {
          // We still want some sort of empty entry for patients without cancer to at least show that they exist but nothing was found
          writeEmptyCancer(cancerMapping, cancerFile, sourceCancerSummary, patient);
 
-      }
-
-      File file = new File( outputDir, EVAL_TUMOR_FILE );
-      for (TumorSummary tumorSummary : sourceCancerSummary.getTumors()) {
-         writeTumorSummary(tumorMapping, file, tumorSummary, patient);
       }
 
 
@@ -348,6 +347,9 @@ public class MedicalRecordBsvWriter extends MedicalRecordWriter {
       if (factsOfGivenCategory==null || factsOfGivenCategory.isEmpty()) return result;
 
       for (Fact f: factsOfGivenCategory) {
+         if ( !BodySiteFact.class.isInstance( f ) ) {
+            continue;
+         }
          BodySiteFact bf = (BodySiteFact) f;
          FactList modifiers = bf.getModifiers();
          for (Fact modifier: modifiers) {

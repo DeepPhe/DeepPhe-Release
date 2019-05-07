@@ -16,6 +16,7 @@ import org.apache.ctakes.typesystem.type.textsem.TimeMention;
 import org.apache.ctakes.typesystem.type.textspan.Paragraph;
 import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
+import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FeatureStructure;
@@ -41,20 +42,9 @@ final public class DocEpisodeTagger extends CleartkAnnotator<String> {
 
    public static final String NO_CATEGORY = "unknown";
 
-   static private final String DOMAIN = "Domain";
-   @ConfigurationParameter(
-         name = DOMAIN,
-         description = "Determines the domain-specific rules to be used.",
-         mandatory = false
-   )
-   private String _domain;  // See FHIRConstants.DOMAINS
-
    static private final String CLASSIFIER_JAR_PATH = "classifierJarPath";
 
    static private final String BREAST_MODEL = "/org/apache/ctakes/cancer/episode/breast/model.jar";
-   static private final String MELANOMA_MODEL = "/org/apache/ctakes/cancer/episode/melanoma/model.jar";
-   // TODO need ovarian model.  For now just use brca.
-   static private final String OVARIAN_MODEL = "/org/apache/ctakes/cancer/episode/breast/model.jar";
 
    static private final String SIMPLE_SEGMENT = Sectionizer.SIMPLE_SEGMENT.toLowerCase();
 
@@ -68,24 +58,8 @@ final public class DocEpisodeTagger extends CleartkAnnotator<String> {
          super.initialize( context );
          return;
       }
-      ConfigurationParameterInitializer.initialize( this, context );
-      switch ( _domain ) {
-         case "Breast":
-            model = BREAST_MODEL;
-            break;
-         case "Melanoma":
-            model = MELANOMA_MODEL;
-            break;
-         case "Ovarian":
-            model = OVARIAN_MODEL;
-            break;
-      }
-      if ( model == null ) {
-         super.initialize( context );
-         return;
-      }
       final MutableUimaContext mutableContext = new MutableUimaContext( context );
-      mutableContext.setConfigParameter( CLASSIFIER_JAR_PATH, model );
+      mutableContext.setConfigParameter( CLASSIFIER_JAR_PATH, BREAST_MODEL );
       super.initialize( mutableContext );
    }
 
@@ -94,6 +68,9 @@ final public class DocEpisodeTagger extends CleartkAnnotator<String> {
     */
    @Override
    public void process( final JCas jCas ) throws AnalysisEngineProcessException {
+      if ( MelanomaDocEpisodeTagger.hasDomainUris( jCas ) ) {
+         return;
+      }
 
       final CoveredTextExtractor<WordToken> extractor = new CoveredTextExtractor<>();
 

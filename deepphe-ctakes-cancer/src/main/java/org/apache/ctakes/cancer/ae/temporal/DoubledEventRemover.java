@@ -83,7 +83,7 @@ final public class DoubledEventRemover extends JCasAnnotator_ImplBase {
       LOGGER.info( "Finished." );
    }
 
-
+   // TODO Copy Relations
    static private void copyProperties( final EventMention highEvent, final EventMention pureEvent ) {
       final Event event = pureEvent.getEvent();
       if ( event == null ) {

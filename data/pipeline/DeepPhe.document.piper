@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 //
-//       Commands and parameters to run the Deep Phenome v0.2.0 pipeline
+//       Commands and parameters to run the Deep Phenome v0.3.0 pipeline
 //          deals with document reading and large item discovery.
 //
 //       For more information on piper files see the Apache cTAKES wiki:
@@ -16,8 +16,6 @@ package org.apache.ctakes.cancer.ae.section
 
 //  Ignore dos/windows carriage return characters when reading files.
 set CRtoSpace=true
-//  Read files in a directory tree, with each patient having its own directory.
-reader NewFileTreeReader
 
 //  Discover sections.
 add Sectionizer
@@ -34,14 +32,14 @@ addLogged SentenceDetectorAnnotatorBIO classifierJarPath=/org/apache/ctakes/core
 //  Use the DeepPhe paragraph expressions for paragraph discovery.
 set PARAGRAPH_TYPES_PATH=org/apache/ctakes/cancer/paragraph/ParagraphRegex.bsv
 //  Discover paragraphs.
-add DpheParagraphAnnotator
+add ParagraphAnnotator
 
 //  Fix sentences so that no sentence spans across two or more paragraphs.
 add ParagraphSentenceFixer
 
 //  Discover formatted lists and tables.
-add DpheListAnnotator
+add ListAnnotator
 
 //  Fix sentences so that no sentence spans across two or more list entries.
-add DpheListSentenceFixer
+add ListSentenceFixer
 

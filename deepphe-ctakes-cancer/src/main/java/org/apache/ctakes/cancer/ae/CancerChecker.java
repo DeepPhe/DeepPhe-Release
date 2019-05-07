@@ -56,13 +56,7 @@ final public class CancerChecker extends JCasAnnotator_ImplBase {
 
 
    static private boolean isCancerNote( final JCas jCas ) {
-      final SourceData sourceData = SourceMetadataUtil.getOrCreateSourceData( jCas );
-      final String sourceType = sourceData.getNoteTypeCode();
-
-
-
       final Collection<String> tumorCancerUris = new ArrayList<>(UriConstants.getTumorUris() );
-      tumorCancerUris.addAll( UriConstants.getCancerUris() );
       final Map<String, Collection<IdentifiedAnnotation>> allTumors
             = Neo4jOntologyConceptUtil.getUriAnnotationsByUris( jCas, tumorCancerUris );
       if ( allTumors.isEmpty() ) {
@@ -124,7 +118,6 @@ final public class CancerChecker extends JCasAnnotator_ImplBase {
     */
    static private Map<IdentifiedAnnotation,Integer> getTumorCounts( final JCas jCas ) {
       final Collection<String> tumorCancerUris = new ArrayList<>(UriConstants.getTumorUris() );
-            tumorCancerUris.addAll( UriConstants.getCancerUris() );
       final Map<String, Collection<IdentifiedAnnotation>> allTumors
             = Neo4jOntologyConceptUtil.getUriAnnotationsByUris( jCas, tumorCancerUris );
       final Map<String,Collection<String>> collatedTumors = ByUriRelationFinder.collateUris( allTumors.keySet() );

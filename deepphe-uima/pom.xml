@@ -8,7 +8,7 @@
    <parent>
       <groupId>org.healthnlp</groupId>
       <artifactId>deepphe</artifactId>
-      <version>0.2.0</version>
+      <version>0.3.0</version>
    </parent>
    <dependencies>
 
@@ -17,14 +17,6 @@
          <artifactId>deepphe-fhir</artifactId>
          <version>${project.version}</version>
       </dependency>
-
-
-      <dependency>
-         <groupId>org.drools</groupId>
-         <artifactId>drools-compiler</artifactId>
-         <version>${droolsVersion}</version>
-      </dependency>
-
 
 
    </dependencies>

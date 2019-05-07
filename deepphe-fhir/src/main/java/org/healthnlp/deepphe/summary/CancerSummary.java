@@ -1,16 +1,15 @@
 package org.healthnlp.deepphe.summary;
 
 import org.apache.ctakes.cancer.concept.instance.ConceptInstance;
+import org.apache.ctakes.cancer.summary.CiContainer;
 import org.apache.ctakes.cancer.uri.UriUtil;
 import org.healthnlp.deepphe.fact.BodySiteFact;
 import org.healthnlp.deepphe.fact.Fact;
 import org.healthnlp.deepphe.fact.FactList;
+import org.healthnlp.deepphe.neo4j.RelationConstants;
 import org.healthnlp.deepphe.util.FHIRConstants;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -223,6 +222,16 @@ public class CancerSummary extends Summary {
    }
 
    public String getBodySide() {
+//      final CiContainer ciContainer = getCiContainer();
+//      if ( ciContainer != null ) {
+//         final Collection<ConceptInstance> lateralities
+//               = ciContainer.getRelations().get( RelationConstants.HAS_LATERALITY );
+//         if ( lateralities != null ) {
+//            return lateralities.stream()
+//                               .map( ConceptInstance::getUri )
+//                               .collect( Collectors.joining( ";" ) );
+//         }
+//      }
       for ( Fact site : getBodySite() ) {
          if ( site instanceof BodySiteFact ) {
             final BodySiteFact location = (BodySiteFact)site;
@@ -231,7 +240,10 @@ public class CancerSummary extends Summary {
             }
          }
       }
-      return "";
+      return getFacts( RelationConstants.HAS_LATERALITY ).stream()
+                                                         .map( Fact::getUri )
+                                                         .collect( Collectors.joining( ";" ) );
+//      return "";
    }
 
    /**

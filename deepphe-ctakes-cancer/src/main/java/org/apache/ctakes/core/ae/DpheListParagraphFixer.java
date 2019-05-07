@@ -2,9 +2,7 @@ package org.apache.ctakes.core.ae;
 
 import org.apache.ctakes.core.pipeline.PipeBitInfo;
 import org.apache.ctakes.typesystem.type.textspan.List;
-import org.apache.ctakes.typesystem.type.textspan.ListEntry;
 import org.apache.ctakes.typesystem.type.textspan.Paragraph;
-import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.log4j.Logger;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
@@ -15,6 +13,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 import java.util.*;
 import java.util.regex.Pattern;
 
+
+//  TODO - switch to recently added ctakes ListParagraphFixer
 
 /**
  * @author SPF , chip-nlp

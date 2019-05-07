@@ -19,7 +19,7 @@ enum StatusValue implements Value {
    final private String _uri;
    final private Pattern _pattern;
 
-
+   // TODO migrate fxality to StatusFinder
 
    StatusValue( final String title, final String uri, final String regex ) {
       _title = title;

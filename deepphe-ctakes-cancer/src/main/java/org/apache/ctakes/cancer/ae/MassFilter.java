@@ -27,45 +27,59 @@ final public class MassFilter extends JCasAnnotator_ImplBase {
 
    static private final Logger LOGGER = Logger.getLogger( "MassFilter" );
 
-
    /**
     * {@inheritDoc}
     */
    @Override
    public void process( final JCas jCas ) throws AnalysisEngineProcessException {
-      final Collection<IdentifiedAnnotation> masses
-            = JCasUtil.select( jCas, IdentifiedAnnotation.class ).stream()
-            .filter( a -> a.getCoveredText().equalsIgnoreCase( "mass" ) )
-            .collect( Collectors.toList() );
-      if ( masses != null && !masses.isEmpty() ) {
-         final String text = jCas.getDocumentText();
-         final Collection<IdentifiedAnnotation> removals = new ArrayList<>();
-         for ( IdentifiedAnnotation mass : masses ) {
-            final int begin = mass.getBegin();
-            final int end = mass.getEnd();
-            if ( begin > 5 && text.substring( begin - 5, begin - 1 ).equalsIgnoreCase( "body" ) ) {
-               removals.add( mass );
-            } else if ( end < text.length() - 7 && text.substring( end + 2, end + 7 ).equalsIgnoreCase( "effect" ) ) {
-               removals.add( mass );
+      LOGGER.info( "Removing misidentified Masses ..." );
+      // TODO should be able to handle this with pos, but for now brute force
+
+      final String docText = jCas.getDocumentText();
+      final Collection<IdentifiedAnnotation> annotations = JCasUtil.select( jCas, IdentifiedAnnotation.class );
+      final Collection<IdentifiedAnnotation> removals = new ArrayList<>();
+
+      for ( IdentifiedAnnotation annotation : annotations ) {
+         final int begin = annotation.getBegin();
+         final int end = annotation.getEnd();
+         final String text = annotation.getCoveredText().toLowerCase();
+         switch ( text ) {
+            case "mass": {
+               if ( begin > 5 && docText.substring( begin - 5, begin - 1 ).contains( "body" ) ) {
+                  removals.add( annotation );
+               } else if ( end < docText.length() - 7 && docText.substring( end + 2, end + 7 ).contains( "effect" ) ) {
+                  removals.add( annotation );
+               }
+            }
+            case "local": {
+               if ( end < docText.length() - 15 && docText.substring( end + 1, end + 15 ).contains( "esthesia" ) ) {
+                  removals.add( annotation );
+               }
+            }
+            case "back": {
+               if ( begin > 5
+                    && (docText.substring( begin - 5, begin - 1 ).contains( "came" )
+                        || docText.substring( begin - 5, begin - 1 ).contains( "went" )) ) {
+                  removals.add( annotation );
+               }
+            }
+            case "duct": {
+               if ( end < docText.length() - 15 && docText.substring( end + 1, end + 15 ).contains( "carcinoma" ) ) {
+                  removals.add( annotation );
+               }
             }
          }
-         removals.forEach( IdentifiedAnnotation::removeFromIndexes );
       }
-      // Should be fixed in ontology
 
+      LOGGER.info( "Removing unwanted anatomic sites ..." );
       Neo4jOntologyConceptUtil.getUriAnnotationsByUris( jCas, UriConstants.getUnwantedAnatomyUris() )
                               .values()
                               .stream()
                               .flatMap( Collection::stream )
                               .forEach( Annotation::removeFromIndexes );
 
-      Neo4jOntologyConceptUtil.getUriAnnotationsByUris( jCas, Collections.singletonList( "Hepatic_Tissue" ) )
-                              .values()
-                              .stream()
-                              .flatMap( Collection::stream )
-                              .filter( a -> a.getCoveredText().equalsIgnoreCase( "liver" ) )
-                              .forEach( Annotation::removeFromIndexes );
 
+      LOGGER.info( "Removing unwanted regions ..." );
       Neo4jOntologyConceptUtil.getUriAnnotationsByUris( jCas, Collections.singletonList( "Local_Recurrence" ) )
                               .values()
                               .stream()

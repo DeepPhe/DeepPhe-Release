@@ -19,20 +19,20 @@ final public class RelationConstants {
    //                              Specific Relations for Objects
    ///////////////////////////////////////////////////////////////////////////////////////////////
 
-   static public final String CANCER_HAS_TUMOR = "Cancer_Has_Tumor";
-   static public final String DISEASE_HAS_TREATMENT = "Disease_Has_Treatment";
-   static public final String DISEASE_HAS_T_STAGE = "Disease_Has_T_Stage";
-   static public final String DISEASE_HAS_N_STAGE = "Disease_Has_N_Stage";
-   static public final String DISEASE_HAS_M_STAGE = "Disease_Has_M_Stage";
-   static public final String ANATOMIC_SITE_HAS_LATERALITY = "Anatomic_Site_Has_Laterality";
+//   static public final String CANCER_HAS_TUMOR = "Cancer_Has_Tumor";
+//   static public final String DISEASE_HAS_TREATMENT = "Disease_Has_Treatment";
+//   static public final String DISEASE_HAS_T_STAGE = "Disease_Has_T_Stage";
+//   static public final String DISEASE_HAS_N_STAGE = "Disease_Has_N_Stage";
+//   static public final String DISEASE_HAS_M_STAGE = "Disease_Has_M_Stage";
+//   static public final String ANATOMIC_SITE_HAS_LATERALITY = "Anatomic_Site_Has_Laterality";
 
    static public final String HAS_LATERALITY = "hasLaterality";
    static public final String HAS_QUADRANT = "hasQuadrant";
    static public final String HAS_CLOCKFACE = "hasClockface";
    static public final String METASTASIS_OF = "isMetastasisOf";
    static public final String HAS_SIZE = "hasSize";
-   static public final String HAS_RECEPTOR_STATUS = "hasReceptorStatus";
-   static public final String HAS_TNM = "hasTNM";
+//   static public final String HAS_RECEPTOR_STATUS = "hasReceptorStatus";
+//   static public final String HAS_TNM = "hasTNM";
    static public final String HAS_TUMOR_TYPE = "hasTumorType";
    static public final String HAS_TREATMENT = "hasTreatment";
    static public final String HAS_STAGE = "hasCancerStage";
@@ -41,6 +41,8 @@ final public class RelationConstants {
    static public final String HAS_DIAGNOSIS = "hasDiagnosis";
    static public final String HAS_TUMOR_EXTENT = "hasTumorExtent";
    static public final String HAS_METHOD = "hasMethod";
+   public static final String HAS_CANCER_TYPE = "hasCancerType";
+   public static final String HAS_HISTORICITY= "hasHistoricity";
    static public final String HAS_CANCER_CELL_LINE = "hasCancerCellLine";
 
    static public final String HAS_CLINICAL_T = "has_Clinical_T";
@@ -54,6 +56,19 @@ final public class RelationConstants {
    static public final String HAS_PR_STATUS = "has_PR_Status";
    static public final String HAS_HER2_STATUS = "has_HER2_Status";
 
+   public static final String HAS_BODY_MODIFIER = "hasBodySiteModifier";
+//   public static final String HAS_CLINICAL_T_CLASSIFICATION = "hasClinicalTClassification";
+//   public static final String HAS_CLINICAL_N_CLASSIFICATION = "hasClinicalNClassification";
+//   public static final String HAS_CLINICAL_M_CLASSIFICATION = "hasClinicalMClassification";
+//   public static final String HAS_PATHOLOGIC_T_CLASSIFICATION = "hasPathologicTClassification";
+//   public static final String HAS_PATHOLOGIC_N_CLASSIFICATION = "hasPathologicNClassification";
+//   public static final String HAS_PATHOLOGIC_M_CLASSIFICATION = "hasPathologicMClassification";
+
+   static public final String HAS_ULCERATION = "has_Ulceration";
+   static public final String HAS_BRESLOW_DEPTH = "has_Breslow_Depth";
+
+   static public final String HAS_PSA_LEVEL = "has_PSA_Level";
+   static public final String HAS_GLEASON_SCORE = "has_Gleason_Score";
 
    ///////////////////////////////////////////////////////////////////////////////////////////////
    //                                           NCIT
@@ -184,11 +199,13 @@ final public class RelationConstants {
          HAS_CALCIFICATION,
          DISEASE_HAS_ASSOCIATED_ANATOMIC_SITE,
          DISEASE_HAS_FINDING, DISEASE_MAY_HAVE_FINDING,
-         DISEASE_HAS_NORMAL_TISSUE_ORIGIN, DISEASE_HAS_NORMAL_CELL_ORIGIN
+         DISEASE_HAS_NORMAL_TISSUE_ORIGIN, DISEASE_HAS_NORMAL_CELL_ORIGIN,
+         HAS_METHOD, HAS_TREATMENT
    );
 
    static public Collection<String> getReverseRelations() {
-      return Collections.singletonList( DISEASE_HAS_ASSOCIATED_ANATOMIC_SITE );
+//      return Collections.singletonList( DISEASE_HAS_ASSOCIATED_ANATOMIC_SITE );
+      return Arrays.asList( DISEASE_HAS_ASSOCIATED_ANATOMIC_SITE, HAS_LATERALITY );
    }
 
 

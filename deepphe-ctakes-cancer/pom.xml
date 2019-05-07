@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.healthnlp</groupId>
         <artifactId>deepphe</artifactId>
-        <version>0.2.0</version>
+        <version>0.3.0</version>
     </parent>
     <artifactId>deepphe-ctakes-cancer</artifactId>
     <name>deepphe-ctakes-cancer</name>
@@ -111,12 +111,6 @@
             <artifactId>deepphe-neo4j</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-       <dependency>
-          <groupId>com.rubiconproject.oss</groupId>
-          <artifactId>jchronic</artifactId>
-          <version>0.2.8</version>
-       </dependency>
 
     </dependencies>
 

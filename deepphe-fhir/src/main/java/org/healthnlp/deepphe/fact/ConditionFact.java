@@ -201,24 +201,24 @@ public class ConditionFact extends Fact implements BodySiteOwner, MethodOwner, I
       return FHIRConstants.HAS_DIAGNOSIS;
    }
 
-   /**
-    * This method is used early in the creation of the Fact so getRelatedFacts(relation) isn't able to be used here
-    * @return
-    */
-   private boolean observationHasThisCondition() {
-      final Map<String, Collection<ConceptInstance>> relatedCIs = new HashMap<>( getConceptInstance().getRelated() );
-      for ( Map.Entry<String, Collection<ConceptInstance>> reverse : getConceptInstance().getReverseRelated()
-                                                                                         .entrySet() ) {
-         relatedCIs.computeIfAbsent( reverse.getKey(), n -> new ArrayList<>() ).addAll( reverse.getValue() );
-      }
-      if ( !relatedCIs.isEmpty() ) {
-         relatedCIs.keySet().forEach( System.out::println );
-         if ( relatedCIs.containsKey( FHIRConstants.HAS_DIAGNOSIS )
-              || relatedCIs.containsKey( RelationConstants.DISEASE_MAY_HAVE_FINDING )
-              || relatedCIs.containsKey( RelationConstants.DISEASE_HAS_FINDING ) ) {
-            return true;
-         }
-      }
-      return false; // Do not always force, forcing to always act as if there is an Observation in a relation to this Condition did too much
-   }
+//   /**
+//    * This method is used early in the creation of the Fact so getRelatedFacts(relation) isn't able to be used here
+//    * @return
+//    */
+//   private boolean observationHasThisCondition() {
+//      final Map<String, Collection<ConceptInstance>> relatedCIs = new HashMap<>( getConceptInstance().getRelatedUris() );
+//      for ( Map.Entry<String, Collection<ConceptInstance>> reverse : getConceptInstance().getReverseRelated()
+//                                                                                         .entrySet() ) {
+//         relatedCIs.computeIfAbsent( reverse.getKey(), n -> new ArrayList<>() ).addAll( reverse.getValue() );
+//      }
+//      if ( !relatedCIs.isEmpty() ) {
+//         relatedCIs.keySet().forEach( System.out::println );
+//         if ( relatedCIs.containsKey( FHIRConstants.HAS_DIAGNOSIS )
+//              || relatedCIs.containsKey( RelationConstants.DISEASE_MAY_HAVE_FINDING )
+//              || relatedCIs.containsKey( RelationConstants.DISEASE_HAS_FINDING ) ) {
+//            return true;
+//         }
+//      }
+//      return false; // Do not always force, forcing to always act as if there is an Observation in a relation to this Condition did too much
+//   }
 }

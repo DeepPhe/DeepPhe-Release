@@ -1,25 +1,18 @@
 package org.healthnlp.deepphe.uima.ae;
 
-import org.apache.ctakes.cancer.uri.UriConstants;
+import org.apache.ctakes.cancer.summary.*;
 import org.apache.ctakes.cancer.uri.UriUtil;
 import org.apache.ctakes.core.patient.AbstractPatientConsumer;
-import org.apache.ctakes.core.patient.PatientViewUtil;
 import org.apache.ctakes.core.pipeline.PipeBitInfo;
-import org.apache.ctakes.core.util.SourceMetadataUtil;
 import org.apache.ctakes.neo4j.Neo4jOntologyConceptUtil;
 import org.apache.log4j.Logger;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
-import org.healthnlp.deepphe.fact.BodySiteFact;
 import org.healthnlp.deepphe.fact.Fact;
 import org.healthnlp.deepphe.fact.FactFactory;
 import org.healthnlp.deepphe.fact.FactHelper;
 import org.healthnlp.deepphe.summary.*;
-import org.healthnlp.deepphe.uima.drools.Domain;
-import org.healthnlp.deepphe.uima.drools.DroolsEngine;
-import org.healthnlp.deepphe.util.FHIRConstants;
-import org.kie.api.runtime.KieSession;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -44,11 +37,15 @@ import java.util.*;
 )
 final public class PatientSummarizer extends AbstractPatientConsumer {
 
+
+   static private final boolean USE_DROOLS = false; //true;
+
+
    static private final Logger LOGGER = Logger.getLogger(MethodHandles.lookup().lookupClass().getSimpleName());
 
    public static final String DOMAIN = "Domain";
 
-   static private final String DEBUG_DIR = "../../";
+   static private final String DEBUG_DIR = ""; //"../../";
    private static boolean WRITE_DEBUG_BSVS = false;
    static {
       if (WRITE_DEBUG_BSVS) {
@@ -74,100 +71,159 @@ final public class PatientSummarizer extends AbstractPatientConsumer {
    @Override
    protected void processPatientCas( final JCas patientCas ) throws AnalysisEngineProcessException {
 
-      final String patientName = SourceMetadataUtil.getPatientIdentifier( patientCas );
-      final MedicalRecord medicalRecord = new MedicalRecord( patientName );
-      final Collection<JCas> docJcases = PatientViewUtil.getAllViews( patientCas );
+//      final String patientName = SourceMetadataUtil.getPatientIdentifier( patientCas );
 
-      docJcases.stream()
-               .filter( Objects::nonNull )
-               .filter( j -> j.getDocumentText() != null )
-               .filter( j -> !j.getDocumentText().isEmpty() )
-               .forEach( medicalRecord::addNote );
+//      final Map<CiSummary,Collection<CiSummary>> ciSummaries = CiSummaryFactory.createPatientDiagnoses2( patientCas );
+//      final Collection<CancerCiSummary> cancers = CiSummaryFactory.createPatientDiagnoses2( patientCas );
+//      CancerCiStore.getInstance().store( cancers );
+      final PatientCiContainer patient = CiContainerFactory.createPatientSummary( patientCas );
+      PatientCiContainerStore.getInstance().store( patient );
 
-      final PatientSummary sourcePatientSummary = medicalRecord.getPatientSummary();
-      sourcePatientSummary.setAnnotationType( FHIRConstants.ANNOTATION_TYPE_RECORD );
+      patient.getCancers().forEach( LOGGER::info );
 
-      final CancerSummary sourceCancerSummary = new CancerSummary( medicalRecord.getPatientName() );
-      sourceCancerSummary.setAnnotationType( FHIRConstants.ANNOTATION_TYPE_RECORD );
+      ///////////////////////////////   Debug for Drools to Java-only comparison   ///////////////////////////
+//      final Collection<CancerSummary> cancerSummaries
+//            = SummaryFactory.createPatientDiagnosedSummaries( patientCas, new NoteSpecs( patientCas ) );
+//      LOGGER.info( "Non-Drools Cancer Summaries for Patient: " + patientName );
+//      cancerSummaries.forEach( s ->
+//            LOGGER.info( "\n=============================================================\n"
+//                         + s.getSummaryText() ) );
+//      try {
+//         AbstractCiSummariesWriter.INSTANCE.writeCancerSummaries( patientName, cancerSummaries );
+//      } catch ( IOException ioE ) {
+//         LOGGER.error( ioE.getMessage() );
+//      }
+//      return;
 
-      final CancerSummary tempSummary = new CancerSummary( medicalRecord.getPatientName() );
-      tempSummary.setAnnotationType( FHIRConstants.ANNOTATION_TYPE_RECORD );
-
-      // Record to load into drools
-      medicalRecord.setPatientSummaryWithoutFacts( sourcePatientSummary );
-      medicalRecord.setCancerSummaryWithoutFacts( sourceCancerSummary );
-      // Each NoteSummary potentially has TumorSummary(s), add each of those to the medicalRecord and set summaryType for those facts since Drools is being driven by TumorSummary's
-      medicalRecord.addTumorSummariesFromNoteSummaries();
-
-      // check ancestors
-      final List<Fact> reportFacts = medicalRecord.getReportLevelFacts(); // aka NoteSummary facts
-      BodySiteFact.makeQuadrantsBodyModifier(reportFacts);
-
-      addMissingAncestors( reportFacts );
-
-      LOGGER.info( "PROCESSING phenotype ..." + sourcePatientSummary.getId());
-
-      if (WRITE_DEBUG_BSVS) writeFactDebug( patientName, reportFacts );
-
-      // Insert record into drools
-      final DroolsEngine de = new DroolsEngine();
-      KieSession droolsSession = null;
-      try {
-         // duplicates care
-         Set<String> dupList = new HashSet<String>();
-
-         String rules;
-         if (domain==null || domain.trim().isEmpty()) {
-            rules = FHIRConstants.DOMAIN_BREAST;
-         } else {
-            if (!FHIRConstants.DOMAINS.contains(domain)) {
-               Exception rte = new RuntimeException("Domain '" + domain + "' is unrecognized.");
-               rte.printStackTrace();
-               rules = FHIRConstants.DOMAIN_BREAST;
-            } else {
-               rules = domain;
-            }
-         }
-         LOGGER.debug("Using rules for domain: " + rules);
-         droolsSession = de.createSessionByKBaseName(rules.toUpperCase());
-
-         // Insert new medical record
-         droolsSession.insert( new Domain( rules, UriConstants.DPHE_ROOT ) );
-         droolsSession.insert( medicalRecord );
-
-         for ( Fact f : reportFacts ) {
-            try {
-               if (dupList.add( f.getInfoDrools(false) ) ) {
-                  droolsSession.insert( f );
-               }
-            } catch ( NullPointerException e ) {
-            }
-         }
-         dupList.clear();
-         dupList = null;
-         droolsSession.fireAllRules();
-         droolsSession.dispose();
-
-      } catch ( Exception e ) {
-         e.printStackTrace();
-      }
-
-      // Fill out the facts that were omitted by the rules.
-      mergeCancerSummaries( sourceCancerSummary, tempSummary );
-
-      cleanSummaries( sourceCancerSummary );
-
-      // Store the medical record
-      // It is better to write custom datatypes directly as they are now at an end state and further translation
-      // requires processing time and introduces potential errors and data loss.
-      MedicalRecordStore.getInstance().storeMedicalRecord( medicalRecord );
-
-      if (WRITE_DEBUG_BSVS) {
-         final List<Fact> factsAfterDrools = medicalRecord.getReportLevelFacts(); // aka NoteSummary facts
-         writeFactDebug( patientName+"_after", factsAfterDrools );
-      }
-      LOGGER.info("\nAfter Drools CS SUMMARY:"+sourceCancerSummary.getSummaryText());
-      LOGGER.debug( "Done with summary text" );
+//      final MedicalRecord medicalRecord = new MedicalRecord( patientName );
+//      final Collection<JCas> docJcases = PatientViewUtil.getAllViews( patientCas );
+//
+//      docJcases.stream()
+//               .filter( Objects::nonNull )
+//               .filter( j -> j.getDocumentText() != null )
+//               .filter( j -> !j.getDocumentText().isEmpty() )
+//               .filter( j -> !PatientViewUtil.getDefaultViewName().equals( j.getViewName() ) )
+//               .forEach( n -> medicalRecord.addNote( n, USE_DROOLS ) );
+//
+//      final PatientSummary sourcePatientSummary = medicalRecord.getPatientSummary();
+//      sourcePatientSummary.setAnnotationType( FHIRConstants.ANNOTATION_TYPE_RECORD );
+//      medicalRecord.setPatientSummaryWithoutFacts( sourcePatientSummary );
+//
+//      if ( !USE_DROOLS ) {
+////         final Collection<CancerSummary> cancerSummaries
+////               = SummaryFactory.createCancerSummaries( patientCas, new NoteSpecs( patientCas ) );
+////         LOGGER.info( "Non-Drools Cancer Summaries for Patient: " + patientName );
+////         cancerSummaries.forEach( s ->
+////               LOGGER.info( "\n=============================================================\n"
+////                            + s.getSummaryText() ) );
+////         cancerSummaries.forEach( s -> s.setAnnotationType( FHIRConstants.ANNOTATION_TYPE_RECORD ) );
+////         cancerSummaries.forEach( medicalRecord::addCancerSummaryWithoutFacts );
+//         final Collection<CancerSummary> cancerSummaries
+//               = SummaryFactory.createPatientDiagnosedSummaries( patientCas, new NoteSpecs( patientCas ) );
+//         LOGGER.info( "Non-Drools Cancer Summaries for Patient: " + patientName );
+//         cancerSummaries.forEach( s ->
+//               LOGGER.info( "\n=============================================================\n"
+//                            + s.getSummaryText() ) );
+//         cancerSummaries.forEach( s -> s.setAnnotationType( FHIRConstants.ANNOTATION_TYPE_RECORD ) );
+//         cancerSummaries.forEach( medicalRecord::addCancerSummaryWithoutFacts );
+//
+//      } else {
+//
+//         final CancerSummary sourceCancerSummary = new CancerSummary( medicalRecord.getPatientName() );
+//         sourceCancerSummary.setAnnotationType( FHIRConstants.ANNOTATION_TYPE_RECORD );
+//
+//         final CancerSummary tempSummary = new CancerSummary( medicalRecord.getPatientName() );
+//         tempSummary.setAnnotationType( FHIRConstants.ANNOTATION_TYPE_RECORD );
+//
+//         // Record to load into drools
+//         medicalRecord.setCancerSummaryWithoutFacts( sourceCancerSummary );
+//
+//         // Each NoteSummary potentially has TumorSummary(s), add each of those to the medicalRecord and set summaryType for those facts since Drools is being driven by TumorSummary's
+//         medicalRecord.addTumorSummariesFromNoteSummaries();
+//
+//         // check ancestors
+//         final List<Fact> reportFacts = medicalRecord.getReportLevelFacts(); // aka NoteSummary facts
+//         BodySiteFact.makeQuadrantsBodyModifier( reportFacts );
+//
+//         addMissingAncestors( reportFacts );
+//
+//         LOGGER.info( "PROCESSING phenotype ..." + sourcePatientSummary.getId() );
+//
+//         if ( WRITE_DEBUG_BSVS )
+//            writeFactDebug( patientName, reportFacts );
+//
+//         // Insert record into drools
+//         final DroolsEngine de = new DroolsEngine();
+//         KieSession droolsSession = null;
+//         try {
+//            // duplicates care
+//            Set<String> dupList = new HashSet<String>();
+//
+//            String rules;
+//            if ( domain == null || domain.trim().isEmpty() ) {
+//               rules = FHIRConstants.DOMAIN_BREAST;
+//            } else {
+//               if ( !FHIRConstants.DOMAINS.contains( domain ) ) {
+//                  Exception rte = new RuntimeException( "Domain '" + domain + "' is unrecognized." );
+//                  rte.printStackTrace();
+//                  rules = FHIRConstants.DOMAIN_BREAST;
+//               } else {
+//                  rules = domain;
+//               }
+//            }
+//            LOGGER.debug( "Using rules for domain: " + rules );
+//            droolsSession = de.createSessionByKBaseName( rules.toUpperCase() );
+//
+//            // Insert new medical record
+//            droolsSession.insert( new Domain( rules, UriConstants.DPHE_ROOT ) );
+//            droolsSession.insert( medicalRecord );
+//
+//            for ( Fact f : reportFacts ) {
+//               try {
+//                  if ( dupList.add( f.getInfoDrools( false ) ) ) {
+//                     droolsSession.insert( f );
+//                  }
+//               } catch ( NullPointerException e ) {
+//               }
+//            }
+//            dupList.clear();
+//            dupList = null;
+//            droolsSession.fireAllRules();
+//            droolsSession.dispose();
+//
+//         } catch ( Exception e ) {
+//            e.printStackTrace();
+//         }
+//
+//         // Fill out the facts that were omitted by the rules.
+//         mergeCancerSummaries( sourceCancerSummary, tempSummary );
+//         cleanSummaries( sourceCancerSummary );
+//
+//         if ( WRITE_DEBUG_BSVS ) {
+//            final List<Fact> factsAfterDrools = medicalRecord.getReportLevelFacts(); // aka NoteSummary facts
+//            writeFactDebug( patientName+"_after", factsAfterDrools );
+//         }
+//         LOGGER.info("\nDrools CS SUMMARY: " + sourceCancerSummary.getSummaryText());
+//      }
+//      // Store the medical record
+//      // It is better to write custom datatypes directly as they are now at an end state and further translation
+//      // requires processing time and introduces potential errors and data loss.
+//      MedicalRecordStore.getInstance().storeMedicalRecord( medicalRecord );
+//
+////      ///////////////////////////////   Debug for Drools to Java-only comparison   ///////////////////////////
+////      final Collection<CancerSummary> cancerSummaries
+////            = SummaryFactory.createPatientDiagnosedSummaries( patientCas, new NoteSpecs( patientCas ) );
+////      LOGGER.info( "Non-Drools Cancer Summaries for Patient: " + patientName );
+////      cancerSummaries.forEach( s ->
+////            LOGGER.info( "\n=============================================================\n"
+////                         + s.getSummaryText() ) );
+////      try {
+////         DirectMedicalRecordBsvWriter.INSTANCE.writeCancerSummaries( patientName, cancerSummaries );
+////      } catch ( IOException ioE ) {
+////         LOGGER.error( ioE.getMessage() );
+////      }
+//
+//      LOGGER.debug( "Done with summary text" );
    }
 
    private void mergeCancerSummaries( final CancerSummary cancerSummary, final CancerSummary tempSummary ) {
@@ -251,8 +307,8 @@ final public class PatientSummarizer extends AbstractPatientConsumer {
       final String username = System.getProperty( "user.name" );
       String filename = DEBUG_DIR + filenameBase + "_V2_" + fileDate + "_" + username + ".bsv";
       final File file = new File( filename );
-      LOGGER.info( "Writing facts to a debug file in: " + file.getParentFile().getAbsolutePath() );
-      LOGGER.info( "  using filename: " + filename );
+//      LOGGER.info( "Writing facts to a debug file in: " + file.getParentFile().getAbsolutePath() );
+      LOGGER.info( "Writing facts to a debug file using filename: " + filename );
       return new FileWriter( filename );
    }
 

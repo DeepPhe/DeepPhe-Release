@@ -1,10 +1,8 @@
 package org.apache.ctakes.cancer.concept.instance;
 
-import org.apache.ctakes.neo4j.Neo4jConnectionFactory;
+import org.apache.ctakes.neo4j.Neo4jOntologyConceptUtil;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.log4j.Logger;
-import org.healthnlp.deepphe.neo4j.SearchUtil;
-import org.neo4j.graphdb.GraphDatabaseService;
 
 import java.util.*;
 import java.util.function.Function;
@@ -47,12 +45,10 @@ final public class ConceptInstanceMerger {
    static public Map<String, Collection<ConceptInstance>> createMergedInstances(
          final Map<String, Collection<ConceptInstance>> oldUriInstances ) {
       LOGGER.info( "Merging Concept Instances ..." );
-      final GraphDatabaseService graphDb = Neo4jConnectionFactory.getInstance()
-                                                                 .getGraph();
       final Map<String, Collection<String>> uriBranches
             = oldUriInstances.keySet().stream()
                              .collect( Collectors
-                                   .toMap( Function.identity(), u -> SearchUtil.getBranchUris( graphDb, u ) ) );
+                                   .toMap( Function.identity(), Neo4jOntologyConceptUtil::getBranchUris ) );
       // Map of neg_unc tag to uriBanch to CIs with that branch
       final Map<String, Map<String, Collection<ConceptInstance>>> negUncUriInstances = new HashMap<>();
       for ( Map.Entry<String, Collection<ConceptInstance>> entry : oldUriInstances.entrySet() ) {
@@ -61,8 +57,9 @@ final public class ConceptInstanceMerger {
             final String dtr = conceptInstance.getDocTimeRel();
             // tag groups alike negation, uncertain, plus begin vs. after vs. [begin/overlap and overlap]
             final String tag = Boolean.toString( conceptInstance.isNegated() )
-                               + '_' + Boolean.toString( conceptInstance.isNegated() )
-                               + '_' + (dtr.length() >= 5 ? dtr.substring( dtr.length() - 5 ).toUpperCase() : "");
+                               + '_' + Boolean.toString( conceptInstance.isUncertain() )
+                               + '_' + (dtr.length() >= 5 ? dtr.substring( dtr.length() - 5 ).toUpperCase() : "")
+                               + '_' + conceptInstance.getSubject();
             negUncUriInstances.computeIfAbsent( tag, c -> new HashMap<>() )
                               .computeIfAbsent( uri, c -> new ArrayList<>() )
                               .add( conceptInstance );
@@ -135,13 +132,6 @@ final public class ConceptInstanceMerger {
             final String type = oldRelated.getKey();
             for ( ConceptInstance oldRelatedCi : oldRelated.getValue() ) {
                newInstance.addRelated( type, oldToNewInstances.get( oldRelatedCi ) );
-            }
-         }
-         for ( Map.Entry<String, Collection<ConceptInstance>> oldReversed : oldInstance.getReverseRelated()
-                                                                                       .entrySet() ) {
-            final String type = oldReversed.getKey();
-            for ( ConceptInstance oldReversedCi : oldReversed.getValue() ) {
-               newInstance.addReverseRelated( type, oldToNewInstances.get( oldReversedCi ) );
             }
          }
       }

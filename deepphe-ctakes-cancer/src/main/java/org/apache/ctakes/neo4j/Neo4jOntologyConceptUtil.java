@@ -1,8 +1,8 @@
 package org.apache.ctakes.neo4j;
 
 
-import org.apache.ctakes.cancer.concept.instance.ConceptInstanceFactory;
 import org.apache.ctakes.cancer.uri.UriConstants;
+import org.apache.ctakes.cancer.uri.UriUtil;
 import org.apache.ctakes.core.semantic.SemanticGroup;
 import org.apache.ctakes.core.util.OntologyConceptUtil;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
@@ -54,7 +54,7 @@ final public class Neo4jOntologyConceptUtil {
     * @return most specific dphe URI that exists for the given annotation
     */
    static public String getUri( final IdentifiedAnnotation annotation ) {
-      return ConceptInstanceFactory.getMostSpecificUri( getUris( annotation ) );
+      return UriUtil.getMostSpecificUri( getUris( annotation ) );
    }
 
 
@@ -322,116 +322,33 @@ final public class Neo4jOntologyConceptUtil {
    }
 
 
-
-
-
-
    static public Collection<String> getBranchUris( final String rootUri ) {
       final GraphDatabaseService graphDb = Neo4jConnectionFactory.getInstance()
                                                                  .getGraph();
-      try ( Transaction tx = graphDb.beginTx() ) {
-         final Node branchRoot = SearchUtil.getClassNode( graphDb, rootUri );
-         if ( branchRoot == null ) {
-            LOGGER.debug( "getBranchUris(..) : No Class exists for URI " + rootUri );
-            tx.success();
-            return Collections.emptyList();
-         }
-         final TraversalDescription traverser = Neo4jTraverserFactory.getInstance()
-                                                                     .getBranchTraverser( graphDb, IS_A_PROP );
-         final Collection<String> branch = traverser.traverse( branchRoot )
-                                                    .nodes()
-                                                    .stream()
-                                                    .map( n -> n.getProperty( NAME_KEY ) )
-                                                    .map( Object::toString )
-                                                    .distinct()
-                                                    .collect( Collectors.toList() );
-         tx.success();
-         return branch;
-      } catch ( MultipleFoundException mfE ) {
-         LOGGER.error( rootUri + " : " + mfE.getMessage(), mfE );
-      }
-      return Collections.emptyList();
+      return SearchUtil.getBranchUris( graphDb, rootUri );
    }
 
    static public Collection<String> getRootUris( final String leafUri ) {
-      if ( leafUri == null || leafUri.isEmpty() ) {
-         new Exception( "getRootUris(..) : Empty or null URI" ).printStackTrace();
-      }
-      if ( leafUri.equals( UriConstants.EVENT ) ) {
-         return Arrays.asList( UriConstants.THING, UriConstants.EVENT );
-      }
       final GraphDatabaseService graphDb = Neo4jConnectionFactory.getInstance()
                                                                  .getGraph();
-      try ( Transaction tx = graphDb.beginTx() ) {
-         final Node rootLeaf = SearchUtil.getClassNode( graphDb, leafUri );
-         if ( rootLeaf == null ) {
-            LOGGER.debug( "getRootUris(..) : No Class exists for URI " + leafUri );
-            tx.success();
-            return Collections.emptyList();
-         }
-         final TraversalDescription traverser = Neo4jTraverserFactory.getInstance()
-                                                                     .getRootsTraverser( graphDb, IS_A_PROP );
-         final Collection<String> root = traverser.traverse( rootLeaf )
-                                                  .nodes()
-                                                  .stream()
-                                                  .map( n -> n.getProperty( NAME_KEY ) )
-                                                  .map( Object::toString )
-                                                  .distinct()
-                                                  .collect( Collectors.toList() );
-         tx.success();
-         return root;
-      } catch ( MultipleFoundException mfE ) {
-         LOGGER.error( leafUri + " : " + mfE.getMessage(), mfE );
-      }
-      return Collections.emptyList();
+      return SearchUtil.getRootUris( graphDb, leafUri );
    }
 
-
-   static private boolean hasTarget( final Iterable<Relationship> relationships, final Node target ) {
-      return relationships != null && StreamSupport.stream( relationships.spliterator(), false ).map( Relationship::getEndNode ).anyMatch( target::equals );
-   }
 
    static public Collection<String> getBranchUrisWithRelation( final String rootUri,
                                                                final String relationName,
                                                                final String targetUri ) {
       final GraphDatabaseService graphDb = Neo4jConnectionFactory.getInstance()
                                                                  .getGraph();
-      try ( Transaction tx = graphDb.beginTx() ) {
-         final Node branchRoot = SearchUtil.getClassNode( graphDb, rootUri );
-         if ( branchRoot == null ) {
-            LOGGER.debug( "getBranchUrisWithRelation(..) : No Class exists for URI " + rootUri );
-            tx.success();
-            return Collections.emptyList();
-         }
-         final Node targetNode = SearchUtil.getClassNode( graphDb, targetUri );
-         if ( targetNode == null ) {
-            LOGGER.debug( "getBranchUrisWithRelation(..) : No Class exists for URI " + targetUri );
-            tx.success();
-            return Collections.emptyList();
-         }
-         final RelationshipType relation = RelationshipType.withName( relationName );
-         final TraversalDescription traverser = Neo4jTraverserFactory.getInstance()
-                                                                     .getBranchTraverser( graphDb, IS_A_PROP );
-         final Collection<String> targetRoots
-               = traverser.traverse( branchRoot )
-                          .nodes()
-                          .stream()
-                          .filter( n -> hasTarget( n.getRelationships( Direction.OUTGOING, relation ), targetNode ) )
-                          .map( n -> n.getProperty( NAME_KEY ) )
-                          .map( Object::toString )
-                          .distinct()
-                          .collect( Collectors.toList() );
-         tx.success();
-         return targetRoots.stream()
-                           .map( u -> SearchUtil.getBranchUris( graphDb, u ) )
-                           .flatMap( Collection::stream )
-                           .distinct()
-                           .collect( Collectors.toList() );
-      } catch ( MultipleFoundException mfE ) {
-         LOGGER.error( rootUri + " , " + targetUri + " " + relationName + " : " + mfE.getMessage(), mfE );
-      }
-      return Collections.emptyList();
+      return SearchUtil.getBranchUrisWithRelation( graphDb, rootUri, relationName, targetUri );
    }
 
+   static public Collection<String> getBranchUrisWithAttribute( final String rootUri,
+                                                                final String attributeName,
+                                                                final String value ) {
+      final GraphDatabaseService graphDb = Neo4jConnectionFactory.getInstance()
+                                                                 .getGraph();
+      return SearchUtil.getBranchUrisWithAttribute( graphDb, rootUri, attributeName, value );
+   }
 
 }

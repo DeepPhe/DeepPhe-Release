@@ -1,7 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 //
-//       Commands and parameters to run the Deep Phenome v0.2.0 pipeline
-//       for a Cancer specified using the -d (Domain) command line parameter.
+//       Commands and parameters to run the Deep Phenome v0.3.0 pipeline
 //
 //       For more information on piper files see the Apache cTAKES wiki:
 //          https://cwiki.apache.org/confluence/display/CTAKES/Piper+Files
@@ -9,11 +8,6 @@
 //       Modify with care.
 //
 //////////////////////////////////////////////////////////////////////////
-
-
-//  Use the command-line parameter -d to specify the Domain to use during processing.
-//  Valid values for DeepPhe v0.2.0 are "Breast", "Melanoma" and "Ovarian".
-cli Domain=d
 
 
 //  Load the piper file that contains configuration, document reading and large item discovery.

@@ -1,7 +1,8 @@
 package org.healthnlp.deepphe.fact;
 
 import org.apache.ctakes.cancer.concept.instance.ConceptInstance;
-import org.apache.ctakes.cancer.summary.CiSummary;
+import org.apache.ctakes.cancer.summary.CiContainer;
+import org.apache.ctakes.cancer.summary.CiSummaryUtil;
 import org.apache.ctakes.cancer.uri.UriConstants;
 import org.apache.ctakes.cancer.uri.UriUtil;
 import org.apache.ctakes.core.note.NoteSpecs;
@@ -34,10 +35,11 @@ public class FactFactory {
 
    static private final Logger LOGGER = Logger.getLogger( "FactFactory" );
 
-   static private final Predicate<ConceptInstance> wantedForFact
-         = ci -> !UriConstants.EVENT.equals( ci.getUri() ) && !UriConstants.UNKNOWN.equals( ci.getUri() )
-                 && !ci.isNegated() && !ci.isUncertain() && !ci.isGeneric() && !ci.isConditional()
-                 && (ci.getRelated().size() + ci.getReverseRelated().size()) != 0;
+//   static private final Predicate<ConceptInstance> wantedForFact
+//         = ci -> !UriConstants.EVENT.equals( ci.getUri() ) && !UriConstants.UNKNOWN.equals( ci.getUri() )
+//                 && !ci.isNegated() && !ci.isUncertain() && !ci.isGeneric() && !ci.isConditional()
+////                 && (ci.getRelatedUris().size() + ci.getReverseRelated().size()) != 0;
+//                 && !ci.getRelatedUris().isEmpty();
 
 
 
@@ -583,8 +585,8 @@ public class FactFactory {
 	}
 
 
-   static public Fact createHistologyFact( final CiSummary ciSummary ) {
-      final String histology = ciSummary.getHistology();
+   static public Fact createHistologyFact( final CiContainer ciContainer ) {
+      final String histology = CiSummaryUtil.getHistology( ciContainer.getUri() );
       if ( histology == null || histology.isEmpty() ) {
          return null;
       }
@@ -595,13 +597,14 @@ public class FactFactory {
       return fact;
    }
 
-   static public Fact createCancerTypeFact( final CiSummary ciSummary ) {
-      final String cancerType = ciSummary.getCancerType();
+   static public Fact createCancerTypeFact( final CiContainer ciContainer ) {
+      final String cancerType = CiSummaryUtil.getCancerType( ciContainer.getUri() );
       if ( cancerType == null || cancerType.isEmpty() ) {
          return null;
       }
       final Fact fact = createTypeFact( CONDITION );
-      fact.setCategory( FHIRConstants.HAS_CANCER_TYPE );
+//      fact.setCategory( RelationConstants.HAS_CANCER_CELL_LINE );
+      fact.setCategory( RelationConstants.HAS_CANCER_TYPE );
       fact.setUri( cancerType );
       fact.autoFillDefaults();
       return fact;

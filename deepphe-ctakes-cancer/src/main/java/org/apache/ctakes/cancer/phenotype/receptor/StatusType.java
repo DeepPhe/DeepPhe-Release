@@ -32,6 +32,8 @@ public enum StatusType implements Type {
          "Triple",
          "C2348819", "C2348819", "C2348819" );
 
+   // TODO migrate what is still used to StatusFinder
+
    static private final String RECEPTOR_EX = "(?:\\s*-?\\s*?Receptors?\\s*-?)?\\s*(?:status|expression)?";
    final private String _title;
    final private String _uri;

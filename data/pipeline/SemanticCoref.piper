@@ -7,7 +7,7 @@
 
 addLogged ClearNLPDependencyParserAE
 
-add StartFinishLogger LOGGER_NAME=Coreferences IS_START=true
+// add StartFinishLogger LOGGER_NAME=Coreferences IS_START=true
 package org.apache.ctakes.cancer.ae.coref
 package org.apache.ctakes.coreference.concurrent
 
@@ -46,13 +46,13 @@ addDescription ThreadSafeMarkableSalienceAnnotator /org/apache/ctakes/temporal/a
 addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
 add MarkableRemover
 
-add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.BodyLateralityModifier
-addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
-add MarkableRemover
+//add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.BodyLateralityModifier
+//addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
+//add MarkableRemover
 
-add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.BodySideModifier
-addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
-add MarkableRemover
+//add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.BodySideModifier
+//addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
+//add MarkableRemover
 
 add SemanticMarkableAnnotator AnnotationClass=org.apache.ctakes.typesystem.type.textsem.MeasurementAnnotation
 addDescription ThreadSafeMentionClusterCoreferencer /org/apache/ctakes/coreference/models/mention-cluster/model.jar
@@ -60,6 +60,6 @@ add MarkableRemover
 
 add HeldMarkableReplacer
 
-add StartFinishLogger LOGGER_NAME=Coreferences IS_START=false
+// add StartFinishLogger LOGGER_NAME=Coreferences IS_START=false
 
 addLast MarkableHolderClearer

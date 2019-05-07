@@ -1,5 +1,6 @@
 package org.apache.ctakes.cancer.ae.section;
 
+import org.apache.ctakes.cancer.document.SectionType;
 import org.apache.ctakes.core.pipeline.PipeBitInfo;
 import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
@@ -29,10 +30,14 @@ import java.util.regex.Pattern;
         dependencies = { PipeBitInfo.TypeProduct.DOCUMENT_ID },
         products = { PipeBitInfo.TypeProduct.SECTION }
 )
-
+// TODO  Why the Heck is there a new sectionizer that uses regex?
+// The RegexSectionizer in ctakes does the same thing but without bugs!!
+// TODO make a copy of the dphe sections.txt using BSV instead of CSV (improper as headers CAN have commas).
+// TODO test and get rid of this thing.
+// TODO This can drop initial sections if there are others that follow.
 public class Sectionizer extends JCasAnnotator_ImplBase {
 
-    Logger logger = Logger.getLogger(this.getClass());
+    static private final Logger LOGGER = Logger.getLogger( "Sectionizer" );
     protected static HashMap<String, Pattern> patterns = new HashMap<>();
     protected static HashMap<String, String> section_names = new HashMap<>();
     protected static final String DEFAULT_SECTION_FILE_NAME = "org/apache/ctakes/cancer/sections/sections.txt";
@@ -60,7 +65,7 @@ public class Sectionizer extends JCasAnnotator_ImplBase {
 
             // Read in the Section Mappings File
             // And load the RegEx Patterns into a Map
-            logger.info("Reading Section File " + sections_path);
+            LOGGER.info( "Reading Section File " + sections_path);
             String line = null;
             while ((line = br.readLine()) != null) {
                 if (!line.trim().startsWith(PARAM_COMMENT)) {
@@ -73,18 +78,18 @@ public class Sectionizer extends JCasAnnotator_ImplBase {
                         // Make a giant alternator (|) regex group for each line
                         Pattern p = buildPattern(fields);
                         Pattern oldPattern = patterns.put(id, p);
-                        if (oldPattern!=null) logger.info("WARNING: already had a pattern '" + oldPattern + "' for " + id + " which was just replaced by " + p);
+                        if (oldPattern!=null) LOGGER.info( "WARNING: already had a pattern '" + oldPattern + "' for " + id + " which was just replaced by " + p);
 
                         if (fields.length > 1 && fields[1] != null) {
                             String temp = fields[1].trim();
                             String previous = section_names.put(id, temp);
-                            if (previous!=null) logger.info("WARNING: already had a section '" + previous + "' for " + id + " which was just replaced by " + temp);
+                            if (previous!=null) LOGGER.info( "WARNING: already had a section '" + previous + "' for " + id + " which was just replaced by " + temp);
 
                         }
 
                     } else {
-                        logger.info("Warning: Skipped reading sections config row: "
-                                + Arrays.toString(fields));
+                        LOGGER.info( "Warning: Skipped reading sections config row: "
+                                     + Arrays.toString(fields));
                     }
                 }
             }
@@ -115,8 +120,8 @@ public class Sectionizer extends JCasAnnotator_ImplBase {
         return p;
     }
 
-    List<Segment> findSectionsHeadersByPattern(JCas jCas, final String text) {
-        final ArrayList<Segment> sections = new ArrayList<>();
+    static private List<Segment> findSectionsHeadersByPattern(JCas jCas, final String text) {
+        final List<Segment> sections = new ArrayList<>();
         for (String patternName : patterns.keySet()) {
             Pattern p = patterns.get(patternName);
             //System.out.println("Pattern " + p);
@@ -163,6 +168,7 @@ public class Sectionizer extends JCasAnnotator_ImplBase {
 
                 segmentHeader.setTagText(text.substring(segmentHeader.getBegin(), segmentHeader.getEnd()));
                 segmentHeader.setId(patternName);
+                segmentHeader.setPreferredText( patternName );
                 sections.add(segmentHeader);
             }
         }
@@ -175,6 +181,19 @@ public class Sectionizer extends JCasAnnotator_ImplBase {
             }
         });
 
+        // Fix for missing untitled first section.
+       if ( sections.isEmpty() ) {
+          return sections;
+       }
+       final Segment firstSection = sections.get( 0 );
+       if ( firstSection.getBegin() > 2 ) {
+          final Segment missing = new Segment( jCas, 0, 0 );
+          missing.setTagText( "" );
+          missing.setId( SectionType.HistoryPresentIllness.getName() );
+          missing.setPreferredText( SectionType.HistoryPresentIllness.getName() );
+          sections.add( 0, missing );
+//          LOGGER.info( "Adding first section as " + SectionType.HistoryPresentIllness.getName() + " " + missing.getBegin() + "," + missing.getEnd() );
+       }
         return sections;
     }
 
@@ -187,18 +206,18 @@ public class Sectionizer extends JCasAnnotator_ImplBase {
             simpleSegment.setBegin(0);
             simpleSegment.setEnd(text.length());
             simpleSegment.setId(SIMPLE_SEGMENT);
-            // simpleSegment.setPreferredText(getId());
-            // segment.setTagText();          // no tag text for SIMPLE_SEGMENT
+             simpleSegment.setPreferredText( SIMPLE_SEGMENT );
+            simpleSegment.setTagText( "" );          // no tag text for SIMPLE_SEGMENT
             simpleSegment.addToIndexes();
             return;
         }
 
         if (sectionHeaders.size()==1) {
             Segment segment = sectionHeaders.get(0);
-            // segment.setBegin(###); // already set when found
+            // segment.setBegin(###); // already set when found  // NOT CORRECTLY IT WASN'T !!!
             segment.setEnd(text.length()); // since only 1 section header, this section's text goes to end of document
             // segment.setId(xxxxxxxxxxxxxx); // already set when it was found by pattern
-            segment.setPreferredText(segment.getId());
+//            segment.setPreferredText(segment.getId());
             // segment.setTagText();          // already set when it was found by pattern
             segment.addToIndexes();
             return;
@@ -211,7 +230,7 @@ public class Sectionizer extends JCasAnnotator_ImplBase {
         // Can assumes at least two segments because the case of a single segment of any type was already handled.
         for (int index=0; index < sectionHeaders.size(); index++) {
             Segment header = sectionHeaders.get(index);
-            //logger.info("Processing segment header: " + header.getId() + " tagText = " + header.getTagText() + " " + header.getBegin() + ", " + header.getEnd());
+//            LOGGER.info("Processing segment header: " + header.getId() + " tagText = " + header.getTagText() + " " + header.getBegin() + ", " + header.getEnd());
             int end = cas.getDocumentText().length(); // handle case for last section
             if (index + 1 < sectionHeaders.size()) {
                 end = sectionHeaders.get(index + 1).getBegin();
@@ -220,12 +239,18 @@ public class Sectionizer extends JCasAnnotator_ImplBase {
             segment.setBegin(header.getEnd()); // text of section starts after the section heading
             segment.setEnd(end);
             segment.setId(header.getId());
+            segment.setPreferredText( header.getPreferredText() );
+            segment.setTagText( header.getTagText() );
             // Only create (add to CAS) a segment if there is some text (at least a new line or any other char).
             // Ignore the segment header if it is immediately followed by another header or by EOL
             if (segment.getEnd() > segment.getBegin()) {
-                segment.setPreferredText(header.getId());
+                segment.setId( header.getId() );
+                segment.setPreferredText( header.getPreferredText() );
                 segment.setTagText(header.getTagText());
                 segment.addToIndexes();
+//                LOGGER.info( "Adding " + segment.getPreferredText() + " " + segment.getId() + " " + segment.getTagText() );
+            } else {
+                LOGGER.info( "Ignoring " + segment.getPreferredText() + " " + segment.getId() + " " + segment.getTagText() + " " + segment.getBegin() + ", " + segment.getEnd() );
             }
         }
     }
@@ -236,7 +261,7 @@ public class Sectionizer extends JCasAnnotator_ImplBase {
         final String text = jCas.getDocumentText();
         if (text == null) {
             String docId = DocumentIDAnnotationUtil.getDocumentID(jCas);
-            logger.info("text is null for docId=" + docId);
+            LOGGER.info( "text is null for docId=" + docId);
             return;
         }
 

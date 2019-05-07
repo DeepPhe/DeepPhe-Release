@@ -4,7 +4,7 @@
    <parent>
       <groupId>org.healthnlp</groupId>
       <artifactId>deepphe</artifactId>
-      <version>0.2.0</version>
+      <version>0.3.0</version>
    </parent>
    <artifactId>deepphe-neo4j</artifactId>
    <name>deepphe-neo4j</name>

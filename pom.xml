@@ -5,17 +5,15 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.healthnlp</groupId>
    <artifactId>deepphe</artifactId>
-   <version>0.2.0</version>
+   <version>0.3.0</version>
    <packaging>pom</packaging>
    <properties>
        <ctakes.version>4.0.1-SNAPSHOT</ctakes.version>
       <maven.compiler.source>1.8</maven.compiler.source>
       <maven.compiler.target>1.8</maven.compiler.target>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <droolsVersion>6.3.0.Final</droolsVersion>
-      <neo4j.version>3.2.1</neo4j.version>
+      <neo4j.version>3.5.1</neo4j.version>
       <luceneVersion>5.5.0</luceneVersion>
-      <apoc.version>3.2.3.6</apoc.version>
    </properties>
 
    <modules>
@@ -26,6 +24,7 @@
       <module>deepphe-distribution</module>
       <module>deepphe-data</module>
       <module>deepphe-viz-neo4j</module>
+      <module>deepphe-internal</module>
    </modules>
 
     <dependencyManagement>

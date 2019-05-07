@@ -18,6 +18,10 @@ public class SummaryTextWriter extends MedicalRecordWriter {
 
    static private final String BREAK = "\n-------------\n";
 
+   public String getEngineName() {
+      return this.getClass().getSimpleName();
+   }
+
    /**
     * {@inheritDoc}
     */
@@ -32,8 +36,7 @@ public class SummaryTextWriter extends MedicalRecordWriter {
       if ( patientSummary != null ) {
          summary.append( patientSummary.getSummaryText() ).append( BREAK );
       }
-      final CancerSummary cancerSummary = record.getCancerSummary();
-      if ( cancerSummary != null ) {
+      for ( CancerSummary cancerSummary : record.getCancerSummaries() ) {
          summary.append( cancerSummary.getSummaryText() ).append( BREAK );
       }
       // save all summaries

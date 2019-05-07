@@ -1,6 +1,7 @@
 package org.healthnlp.deepphe.summary;
 
 import org.apache.ctakes.cancer.concept.instance.IdOwner;
+import org.apache.ctakes.cancer.summary.CiContainer;
 import org.apache.ctakes.cancer.uri.UriUtil;
 import org.apache.log4j.Logger;
 import org.healthnlp.deepphe.fact.Appendable;
@@ -9,6 +10,7 @@ import org.healthnlp.deepphe.util.FHIRConstants;
 
 import java.lang.invoke.MethodHandles;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public abstract class Summary
@@ -25,6 +27,14 @@ public abstract class Summary
    protected String resourceIdentifier;
    protected String conceptURI;
    private String _patientId;
+
+   private CiContainer _ciContainer;
+   public void setCiContainer( final CiContainer ciContainer ) {
+      _ciContainer = ciContainer;
+   }
+   public CiContainer getCiContainer() {
+      return _ciContainer;
+   }
 
 
    public Summary(final String id) {
@@ -153,7 +163,7 @@ public abstract class Summary
    }
 
    public String getDisplayText() {
-      return getClass().getSimpleName() + " (" + resourceIdentifier + ")";
+      return getClass().getSimpleName() + " ( " + resourceIdentifier + " )";
    }
 
 
@@ -228,23 +238,28 @@ public abstract class Summary
       final StringBuilder sb = new StringBuilder();
       sb.append( getDisplayText() )
         .append( ":\n" );
-      Set<String> duplCategory = new HashSet<String>();
-      for ( String category : getFactCategories() ) {
+      final Set<String> duplCategory = new HashSet<>();
+      final List<String> sortedCategories = new ArrayList<>( getFactCategories() );
+      sortedCategories.sort( Comparator.comparing( this::getPropertyDisplayLabel ) );
+      for ( String category : sortedCategories ) {
          sb.append( "\t" )
            .append( getPropertyDisplayLabel( category ) )
            .append( ":\n" );
          duplCategory.clear();
-         for ( Fact c : getFacts( category ) ) {
-        	 if(duplCategory.add(c.getSummaryText())) {
-	            sb.append( "\t\t" )
-	              .append( c.getSummaryText() )
-	              .append( "\n" );
+         final List<String> sortedFactTexts = getFacts( category ).stream()
+                                                                  .map( Fact::getSummaryText )
+                                                                  .sorted()
+                                                                  .collect( Collectors.toList() );
+         for ( String factText : sortedFactTexts ) {
+        	 if( duplCategory.add( factText )) {
+                  sb.append( "\t\t" )
+                    .append( factText )
+                    .append( "\n" );
         	 }
          }
       }
       
       duplCategory.clear();
-      duplCategory = null;
       return sb.toString();
    }
 

@@ -1,7 +1,11 @@
 package org.apache.ctakes.core.util;
 
 
+import org.apache.ctakes.cancer.uri.UriConstants;
+import org.apache.ctakes.core.semantic.SemanticGroup;
 import org.apache.ctakes.neo4j.Neo4jOntologyConceptUtil;
+import org.apache.ctakes.typesystem.type.constants.CONST;
+import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.LocationOfTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
@@ -10,13 +14,17 @@ import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.log4j.Logger;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.healthnlp.deepphe.neo4j.RelationConstants;
-import org.healthnlp.deepphe.neo4j.UriConstants;
+//import org.healthnlp.deepphe.neo4j.UriConstants;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static org.apache.ctakes.typesystem.type.constants.CONST.NE_DISCOVERY_TECH_EXPLICIT_AE;
 
 /**
  * @author SPF , chip-nlp
@@ -29,6 +37,8 @@ final public class RelationUtil {
    }
 
    static private final Logger LOGGER = Logger.getLogger( "RelationUtil" );
+
+   static private final Pattern WHITESPACE = Pattern.compile( "\\s+" );
 
    static public <T extends IdentifiedAnnotation> Map<T, Collection<BinaryTextRelation>> getRelatedAsFirst(
          final JCas jCas,
@@ -225,119 +235,63 @@ final public class RelationUtil {
 
 
 
-   /**
-    * Candidates for primary annotations of a possible relation are preceding candidates in the same paragraph,
-    * or if none then nearest following candidate in the same sentence
-    *
-    * @param jcas            ye olde ...
-    * @param sources      all candidate owners of a type in a paragraph.  Should be the things BEFORE
-    * @param targets all candidate attributes of a type that has a relation in a paragraph.  Should be the things AFTER
-    * @param onlyOneTarget true if the attribute owner should only have one of the provided attributes
-    * @return a map of owners and their attributes
-    */
    static public Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> createSourceTargetMap(
-         final JCas jcas,
-         final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
-         final List<IdentifiedAnnotation> sources,
-         final List<IdentifiedAnnotation> targets,
-         final boolean onlyOneTarget ) {
-      if ( sources.isEmpty() || targets.isEmpty() ) {
-         return Collections.emptyMap();
-      }
-      final boolean haveOnlyOne = sources.size() == 1 && targets.size() == 1;
-      final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> sourceTargets
-            = new HashMap<>( sources.size() );
-
-      final Collection<Sentence> targetSentences = new ArrayList<>();
-      for ( IdentifiedAnnotation target : targets ) {
-         targetSentences.clear();
-         IdentifiedAnnotation bestSource = null;
-         for ( IdentifiedAnnotation source : sources ) {
-            if ( source.equals( target ) ) {
-               continue;
-            }
-            if ( onlyOneTarget && sourceTargets.containsKey( source ) ) {
-               continue;
-            }
-            if ( source.getBegin() > target.getEnd() ) {
-               if ( haveOnlyOne ) {
-                  break;
-               }
-               if ( !onlyOneTarget ) {
-                  if ( bestSource == null ) {
-                     if ( targetSentences.isEmpty() ) {
-                        targetSentences.addAll( coveringSentences.get( target ) );
-                     }
-                     final Collection<Sentence> sourceSentences = new ArrayList<>( coveringSentences.get( source ) );
-                     sourceSentences.retainAll( targetSentences );
-                     if ( !sourceSentences.isEmpty() ) {
-                        bestSource = source;
-                     }
-                  }
-                  break;
-               }
-               if ( bestSource != null ) {
-                  break;
-               }
-            }
-            bestSource = source;
-         }
-         if ( bestSource != null ) {
-            sourceTargets.computeIfAbsent( bestSource, a -> new ArrayList<>() ).add( target );
-         }
-      }
-      return sourceTargets;
-   }
-
-   static public Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> createSourceTargetMap(
-           final JCas jcas,
            final List<IdentifiedAnnotation> sources,
            final List<IdentifiedAnnotation> targets,
            final boolean onlyOneTarget ) {
       if ( sources.isEmpty() || targets.isEmpty() ) {
          return Collections.emptyMap();
       }
-      final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences
-              = JCasUtil.indexCovering( jcas, IdentifiedAnnotation.class, Sentence.class );
       final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> sourceTargets
               = new HashMap<>( sources.size() );
 
       for ( IdentifiedAnnotation target : targets ) {
-         IdentifiedAnnotation bestSource = null;
+         Pair<Integer> bestSpan = null;
          for ( IdentifiedAnnotation source : sources ) {
-            final Collection<Sentence> targetSentences = new ArrayList<>( coveringSentences.get( target ) );
-            if ( source.equals( target ) ) {
+            if ( source.equals( target )
+                 || ( source.getBegin() == target.getBegin() && source.getEnd() == target.getEnd() ) ) {
+               // source and target are same OR duplicates formed for conjunctions
                continue;
             }
             if ( onlyOneTarget && sourceTargets.containsKey( source ) ) {
                continue;
             }
+            final String sourceSentenceId = source.getSentenceID();
             if ( source.getBegin() > target.getEnd() ) {
                if ( !onlyOneTarget ) {
-                  if ( bestSource == null ) {
-                     targetSentences.retainAll( coveringSentences.get( source ) );
-                     if ( !targetSentences.isEmpty() ) {
-                        bestSource = source;
+                  if ( bestSpan == null ) {
+                     if ( sourceSentenceId.equals( target.getSentenceID() ) ) {
+                        bestSpan = new Pair<>( source.getBegin(), source.getEnd() );
                      }
                   }
                   break;
                }
-               if ( bestSource != null ) {
+               if ( bestSpan != null ) {
                   break;
                }
             }
-            bestSource = source;
+            bestSpan = new Pair<>( source.getBegin(), source.getEnd() );
          }
-         if ( bestSource != null ) {
-            sourceTargets.computeIfAbsent( bestSource, a -> new ArrayList<>() ).add( target );
+         if ( bestSpan != null ) {
+            for ( IdentifiedAnnotation source : sources ) {
+               if ( source.getBegin() > bestSpan.getValue1() ) {
+                  break;
+               }
+               if ( source.getBegin() == bestSpan.getValue1() && source.getEnd() == bestSpan.getValue2() ) {
+                  sourceTargets.computeIfAbsent( source, a -> new ArrayList<>() ).add( target );
+               }
+            }
          }
       }
       return sourceTargets;
    }
 
+
+   // Attributes is anatomical site (location), owners is finding, disorder, procedure (thing at location)
+   // In other words, attributeOwner hasRelationTo attribute
+   // TODO for some reason this seems to randomly take a -long- time
    static public Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> createReverseAttributeMap(
          final JCas jcas,
-         final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
          final List<IdentifiedAnnotation> attributeOwners,
          final List<IdentifiedAnnotation> attributes,
          final boolean onlyOneOwner ) {
@@ -350,28 +304,30 @@ final public class RelationUtil {
       if ( attributeOwners.isEmpty() || attributes.isEmpty() ) {
          return Collections.emptyMap();
       }
+
+      final Map<IdentifiedAnnotation,Collection<IdentifiedAnnotation>> conjoinedAttributes
+            = getConjoinedAttributes( jcas.getDocumentText(), attributes );
       final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> ownerMap = new HashMap<>( attributeOwners
             .size() );
       for ( IdentifiedAnnotation owner : attributeOwners ) {
          if ( onlyOneOwner && ownerMap.containsKey( owner ) ) {
             continue;
          }
-         final Collection<Sentence> ownerSentences = coveringSentences.get( owner );
-
-         final Collection<IdentifiedAnnotation> sentenceAttributes = new ArrayList<>();
+         final String ownerSentenceId = owner.getSentenceID();
+         final Collection<IdentifiedAnnotation> sameSentenceAttributes = new ArrayList<>();
          for ( IdentifiedAnnotation attribute : attributes ) {
-            if ( owner.equals( attribute ) ) {
+            if ( owner.equals( attribute )
+                 || (owner.getSubject() != null && !owner.getSubject().equals( attribute.getSubject() )) ) {
                continue;
             }
-            final Collection<Sentence> attributeSentences = coveringSentences.get( attribute );
-            attributeSentences.retainAll( ownerSentences );
-            if ( !attributeSentences.isEmpty() ) {
-               sentenceAttributes.add( attribute );
+            if ( ownerSentenceId.equals( attribute.getSentenceID() ) ) {
+               sameSentenceAttributes.add( attribute );
             }
          }
          final Collection<IdentifiedAnnotation> assignedAttributes = new ArrayList<>( attributes.size() );
          IdentifiedAnnotation bestAttribute = null;
-         for ( IdentifiedAnnotation attribute : sentenceAttributes ) {
+         for ( IdentifiedAnnotation attribute : sameSentenceAttributes ) {
+            // if location is after locatable thing then it is the best location?
             if ( attribute.getBegin() > owner.getEnd() ) {
                if ( bestAttribute == null ) {
                   bestAttribute = attribute;
@@ -383,11 +339,93 @@ final public class RelationUtil {
          if ( bestAttribute != null ) {
             ownerMap.computeIfAbsent( owner, a -> new ArrayList<>() ).add( bestAttribute );
             assignedAttributes.add( bestAttribute );
+
+            // Check conjoined, adding a duplicate owner to each conjoined attribute
+            final Collection<IdentifiedAnnotation> conjoinedList = conjoinedAttributes.get( bestAttribute );
+            if ( conjoinedList != null ) {
+               for ( IdentifiedAnnotation conjoined : conjoinedList ) {
+                  if ( !conjoined.equals( bestAttribute ) ) {
+                     final IdentifiedAnnotation duplicate = createDuplicate( jcas, owner );
+                     ownerMap.computeIfAbsent( duplicate, a -> new ArrayList<>() ).add( conjoined );
+                  }
+               }
+            }
             continue;
          }
          // get best attribute by those in preceding sentences
          for ( IdentifiedAnnotation attribute : attributes ) {
             if ( owner.equals( attribute ) || assignedAttributes.contains( attribute ) ) {
+               continue;
+            }
+            if ( attribute.getBegin() > owner.getEnd() ) {
+               break;
+            }
+            bestAttribute = attribute;
+         }
+         if ( bestAttribute != null ) {
+            ownerMap.computeIfAbsent( owner, a -> new ArrayList<>() ).add( bestAttribute );
+
+            // Check conjoined, adding a duplicate owner to each conjoined attribute
+            final Collection<IdentifiedAnnotation> conjoinedList = conjoinedAttributes.get( bestAttribute );
+            if ( conjoinedList != null ) {
+               for ( IdentifiedAnnotation conjoined : conjoinedList ) {
+                  if ( !conjoined.equals( bestAttribute ) ) {
+                     final IdentifiedAnnotation duplicate = createDuplicate( jcas, owner );
+                     ownerMap.computeIfAbsent( duplicate, a -> new ArrayList<>() ).add( conjoined );
+                  }
+               }
+            }
+         }
+      }
+      return ownerMap;
+   }
+
+   // Attributes is anatomical site (location), owners is finding, disorder, procedure (thing at location)
+   // In other words, attributeOwner hasRelationTo attribute
+   // TODO for some reason this seems to randomly take a -long- time
+   static public Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> createReverseAttributeMapSingle(
+         final List<IdentifiedAnnotation> attributeOwners,
+         final List<IdentifiedAnnotation> attributes,
+         final boolean onlyOneOwner ) {
+      if ( attributeOwners.isEmpty() || attributes.isEmpty() ) {
+         return Collections.emptyMap();
+      }
+      final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> ownerMap = new HashMap<>( attributeOwners
+            .size() );
+      for ( IdentifiedAnnotation owner : attributeOwners ) {
+         if ( onlyOneOwner && ownerMap.containsKey( owner ) ) {
+            continue;
+         }
+         final String ownerSentenceId = owner.getSentenceID();
+
+         final Collection<IdentifiedAnnotation> sentenceAttributes = new ArrayList<>();
+         for ( IdentifiedAnnotation attribute : attributes ) {
+            if ( owner.equals( attribute )
+                 || (owner.getSubject() != null && !owner.getSubject().equals( attribute.getSubject() )) ) {
+               continue;
+            }
+            if ( ownerSentenceId.equals( attribute.getSentenceID() ) ) {
+               sentenceAttributes.add( attribute );
+            }
+         }
+         IdentifiedAnnotation bestAttribute = null;
+         for ( IdentifiedAnnotation attribute : sentenceAttributes ) {
+            // if location is after locatable thing then it is the best location?
+            if ( attribute.getBegin() > owner.getEnd() ) {
+               if ( bestAttribute == null ) {
+                  bestAttribute = attribute;
+               }
+               break;
+            }
+            bestAttribute = attribute;
+         }
+         if ( bestAttribute != null ) {
+            ownerMap.computeIfAbsent( owner, a -> new ArrayList<>() ).add( bestAttribute );
+            continue;
+         }
+         // get best attribute by those in preceding sentences
+         for ( IdentifiedAnnotation attribute : attributes ) {
+            if ( owner.equals( attribute ) ) {
                continue;
             }
             if ( attribute.getBegin() > owner.getEnd() ) {
@@ -403,106 +441,89 @@ final public class RelationUtil {
    }
 
 
-
-   static public Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> getBestMatches(
-         final JCas jcas,
-         final List<IdentifiedAnnotation> matchables,
-         final List<IdentifiedAnnotation> toMatches,
-         final boolean onlyOneMatch,
-         final boolean sentenceFirst ) {
-      if ( matchables.isEmpty() || toMatches.isEmpty() ) {
-         return Collections.emptyMap();
-      }
-      final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences
-            = JCasUtil.indexCovering( jcas, IdentifiedAnnotation.class, Sentence.class );
-      final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> matchMap = new HashMap<>( matchables
-            .size() );
-      // for each attribute, get the best owner
-      for ( IdentifiedAnnotation toMatch : toMatches ) {
-         IdentifiedAnnotation bestMatchable = null;
-         final Collection<Sentence> allToMatchSentences = new ArrayList<>( coveringSentences.get( toMatch ) );
-         // if same-sentence owner-attribute relations are preferred, check the sentence first.
-         if ( sentenceFirst ) {
-            bestMatchable = getBestSameSentenceMatch( coveringSentences,
-                  allToMatchSentences, toMatch, onlyOneMatch, matchMap.keySet() );
-            if ( bestMatchable != null ) {
-               LOGGER.warn( "Best Matchable " + bestMatchable.getCoveredText() + " to Match " + toMatch.getCoveredText() );
+   static private Map<IdentifiedAnnotation,Collection<IdentifiedAnnotation>> getConjoinedAttributes(
+         final String docText,
+         final List<IdentifiedAnnotation> attributes ) {
+      final Map<IdentifiedAnnotation,Collection<IdentifiedAnnotation>> conjoinedAttributeLists = new HashMap<>();
+      IdentifiedAnnotation previousAttribute = null;
+      String previousSentenceId = null;
+      Collection<IdentifiedAnnotation> conjoinedAttributes = new ArrayList<>();
+      for ( IdentifiedAnnotation attribute : attributes ) {
+         if ( previousAttribute == null ) {
+            previousAttribute = attribute;
+            previousSentenceId = previousAttribute.getSentenceID();
+            continue;
+         }
+         if ( attribute.getBegin() <= previousAttribute.getEnd() ) {
+            // The previous attribute overlaps and is longer than this attribute.
+            // Since the are the same type, this attribute should be subsumed.  Skip it.
+            continue;
+         }
+         final String attributeSentenceId = attribute.getSentenceID();
+         if ( !attributeSentenceId.equals( previousSentenceId ) ) {
+            if ( !conjoinedAttributes.isEmpty() ) {
+               final Collection<IdentifiedAnnotation> conjoined = new ArrayList<>( conjoinedAttributes );
+               conjoinedAttributes.forEach( a -> conjoinedAttributeLists.put( a, conjoined ) );
+               conjoinedAttributes = new ArrayList<>();
+            }
+            previousAttribute = attribute;
+            previousSentenceId = attributeSentenceId;
+            continue;
+         }
+         final String textBetween = docText.substring( previousAttribute.getEnd(), attribute.getBegin() );
+         final String[] splits = WHITESPACE.split( textBetween );
+         if ( splits.length < 5
+            && ( textBetween.contains( "," ) || textBetween.toLowerCase().contains( " and " ) ) ) {
+            if ( conjoinedAttributes.isEmpty() ) {
+               conjoinedAttributes.add( previousAttribute );
+            }
+            conjoinedAttributes.add( attribute );
+         } else {
+            if ( !conjoinedAttributes.isEmpty() ) {
+               final Collection<IdentifiedAnnotation> conjoined = new ArrayList<>( conjoinedAttributes );
+               conjoinedAttributes.forEach( a -> conjoinedAttributeLists.put( a, conjoined ) );
+               conjoinedAttributes = new ArrayList<>();
             }
          }
-         // if there was no same-sentence best owner, get the nearest preceding owner
-         if ( bestMatchable == null ) {
-            for ( IdentifiedAnnotation matchable : matchables ) {
-               if ( matchable.equals( toMatch ) ) {
-                  continue;
-               }
-               if ( onlyOneMatch && matchMap.containsKey( matchable ) ) {
-                  continue;
-               }
-               // owner is after attribute.  Only consider valid if in the same sentence.
-               if ( matchable.getBegin() > toMatch.getEnd() ) {
-                  if ( !onlyOneMatch ) {
-                     if ( bestMatchable == null && !sentenceFirst ) {
-                        final Collection<Sentence> toMatchSentences = new ArrayList<>( allToMatchSentences );
-                        toMatchSentences.retainAll( coveringSentences.get( matchable ) );
-                        if ( !toMatchSentences.isEmpty() ) {
-                           bestMatchable = matchable;
-                        }
-                     }
-                     break;
-                  }
-                  if ( bestMatchable != null ) {
-                     break;
-                  }
-               }
-               bestMatchable = matchable;
-            }
-         }
-
-         if ( bestMatchable != null ) {
-            LOGGER.error(
-                  "   Assigning Best Matchable " + bestMatchable.getCoveredText() + " " + bestMatchable.getBegin() + "," + bestMatchable.getEnd()
-                  + " to Match " + toMatch.getCoveredText() + " " + toMatch.getBegin() + "," + toMatch.getEnd() );
-            matchMap.computeIfAbsent( bestMatchable, a -> new ArrayList<>() ).add( toMatch );
-         }
+         previousAttribute = attribute;
+         previousSentenceId = attributeSentenceId;
       }
-      return matchMap;
+      if ( !conjoinedAttributes.isEmpty() ) {
+         final Collection<IdentifiedAnnotation> conjoined = new ArrayList<>( conjoinedAttributes );
+         conjoinedAttributes.forEach( a -> conjoinedAttributeLists.put( a, conjoined ) );
+      }
+
+      return conjoinedAttributeLists;
    }
 
-
-   static private IdentifiedAnnotation getBestSameSentenceMatch( final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
-                                                                 final Collection<Sentence> allToMatchSentences,
-                                                                 final IdentifiedAnnotation toMatch,
-                                                                 final boolean onlyOneMatch,
-                                                                 final Collection<IdentifiedAnnotation> alreadyMatched
-                                                                 ) {
-      final Collection<IdentifiedAnnotation> sentenceMatchables
-            = coveringSentences.entrySet().stream()
-                               .filter( e -> e.getValue().equals( allToMatchSentences ) )
-                               .map( Map.Entry::getKey )
-                               .sorted( Comparator.comparingInt( Annotation::getBegin ) )
-                               .collect( Collectors.toList() );
-      if ( sentenceMatchables.isEmpty() ) {
-         return null;
+   static private IdentifiedAnnotation createDuplicate( final JCas jCas, final IdentifiedAnnotation annotation ) {
+      final SemanticGroup semanticGroup = SemanticGroup.getBestGroup( annotation );
+      final IdentifiedAnnotation duplicate = semanticGroup.getCreator().apply( jCas );
+      duplicate.setBegin( annotation.getBegin() );
+      duplicate.setEnd( annotation.getEnd() );
+      duplicate.setTypeID( annotation.getTypeID() );
+      duplicate.setDiscoveryTechnique( NE_DISCOVERY_TECH_EXPLICIT_AE );
+      final Collection<UmlsConcept> umlsConcepts = OntologyConceptUtil.getUmlsConcepts( annotation );
+      if ( !umlsConcepts.isEmpty() ) {
+         final FSArray conceptArray = new FSArray( jCas, umlsConcepts.size() );
+         int i=0;
+         for ( UmlsConcept umlsConcept : umlsConcepts ) {
+            conceptArray.set( i, umlsConcept );
+            i++;
+         }
+         duplicate.setOntologyConceptArr( conceptArray );
       }
-      int bestDistance = Integer.MAX_VALUE;
-      IdentifiedAnnotation bestMatch = null;
-      for ( IdentifiedAnnotation matchable : sentenceMatchables ) {
-         if ( matchable.equals( toMatch ) ) {
-            continue;
-         }
-         if ( onlyOneMatch && alreadyMatched.contains( matchable ) ) {
-            continue;
-         }
-         final int abToOb = Math.abs( toMatch.getBegin() - matchable.getBegin() );
-         final int aeToOb = Math.abs( toMatch.getEnd() - matchable.getBegin() );
-         final int abToOe = Math.abs( toMatch.getBegin() - matchable.getEnd() );
-         final int aeToOe = Math.abs( toMatch.getEnd() - matchable.getEnd() );
-         final int distance = Math.min( Math.min( abToOb, aeToOb ), Math.min( abToOe, aeToOe ) );
-         if ( distance < bestDistance ) {
-            bestMatch = matchable;
-         }
-      }
-      return bestMatch;
+      duplicate.setConditional( annotation.getConditional() );
+      duplicate.setConfidence( annotation.getConfidence() );
+      duplicate.setGeneric( annotation.getGeneric() );
+      duplicate.setHistoryOf( annotation.getHistoryOf() );
+      duplicate.setPolarity( annotation.getPolarity() );
+      duplicate.setSegmentID( annotation.getSegmentID() );
+      duplicate.setSentenceID( annotation.getSentenceID() );
+      duplicate.setSubject( annotation.getSubject() );
+      duplicate.setUncertainty( annotation.getUncertainty() );
+      duplicate.addToIndexes( jCas );
+      return duplicate;
    }
 
 

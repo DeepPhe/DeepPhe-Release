@@ -42,6 +42,8 @@ import java.util.stream.Collectors;
 )
 final public class Hl7Reader extends AbstractFileTreeReader {
 
+   // TODO - move to ctakes
+
    static public final String HL7_DOC_VIEW = "HL7_DOC_VIEW";
 
    static private final Logger LOGGER = Logger.getLogger( "Hl7Reader" );

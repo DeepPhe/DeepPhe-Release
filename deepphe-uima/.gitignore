@@ -6,6 +6,8 @@
 /neo4jtestdb/
 /testdb/
 /metadata/
+
 /bin/
-*.iml
+/deepphe-uima (2).iml
+/runconfigs/
 /cTAKES.error.log

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
 //
-//       Commands and parameters to run the Deep Phenome v0.2.0 pipeline
+//       Commands and parameters to run the Deep Phenome v0.3.0 pipeline
 //          deals with entity discovery and filtering.
 //
 //       For more information on piper files see the Apache cTAKES wiki:
@@ -29,8 +29,8 @@ addDescription POSTagger
 //  Add phrase chunkers.
 load ChunkerSubPipe
 
-//  Do not exclude words of any part of speech tag for dictionary lookup.
-set exclusionTags=""
+//  Do not exclude words of any part of speech tag for dictionary lookup.  RB* = Adverb
+set exclusionTags="RB,WRB,RBR,RBS"
 //  Use span of 2 for dictionary lookup.
 set minimumSpan=2
 //  Set the path to the xml file containing information for dictionary lookup configuration.

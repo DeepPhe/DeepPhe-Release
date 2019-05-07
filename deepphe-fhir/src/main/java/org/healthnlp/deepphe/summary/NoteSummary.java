@@ -6,6 +6,7 @@ import org.apache.ctakes.cancer.concept.instance.ConceptInstance;
 import org.apache.ctakes.cancer.type.textspan.Episode;
 import org.apache.ctakes.core.note.NoteSpecs;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.log4j.Logger;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
@@ -35,7 +36,7 @@ final public class NoteSummary extends Summary {
 
    private NoteSpecs _noteSpecs;
 
-   public NoteSummary( final JCas jCas ) {
+   public NoteSummary( final JCas jCas, final boolean forDrools ) {
       super( DocumentIDAnnotationUtil.getDocumentID( jCas ) );
 
       final NoteSpecs noteSpecs = new NoteSpecs( jCas );
@@ -49,9 +50,12 @@ final public class NoteSummary extends Summary {
                              .findFirst()
                              .orElse( DocEpisodeTagger.NO_CATEGORY );
 
+      if ( !forDrools ) {
+         return;
+      }
       final CancerSummary cancerSummary = new CancerSummary( noteSpecs.getDocumentId(), noteSpecs.getPatientName() );
       // Create Tumor Summaries
-      tumorSummaries = SummaryFactory.createTumorSummaries( jCas, noteSpecs );
+      tumorSummaries = SummaryFactory.createDocTumorSummaries( jCas, noteSpecs );
 
       LOGGER.debug( getSummaryType() + " " + getId() + " created "
                    + tumorSummaries.size() + " tumorSummaries "
@@ -68,6 +72,9 @@ final public class NoteSummary extends Summary {
       }
 
       tumorSummaries.forEach( cancerSummary::addTumor );
+
+      LOGGER.info( "Before Drools CancerSummary for Note: " + noteSpecs.getDocumentId() + "\n" + cancerSummary.getSummaryText() );
+
       _rawCancerSummaries = Collections.singletonList( cancerSummary );
    }
 
@@ -143,6 +150,9 @@ final public class NoteSummary extends Summary {
    }
 
    public Collection<TumorSummary> getTumorSummaries() {
+      if ( tumorSummaries == null ) {
+         return Collections.emptyList();
+      }
       return tumorSummaries;
    }
 

@@ -52,7 +52,7 @@ abstract public class MedicalRecordWriter extends AbstractFileWriter<MedicalReco
    @Override
    public void collectionProcessComplete() throws AnalysisEngineProcessException {
       super.collectionProcessComplete();
-      _medicalRecord = MedicalRecordStore.getInstance().popMedicalRecord( getEngineName() );
+      _medicalRecord = MedicalRecordStore.getInstance().pop( getEngineName() );
       if ( _medicalRecord != null ) {
          try {
             writeMedicalRecord( _medicalRecord, getEmrOutputDirectory() );
@@ -68,7 +68,7 @@ abstract public class MedicalRecordWriter extends AbstractFileWriter<MedicalReco
    @Override
    protected void createData( final JCas jCas ) {
       // popMedicalRecord can only be performed once per registered engine.  Do not use this method more than once.
-      _medicalRecord = MedicalRecordStore.getInstance().popMedicalRecord( getEngineName() );
+      _medicalRecord = MedicalRecordStore.getInstance().pop( getEngineName() );
    }
 
    /**

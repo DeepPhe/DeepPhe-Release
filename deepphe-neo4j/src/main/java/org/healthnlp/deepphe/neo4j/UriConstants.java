@@ -1,8 +1,13 @@
 package org.healthnlp.deepphe.neo4j;
 
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.MultipleFoundException;
+import org.neo4j.graphdb.Transaction;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.healthnlp.deepphe.neo4j.Neo4jConstants.NAME_KEY;
 
 /**
  * @author SPF , chip-nlp
@@ -144,6 +149,7 @@ final public class UriConstants {
    //// Subclass of "Biological_Process" and later "Tumor_Associated_Process"
    // Semantic Type "Pathologic Function"
    static public final String METASTASIS = DPHE_ROOT_HASH + "Secondary_Neoplasm";
+   static public final String BENIGN_TUMOR = DPHE_ROOT_HASH + "Benign_Neoplasm";
 
    static public final String BODY_MODIFIER = DPHE_ROOT_HASH + "Body_Modifier";
 
@@ -206,6 +212,13 @@ final public class UriConstants {
       return PRIMARY_URIS;
    }
 
+   static private final Collection<String> BENIGN_TUMOR_URIS = new HashSet<>();
+
+   static public Collection<String> getBenignTumorUris( final GraphDatabaseService graphDb ) {
+      initializeUris( graphDb );
+      return BENIGN_TUMOR_URIS;
+   }
+
    static private final Collection<String> GENERIC_TUMOR_URIS = new HashSet<>();
 
    static public Collection<String> getGenericTumorUris( final GraphDatabaseService graphDb ) {
@@ -249,12 +262,48 @@ final public class UriConstants {
       return CANCER_TYPE_MAP;
    }
 
+   static private final Map<String, String> DIAGNOSIS_GROUP_NAMES = new HashMap<>();
+
+   static public Map<String, String> getDiagnosisGroupNames( final GraphDatabaseService graphDb ) {
+      initializeUris( graphDb );
+      return DIAGNOSIS_GROUP_NAMES;
+   }
+
+   static public String getDiagnosisGroupName( final GraphDatabaseService graphDb, final String uri ) {
+      final Map<String, String> map = getDiagnosisGroupNames( graphDb );
+      final String category = map.get( uri );
+      if ( category != null && !category.isEmpty() ) {
+         return category;
+      }
+      return "Unknown";
+   }
+
 
    static private final Object URI_LOCK = new Object();
 
    static private void initializeUris( final GraphDatabaseService graphDb ) {
       synchronized ( URI_LOCK ) {
-         if ( CANCER_URIS.isEmpty() ) {
+         if ( TUMOR_URIS.isEmpty() ) {
+
+//            PRIMARY_URIS.addAll( SearchUtil.getBranchUrisWithRelation( graphDb, MASS, "Disease_Has_Finding", "Primary_Lesion" ) );
+//            PRIMARY_URIS.addAll( SearchUtil.getBranchUrisWithRelation( graphDb, NEOPLASM, "Disease_Has_Finding", "Primary_Lesion" ) );
+//
+//            METASTASIS_URIS.addAll( SearchUtil.getBranchUris( graphDb, METASTASIS ) );
+//            PRIMARY_URIS.removeAll( METASTASIS_URIS );
+//
+//            GENERIC_TUMOR_URIS.addAll( SearchUtil.getBranchUris( graphDb, MASS ) );
+//            GENERIC_TUMOR_URIS.addAll( SearchUtil.getBranchUris( graphDb, NEOPLASM ) );
+//            GENERIC_TUMOR_URIS.removeAll( PRIMARY_URIS );
+//            GENERIC_TUMOR_URIS.removeAll( METASTASIS_URIS );
+//
+//            TUMOR_URIS.addAll( PRIMARY_URIS );
+//            TUMOR_URIS.addAll( METASTASIS_URIS );
+//            TUMOR_URIS.addAll( GENERIC_TUMOR_URIS );
+
+            BENIGN_TUMOR_URIS.addAll( SearchUtil.getBranchUris( graphDb, BENIGN_TUMOR ) );
+            BENIGN_TUMOR_URIS.addAll( SearchUtil.getBranchUrisWithAttribute( graphDb, MASS, "Neoplastic_Status", "Benign" ) );
+            BENIGN_TUMOR_URIS.addAll( SearchUtil.getBranchUrisWithAttribute( graphDb, NEOPLASM, "Neoplastic_Status", "Benign" ) );
+
 
             PRIMARY_URIS.addAll( SearchUtil.getBranchUrisWithRelation( graphDb, MASS, "Disease_Has_Finding", "Primary_Lesion" ) );
             PRIMARY_URIS.addAll( SearchUtil.getBranchUrisWithRelation( graphDb, NEOPLASM, "Disease_Has_Finding", "Primary_Lesion" ) );
@@ -264,9 +313,12 @@ final public class UriConstants {
 
             GENERIC_TUMOR_URIS.addAll( SearchUtil.getBranchUris( graphDb, MASS ) );
             GENERIC_TUMOR_URIS.addAll( SearchUtil.getBranchUris( graphDb, NEOPLASM ) );
+            GENERIC_TUMOR_URIS.add( "Ovarian_Mass" );
+            GENERIC_TUMOR_URIS.removeAll( BENIGN_TUMOR_URIS );
             GENERIC_TUMOR_URIS.removeAll( PRIMARY_URIS );
             GENERIC_TUMOR_URIS.removeAll( METASTASIS_URIS );
 
+            TUMOR_URIS.addAll( BENIGN_TUMOR_URIS );
             TUMOR_URIS.addAll( PRIMARY_URIS );
             TUMOR_URIS.addAll( METASTASIS_URIS );
             TUMOR_URIS.addAll( GENERIC_TUMOR_URIS );
@@ -341,9 +393,65 @@ final public class UriConstants {
 
             ANATOMY_URIS.removeAll( UNWANTED_ANATOMY_URIS );
 
+
+//            DIAGNOSIS_GROUP_NAMES
+            final Collection<String> sites = getChildren( graphDb, "Neoplasm_by_Site" );
+            final Collection<String> morphs = getChildren( graphDb,"Neoplasm_by_Morphology" );
+            final Collection<String> specials = getChildren( graphDb,"Neoplasm_by_Morphology" );
+            final Collection<String> masses = getChildren( graphDb, "Mass" );
+
+            for ( String mass : masses ) {
+               final String groupText = SearchUtil.getPreferredText( graphDb, mass );
+               final Collection<String> branch = SearchUtil.getBranchUris( graphDb, mass );
+               for ( String node : branch ) {
+                  final String prefText = SearchUtil.getPreferredText( graphDb, node );
+                  DIAGNOSIS_GROUP_NAMES.put( prefText, groupText );
+               }
+               DIAGNOSIS_GROUP_NAMES.put( "Mass", "Mass" );
+            }
+            for ( String special : specials ) {
+               final String groupText = SearchUtil.getPreferredText( graphDb, special );
+               final Collection<String> branch = SearchUtil.getBranchUris( graphDb, special );
+               for ( String node : branch ) {
+                  final String prefText = SearchUtil.getPreferredText( graphDb, node );
+                  DIAGNOSIS_GROUP_NAMES.put( prefText, groupText );
+               }
+            }
+            for ( String morph : morphs ) {
+               final String groupText = SearchUtil.getPreferredText( graphDb, morph );
+               final Collection<String> branch = SearchUtil.getBranchUris( graphDb, morph );
+               for ( String node : branch ) {
+                  final String prefText = SearchUtil.getPreferredText( graphDb, node );
+                  DIAGNOSIS_GROUP_NAMES.put( prefText, groupText );
+               }
+            }
+            for ( String site : sites ) {
+               final String groupText = SearchUtil.getPreferredText( graphDb, site );
+               final Collection<String> branch = SearchUtil.getBranchUris( graphDb, site );
+               for ( String node : branch ) {
+                  final String prefText = SearchUtil.getPreferredText( graphDb, node );
+                  DIAGNOSIS_GROUP_NAMES.put( prefText, groupText );
+               }
+            }
+
          }
       }
    }
 
+   static private Collection<String> getChildren( final GraphDatabaseService graphDb, final String uri ) {
+      try ( Transaction tx = graphDb.beginTx() ) {
+         Collection<String> children = SearchUtil.getChildClassNodes( graphDb, uri )
+                                                 .stream()
+                                                 .map( n -> n.getProperty( NAME_KEY ) )
+                                                 .filter( Objects::nonNull )
+                                                 .map( Object::toString )
+                                                 .collect( Collectors.toList() );
+         tx.success();
+         return children;
+      } catch ( MultipleFoundException mfE ) {
+         System.out.println( mfE.getMessage() );
+      }
+      return Collections.emptyList();
+   }
 
 }

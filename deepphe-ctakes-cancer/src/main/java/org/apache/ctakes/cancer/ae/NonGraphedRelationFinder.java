@@ -1,6 +1,7 @@
 package org.apache.ctakes.cancer.ae;
 
 
+import org.apache.ctakes.cancer.document.SectionType;
 import org.apache.ctakes.cancer.uri.UriConstants;
 import org.apache.ctakes.core.util.RelationUtil;
 import org.apache.ctakes.neo4j.Neo4jConnectionFactory;
@@ -10,6 +11,7 @@ import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.LocationOfTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.ctakes.typesystem.type.textspan.Paragraph;
+import org.apache.ctakes.typesystem.type.textspan.Segment;
 import org.apache.ctakes.typesystem.type.textspan.Sentence;
 import org.apache.log4j.Logger;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -26,6 +28,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.healthnlp.deepphe.neo4j.RelationConstants.*;
+import static org.healthnlp.deepphe.neo4j.UriConstants.TRIPLE_NEGATIVE;
 
 /**
  * The ml location_of module only finds same-sentence relations.
@@ -104,7 +107,8 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
          = a -> a.getPolarity() != CONST.NE_POLARITY_NEGATION_PRESENT
                 && a.getUncertainty() != CONST.NE_UNCERTAINTY_PRESENT
                 && !a.getGeneric()
-                && !a.getConditional();
+                && !a.getConditional()
+                && CONST.ATTR_SUBJECT_PATIENT.equals( a.getSubject() );
 
    /**
     * Adds sizes and breast locations for neoplasms and location modifiers that do not already have them.
@@ -158,106 +162,106 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
             .collect( Collectors.toList() );
 
       // iterate over paragraphs.
+      final Map<Segment, Collection<Paragraph>> sectionParagraphMap
+            = JCasUtil.indexCovered( jCas, Segment.class, Paragraph.class );
       final Map<Paragraph, Collection<IdentifiedAnnotation>> paragraphAnnotationMap
             = JCasUtil.indexCovered( jCas, Paragraph.class, IdentifiedAnnotation.class );
-      final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences
-            = JCasUtil.indexCovering( jCas, IdentifiedAnnotation.class, Sentence.class );
 
-      for ( Map.Entry<Paragraph, Collection<IdentifiedAnnotation>> paragraphAnnotations : paragraphAnnotationMap
-            .entrySet() ) {
-         final Paragraph paragraph = paragraphAnnotations.getKey();
-         final Collection<IdentifiedAnnotation> annotations = paragraphAnnotations.getValue();
-         final List<IdentifiedAnnotation> cancerList
-               = Neo4jOntologyConceptUtil.getUriAnnotationsByUris( annotations, cancerUris ).values().stream()
-                                         .flatMap( Collection::stream )
-                                         .filter( wantedForFact )
-                                                                     .distinct()
-                                                                     .sorted( Comparator.comparingInt( Annotation::getBegin ) )
-                                                                     .collect( Collectors.toList() );
+      for ( Map.Entry<Segment, Collection<Paragraph>> sectionParagraphs : sectionParagraphMap.entrySet() ) {
+         final boolean isMicroscopic = SectionType.Microscopic.isThisSectionType( sectionParagraphs.getKey() );
+         final boolean isFinding = SectionType.Finding.isThisSectionType( sectionParagraphs.getKey() );
+         final boolean isHistology = SectionType.HistologySummary.isThisSectionType( sectionParagraphs.getKey() );
+         for ( Paragraph paragraph : sectionParagraphs.getValue() ) {
+            final Collection<IdentifiedAnnotation> annotations = paragraphAnnotationMap.get( paragraph );
+            final List<IdentifiedAnnotation> cancerList
+                  = Neo4jOntologyConceptUtil.getUriAnnotationsByUris( annotations, cancerUris ).values().stream()
+                                            .flatMap( Collection::stream )
+                                            .filter( wantedForFact )
+                                            .distinct()
+                                            .sorted( Comparator.comparingInt( Annotation::getBegin ) )
+                                            .collect( Collectors.toList() );
 
-         final List<IdentifiedAnnotation> primaryList
-               = Neo4jOntologyConceptUtil.getUriAnnotationsByUris( annotations, primaryUris ).values().stream()
-                                         .flatMap( Collection::stream )
-                                         .filter( wantedForFact )
-                                         .distinct()
-                                         .sorted( Comparator.comparingInt( Annotation::getBegin ) )
-                                         .collect( Collectors.toList() );
+            final List<IdentifiedAnnotation> primaryList
+                  = Neo4jOntologyConceptUtil.getUriAnnotationsByUris( annotations, primaryUris ).values().stream()
+                                            .flatMap( Collection::stream )
+                                            .filter( wantedForFact )
+                                            .distinct()
+                                            .sorted( Comparator.comparingInt( Annotation::getBegin ) )
+                                            .collect( Collectors.toList() );
 
-         final List<IdentifiedAnnotation> metastasisList
-               = Neo4jOntologyConceptUtil.getUriAnnotationsByUris( annotations, metastasisUris ).values().stream()
-                                         .flatMap( Collection::stream )
-                                         .filter( wantedForFact )
-                                         .distinct()
-                                         .sorted( Comparator.comparingInt( Annotation::getBegin ) )
-                                         .collect( Collectors.toList() );
-         final List<IdentifiedAnnotation> genericList
-               = Neo4jOntologyConceptUtil.getUriAnnotationsByUris( annotations, genericUris ).values().stream()
-                                         .flatMap( Collection::stream )
-                                         .filter( wantedForFact )
-                                         .distinct()
-                                         .sorted( Comparator.comparingInt( Annotation::getBegin ) )
-                                         .collect( Collectors.toList() );
-         final List<IdentifiedAnnotation> tumorList = new ArrayList<>( primaryList );
-         tumorList.addAll( metastasisList );
-         tumorList.addAll( genericList );
-         tumorList.sort( Comparator.comparingInt( Annotation::getBegin ) );
+            final List<IdentifiedAnnotation> metastasisList
+                  = Neo4jOntologyConceptUtil.getUriAnnotationsByUris( annotations, metastasisUris ).values().stream()
+                                            .flatMap( Collection::stream )
+                                            .filter( wantedForFact )
+                                            .distinct()
+                                            .sorted( Comparator.comparingInt( Annotation::getBegin ) )
+                                            .collect( Collectors.toList() );
+            final List<IdentifiedAnnotation> genericList
+                  = Neo4jOntologyConceptUtil.getUriAnnotationsByUris( annotations, genericUris ).values().stream()
+                                            .flatMap( Collection::stream )
+                                            .filter( wantedForFact )
+                                            .distinct()
+                                            .sorted( Comparator.comparingInt( Annotation::getBegin ) )
+                                            .collect( Collectors.toList() );
+            final List<IdentifiedAnnotation> tumorList = new ArrayList<>( primaryList );
+            tumorList.addAll( metastasisList );
+            tumorList.addAll( genericList );
+            tumorList.sort( Comparator.comparingInt( Annotation::getBegin ) );
 
-         cancerList.addAll( primaryList );
-         cancerList.addAll( genericList );
-         cancerList.sort( Comparator.comparingInt( Annotation::getBegin ) );
+            cancerList.addAll( primaryList );
+            cancerList.addAll( genericList );
+            cancerList.sort( Comparator.comparingInt( Annotation::getBegin ) );
 
-         if ( !cancerList.isEmpty() ) {
-            findDiagnoses( jCas, coveringSentences, paragraph, cancerList, tumorList );
-            findMetastasis( jCas, coveringSentences, paragraph, cancerList, metastasisList );
-            findTnm( jCas, coveringSentences, paragraph, cancerList );
-            findStage( jCas, paragraph, cancerList );
-         }
-         findTumorExtent( jCas, coveringSentences, paragraph, tumorList );
-         findReceptorStatus( jCas, coveringSentences, paragraph, cancerList, allPrimaryList );
+            if ( !cancerList.isEmpty() ) {
+               findTnm( jCas, annotations, cancerList );
+               findStage( jCas, annotations, cancerList );
+            }
 
-         // if there are breast sites then there may be breast site modifiers
-         final List<IdentifiedAnnotation> breastList
-               = Neo4jOntologyConceptUtil.getAnnotationsByUriBranch( jCas, paragraph, UriConstants.BREAST ).stream()
-                                         .sorted( Comparator.comparingInt( Annotation::getBegin ) )
-                                         .collect( Collectors.toList() );
-         if ( !breastList.isEmpty() ) {
-            final List<IdentifiedAnnotation> breastTumors
-                  = breastList.stream()
-                              .map( a -> RelationUtil.getAllRelated( hasBodySites, a ) )
-                              .flatMap( Collection::stream )
-                              .filter( tumorList::contains )
-                              .distinct()
-                              .sorted( Comparator.comparingInt( Annotation::getBegin ) )
-                              .collect( Collectors.toList() );
-            if ( !breastTumors.isEmpty() ) {
-               findClockwise( jCas, coveringSentences, paragraph, tumorList );
-               findQuadrant( jCas, coveringSentences, paragraph, tumorList );
+            findTumorExtent( jCas, annotations, tumorList );
+            findReceptorStatus( jCas, annotations, cancerList, allPrimaryList );
+
+            if ( isMicroscopic || isFinding || isHistology ) {
+               continue;
+            }
+            if ( !cancerList.isEmpty() ) {
+               findDiagnoses( jCas, paragraph, cancerList, tumorList );
+               findMetastasis( jCas, paragraph, cancerList, metastasisList );
+            }
+
+            // if there are breast sites then there may be breast site modifiers
+            final List<IdentifiedAnnotation> breastList
+                  = Neo4jOntologyConceptUtil.getAnnotationsByUriBranch( jCas, paragraph, UriConstants.BREAST ).stream()
+                                            .sorted( Comparator.comparingInt( Annotation::getBegin ) )
+                                            .collect( Collectors.toList() );
+            if ( !breastList.isEmpty() ) {
+               final List<IdentifiedAnnotation> breastTumors
+                     = breastList.stream()
+                                 .map( a -> RelationUtil.getAllRelated( hasBodySites, a ) )
+                                 .flatMap( Collection::stream )
+                                 .filter( tumorList::contains )
+                                 .distinct()
+                                 .sorted( Comparator.comparingInt( Annotation::getBegin ) )
+                                 .collect( Collectors.toList() );
+               if ( !breastTumors.isEmpty() ) {
+                  findClockwise( jCas, annotations, tumorList );
+                  findQuadrant( jCas, annotations, tumorList );
+               }
             }
          }
       }
-
       LOGGER.info( "Finished Processing" );
    }
 
-
-   /**
-    * Tumor to size
-    *
-    * @param jCas      -
-    * @param paragraph -
-    * @param tumors -
-    */
    static private void findSize( final JCas jCas,
-                                 final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
-                                 final Paragraph paragraph,
+                                 final Collection<IdentifiedAnnotation> annotations,
                                  final List<IdentifiedAnnotation> tumors ) {
       final List<IdentifiedAnnotation> sizeList
-            = getAnnotationList( jCas, paragraph, UriConstants.SIZE );
+            = getAnnotationList( annotations, UriConstants.SIZE );
       if ( sizeList.isEmpty() ) {
          return;
       }
       final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> sizeMap
-            = RelationUtil.createSourceTargetMap( jCas, coveringSentences, tumors, sizeList, true );
+            = RelationUtil.createSourceTargetMap( tumors, sizeList, true );
       for ( Map.Entry<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> entry : sizeMap.entrySet() ) {
          final IdentifiedAnnotation tumor = entry.getKey();
          entry.getValue().forEach( s -> RelationUtil.createRelation( jCas, tumor, s, HAS_SIZE ) );
@@ -270,20 +274,19 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
     * tumor to lesion (tumor extent)
     *
     * @param jCas      -
-    * @param paragraph -
+    * @param annotations -
     * @param tumors    -
     */
    static private void findTumorExtent( final JCas jCas,
-                                        final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
-                                        final Paragraph paragraph,
+                                        final Collection<IdentifiedAnnotation> annotations,
                                         final List<IdentifiedAnnotation> tumors ) {
       final List<IdentifiedAnnotation> lesionList
-            = getWantedAnnotationList( jCas, paragraph, UriConstants.LESION );
+            = getWantedAnnotationList( annotations, UriConstants.LESION );
       if ( lesionList.isEmpty() ) {
          return;
       }
       final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> lesionMap
-            = RelationUtil.createSourceTargetMap( jCas, coveringSentences, tumors, lesionList, true );
+            = RelationUtil.createSourceTargetMap( tumors, lesionList, true );
       for ( Map.Entry<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> entry : lesionMap.entrySet() ) {
          final IdentifiedAnnotation tumor = entry.getKey();
          entry.getValue().forEach( s -> RelationUtil.createRelation( jCas, tumor, s, HAS_TUMOR_EXTENT ) );
@@ -293,66 +296,43 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
    }
 
 
-   /**
-    * Tumor to receptor status
-    *
-    * @param jCas      -
-    * @param paragraph -
-    * @param tumors    -
-    */
-   static private void findReceptorStatus( final JCas jCas,
-                                           final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
-                                           final Paragraph paragraph,
-                                           final List<IdentifiedAnnotation> tumors ) {
-      final List<IdentifiedAnnotation> statusList
-            = getAnnotationList( jCas, paragraph, UriConstants.RECEPTOR_STATUS );
-      if ( statusList.isEmpty() ) {
-         return;
-      }
-      final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> statusMap
-            = RelationUtil.createSourceTargetMap( jCas, coveringSentences, tumors, statusList, false );
-      for ( Map.Entry<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> entry : statusMap.entrySet() ) {
-         final IdentifiedAnnotation tumor = entry.getKey();
-         entry.getValue().forEach( s -> RelationUtil.createRelation( jCas, tumor, s, HAS_RECEPTOR_STATUS ) );
-         entry.getValue().forEach( s -> debugOut(
-               HAS_RECEPTOR_STATUS + "  " + tumor.getCoveredText() + "  " + s.getCoveredText() ) );
-      }
+
+   static private boolean hasStatusValue( final IdentifiedAnnotation annotation ) {
+      final String uri = Neo4jOntologyConceptUtil.getUri( annotation );
+      return uri.endsWith( "_Positive" ) || uri.endsWith( "_Negative" ) || uri.endsWith( "_Status_Unknown" );
    }
 
-   /**
-    * Tumor to receptor status.  Any receptor status that has not gone to a tumor can go to a cancer.
-    *
-    * @param jCas      -
-    * @param paragraph -
-    * @param tumors    -
-    * @param cancers   -
-    */
+
    static private void findReceptorStatus( final JCas jCas,
-                                           final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
-                                           final Paragraph paragraph,
+                                           final Collection<IdentifiedAnnotation> annotations,
                                            final List<IdentifiedAnnotation> tumors,
                                            final List<IdentifiedAnnotation> cancers ) {
       final List<IdentifiedAnnotation> statusList
-            = getAnnotationList( jCas, paragraph, UriConstants.RECEPTOR_STATUS );
+            = getAnnotationList( annotations, UriConstants.RECEPTOR_STATUS )
+            .stream()
+            .filter( NonGraphedRelationFinder::hasStatusValue )
+            .collect( Collectors.toList() );
+      statusList.addAll( getAnnotationList( annotations, TRIPLE_NEGATIVE ) );
       if ( statusList.isEmpty() ) {
          return;
       }
       final List<IdentifiedAnnotation> unusedStatus = new ArrayList<>( statusList );
       final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> statusMap
-            = RelationUtil.createSourceTargetMap( jCas, coveringSentences, tumors, statusList, false );
+            = RelationUtil.createSourceTargetMap( tumors, statusList, false );
       for ( Map.Entry<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> entry : statusMap.entrySet() ) {
          final IdentifiedAnnotation tumor = entry.getKey();
-         entry.getValue().forEach( s -> RelationUtil.createRelation( jCas, tumor, s, HAS_RECEPTOR_STATUS ) );
-         entry.getValue().forEach( s -> debugOut(
-               HAS_RECEPTOR_STATUS + "  " + tumor.getCoveredText() + "  " + s.getCoveredText() ) );
 
          for ( IdentifiedAnnotation status : entry.getValue() ) {
             final String uri = Neo4jOntologyConceptUtil.getUri( status );
-            if ( uri.startsWith( "Estrogen" ) ) {
+            if ( uri.startsWith( "Estrogen" ) && !uri.equals( "Estrogen_Receptor_Family" ) ) {
                RelationUtil.createRelation( jCas, tumor, status, HAS_ER_STATUS );
             } else if ( uri.startsWith( "Progesterone" ) ) {
                RelationUtil.createRelation( jCas, tumor, status, HAS_PR_STATUS );
             } else if ( uri.startsWith( "HER2_Neu" ) ) {
+               RelationUtil.createRelation( jCas, tumor, status, HAS_HER2_STATUS );
+            } else if ( uri.equals( TRIPLE_NEGATIVE ) ) {
+               RelationUtil.createRelation( jCas, tumor, status, HAS_ER_STATUS );
+               RelationUtil.createRelation( jCas, tumor, status, HAS_PR_STATUS );
                RelationUtil.createRelation( jCas, tumor, status, HAS_HER2_STATUS );
             }
          }
@@ -363,21 +343,21 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
          return;
       }
       final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> cancerStatusMap
-            = RelationUtil.createSourceTargetMap( jCas, coveringSentences, cancers, unusedStatus, false );
+            = RelationUtil.createSourceTargetMap( cancers, unusedStatus, false );
       for ( Map.Entry<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> entry : cancerStatusMap.entrySet() ) {
          final IdentifiedAnnotation cancer = entry.getKey();
-         entry.getValue().forEach( s -> RelationUtil.createRelation( jCas, cancer, s, HAS_RECEPTOR_STATUS ) );
-         entry.getValue().forEach( s -> debugOut( "Cancer " +
-                                                  HAS_RECEPTOR_STATUS + "  " + cancer.getCoveredText() + "  " +
-                                                  s.getCoveredText() ) );
 
          for ( IdentifiedAnnotation status : entry.getValue() ) {
             final String uri = Neo4jOntologyConceptUtil.getUri( status );
-            if ( uri.startsWith( "Estrogen" ) ) {
+            if ( uri.startsWith( "Estrogen" ) && !uri.equals( "Estrogen_Receptor_Family" ) ) {
                RelationUtil.createRelation( jCas, cancer, status, HAS_ER_STATUS );
             } else if ( uri.startsWith( "Progesterone" ) ) {
                RelationUtil.createRelation( jCas, cancer, status, HAS_PR_STATUS );
             } else if ( uri.startsWith( "HER2_Neu" ) ) {
+               RelationUtil.createRelation( jCas, cancer, status, HAS_HER2_STATUS );
+            } else if ( uri.equals( TRIPLE_NEGATIVE ) ) {
+               RelationUtil.createRelation( jCas, cancer, status, HAS_ER_STATUS );
+               RelationUtil.createRelation( jCas, cancer, status, HAS_PR_STATUS );
                RelationUtil.createRelation( jCas, cancer, status, HAS_HER2_STATUS );
             }
          }
@@ -385,29 +365,17 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
       }
    }
 
-   /**
-    * neoplasm to tnm
-    *
-    * @param jCas      -
-    * @param paragraph -
-    * @param cancers -
-    */
    static private void findTnm( final JCas jCas,
-                                final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
-                                final Paragraph paragraph,
+                                final Collection<IdentifiedAnnotation> annotations,
                                 final List<IdentifiedAnnotation> cancers ) {
-      final List<IdentifiedAnnotation> tnmList
-            = getAnnotationList( jCas, paragraph, UriConstants.TNM );
+      final List<IdentifiedAnnotation> tnmList = getAnnotationList( annotations, UriConstants.TNM );
       if ( tnmList.isEmpty() ) {
          return;
       }
       final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> tnmMap
-            = RelationUtil.createSourceTargetMap( jCas, coveringSentences, cancers, tnmList, false );
+            = RelationUtil.createSourceTargetMap( cancers, tnmList, false );
       for ( Map.Entry<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> entry : tnmMap.entrySet() ) {
          final IdentifiedAnnotation cancer = entry.getKey();
-         entry.getValue().forEach( s -> RelationUtil.createRelation( jCas, cancer, s, HAS_TNM ) );
-         entry.getValue()
-              .forEach( s -> debugOut( HAS_TNM + "  " + cancer.getCoveredText() + "  " + s.getCoveredText() ) );
          for ( IdentifiedAnnotation tnm : entry.getValue() ) {
             final String text = tnm.getCoveredText();
             if ( text.startsWith( "p" ) ) {
@@ -450,46 +418,32 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
       }
    }
 
-   /**
-    * Neoplasm to stage
-    *
-    * @param jCas      -
-    * @param paragraph -
-    * @param cancers -
-    */
-   static private void findStage( final JCas jCas, final Paragraph paragraph,
+   static private void findStage( final JCas jCas,
+                                  final Collection<IdentifiedAnnotation> annotations,
                                   final List<IdentifiedAnnotation> cancers ) {
 
       final List<IdentifiedAnnotation> stageList
-              = getAnnotationList( jCas, paragraph, UriConstants.STAGE );
+            = getAnnotationList( annotations, UriConstants.getCancerStages() );
       if ( stageList.isEmpty() ) {
          return;
       }
       final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> stageMap
-              = RelationUtil.createSourceTargetMap( jCas, cancers, stageList, true );
+            = RelationUtil.createSourceTargetMap( cancers, stageList, true );
       for ( Map.Entry<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> entry : stageMap.entrySet() ) {
          final IdentifiedAnnotation cancer = entry.getKey();
          entry.getValue().forEach( s -> RelationUtil.createRelation( jCas, cancer, s, HAS_STAGE ) );
          entry.getValue()
-                 .forEach( s -> debugOut( HAS_STAGE + "  " + cancer.getCoveredText() + "  " + s.getCoveredText() ) );
+              .forEach( s -> debugOut( HAS_STAGE + "  " + cancer.getCoveredText() + "  " + s.getCoveredText() ) );
       }
    }
 
-   /**
-    * Breast Tumor to Clockwise position
-    *
-    * @param jCas         -
-    * @param paragraph    -
-    * @param breastTumors -
-    */
    static private void findClockwise( final JCas jCas,
-                                      final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
-                                      final Paragraph paragraph,
+                                      final Collection<IdentifiedAnnotation> annotations,
                                       final List<IdentifiedAnnotation> breastTumors ) {
       final List<IdentifiedAnnotation> clockList
-            = getAnnotationList( jCas, paragraph, UriConstants.CLOCKFACE );
+            = getAnnotationList( annotations, UriConstants.CLOCKFACE );
       final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> clockMap
-            = RelationUtil.createSourceTargetMap( jCas, coveringSentences, breastTumors, clockList, true );
+            = RelationUtil.createSourceTargetMap( breastTumors, clockList, true );
       for ( Map.Entry<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> entry : clockMap.entrySet() ) {
          final IdentifiedAnnotation breastTumor = entry.getKey();
          entry.getValue().forEach( s -> RelationUtil.createRelation( jCas, breastTumor, s, HAS_CLOCKFACE ) );
@@ -498,21 +452,13 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
       }
    }
 
-   /**
-    * Breast Tumor to quadrant position
-    *
-    * @param jCas            -
-    * @param paragraph       -
-    * @param breastTumors -
-    */
    static private void findQuadrant( final JCas jCas,
-                                     final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
-                                     final Paragraph paragraph,
+                                     final Collection<IdentifiedAnnotation> annotations,
                                      final List<IdentifiedAnnotation> breastTumors ) {
       final List<IdentifiedAnnotation> quadrantList
-            = getAnnotationList( jCas, paragraph, UriConstants.QUADRANT );
+            = getAnnotationList( annotations, UriConstants.QUADRANT );
       final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> quadrantMap
-            = RelationUtil.createSourceTargetMap( jCas, coveringSentences, breastTumors, quadrantList, true );
+            = RelationUtil.createSourceTargetMap( breastTumors, quadrantList, true );
       for ( Map.Entry<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> entry : quadrantMap.entrySet() ) {
          final IdentifiedAnnotation breastTumor = entry.getKey();
          entry.getValue().forEach( s -> RelationUtil.createRelation( jCas, breastTumor, s, HAS_QUADRANT ) );
@@ -530,7 +476,6 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
     * @param metastases  -
     */
    static private void findMetastasis( final JCas jCas,
-                                       final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
                                        final Paragraph paragraph,
                                        final List<IdentifiedAnnotation> cancers,
                                        final List<IdentifiedAnnotation> metastases ) {
@@ -538,7 +483,7 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
          return;
       }
       final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> metastasisMap
-            = RelationUtil.createSourceTargetMap( jCas, coveringSentences, cancers, metastases, false );
+            = RelationUtil.createSourceTargetMap( cancers, metastases, false );
       for ( Map.Entry<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> entry : metastasisMap.entrySet() ) {
          final IdentifiedAnnotation cancer = entry.getKey();
          entry.getValue().forEach( s -> RelationUtil.createRelation( jCas, s, cancer, METASTASIS_OF ) );
@@ -556,7 +501,6 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
     * @param tumors    -
     */
    static private void findDiagnoses( final JCas jCas,
-                                      final Map<IdentifiedAnnotation, Collection<Sentence>> coveringSentences,
                                       final Paragraph paragraph,
                                       final List<IdentifiedAnnotation> cancers,
                                       final List<IdentifiedAnnotation> tumors ) {
@@ -564,7 +508,7 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
          return;
       }
       final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> metastasisMap
-            = RelationUtil.createSourceTargetMap( jCas, coveringSentences, cancers, tumors, false );
+            = RelationUtil.createSourceTargetMap( cancers, tumors, false );
       for ( Map.Entry<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> entry : metastasisMap.entrySet() ) {
          final IdentifiedAnnotation cancer = entry.getKey();
          entry.getValue().forEach( s -> RelationUtil.createRelation( jCas, s, cancer, HAS_DIAGNOSIS ) );
@@ -573,25 +517,42 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
       }
    }
 
-   static private List<IdentifiedAnnotation> getAnnotationList( final JCas jcas,
-                                                                final Annotation lookupWindow,
+
+   // TODO Can these be faster given new Neo4jOntologyConceptUtil methods?
+   static private List<IdentifiedAnnotation> getAnnotationList( final Collection<IdentifiedAnnotation> annotations,
                                                                 final String uri ) {
-      return Neo4jOntologyConceptUtil.getAnnotationsByUriBranch( jcas, lookupWindow, uri )
+      final Collection<String> uris = Neo4jOntologyConceptUtil.getBranchUris( uri );
+      return getAnnotationList( annotations, uris );
+   }
+
+   static private List<IdentifiedAnnotation> getAnnotationList( final Collection<IdentifiedAnnotation> annotations,
+                                                                final Collection<String> uris ) {
+      return Neo4jOntologyConceptUtil.getUriAnnotationsByUris( annotations, uris ).values()
                                      .stream()
+                                     .flatMap( Collection::stream )
+                                     .distinct()
                                      .sorted( Comparator.comparingInt( Annotation::getBegin ) )
                                      .collect( Collectors.toList() );
    }
 
-   static private List<IdentifiedAnnotation> getWantedAnnotationList( final JCas jcas,
-                                                                      final Annotation lookupWindow,
+
+   static private List<IdentifiedAnnotation> getWantedAnnotationList( final Collection<IdentifiedAnnotation> annotations,
                                                                       final String uri ) {
-      return Neo4jOntologyConceptUtil.getAnnotationsByUriBranch( jcas, lookupWindow, uri )
+      final Collection<String> uris = Neo4jOntologyConceptUtil.getBranchUris( uri );
+      return getWantedAnnotationList( annotations, uris );
+   }
+
+   static private List<IdentifiedAnnotation> getWantedAnnotationList( final Collection<IdentifiedAnnotation> annotations,
+                                                                      final Collection<String> uris ) {
+      return Neo4jOntologyConceptUtil.getUriAnnotationsByUris( annotations, uris ).values()
                                      .stream()
+                                     .flatMap( Collection::stream )
                                      .filter( wantedForFact )
                                      .distinct()
                                      .sorted( Comparator.comparingInt( Annotation::getBegin ) )
                                      .collect( Collectors.toList() );
    }
+
 
    static private void debugOut( final String text ) {
       if ( DEBUG_OUT ) {

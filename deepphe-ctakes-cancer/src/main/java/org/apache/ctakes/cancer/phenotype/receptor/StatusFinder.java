@@ -1,7 +1,7 @@
 package org.apache.ctakes.cancer.phenotype.receptor;
 
 import org.apache.ctakes.cancer.uri.UriAnnotationFactory;
-import org.apache.ctakes.cancer.uri.UriConstants;
+import org.apache.ctakes.core.semantic.SemanticGroup;
 import org.apache.log4j.Logger;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.jcas.JCas;
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.healthnlp.deepphe.neo4j.UriConstants.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -64,10 +65,10 @@ final public class StatusFinder {
    static private final Pattern VALUE_TYPE_PATTERN = Pattern.compile( VALUE_TYPE_REGEX, Pattern.CASE_INSENSITIVE );
 
    private enum SimpleStatusType {
-      ER( UriConstants.ER_STATUS, "(?:Estrogen|ER(?!B)|ER:(\\s*DCIS)?(\\s*IS)?)" ),
-      PR( UriConstants.PR_STATUS, "(?:Progesterone|PR|PR:(\\s*DCIS)?(\\s*IS)?)" ),
-      HER2( UriConstants.HER2_STATUS, "(?:HER-? ?2(?: ?/ ?neu)?(?:\\s*ONCOGENE)?(?:\\s*\\(?ERBB2\\)?)?)" ),
-      NEG_3( UriConstants.TRIPLE_NEGATIVE, "Triple" );
+      ER( ER_STATUS, "(?:Estrogen|ER(?!B)|ER:(\\s*DCIS)?(\\s*IS)?)" ),
+      PR( PR_STATUS, "(?:Progesterone|PR|PR:(\\s*DCIS)?(\\s*IS)?)" ),
+      HER2( HER2_STATUS, "(?:HER-? ?2(?: ?/ ?neu)?(?:\\s*ONCOGENE)?(?:\\s*\\(?ERBB2\\)?)?)" ),
+      NEG_3( TRIPLE_NEGATIVE, "Triple" );
 
       static private final String RECEPTOR_EX = "(?:\\s*-?\\s*?Receptors?\\s*-?)?\\s*(?:status|expression)?";
       final private String _uri;
@@ -148,12 +149,12 @@ final public class StatusFinder {
       for ( SimpleStatus status : statuses ) {
          UriAnnotationFactory.createIdentifiedAnnotations( jcas,
                windowStartOffset + status._begin,
-               windowStartOffset + status._end, status._uri );
+               windowStartOffset + status._end, status._uri, SemanticGroup.LAB, "T034" );
       }
    }
 
 
-   static List<SimpleStatus> getReceptorStatuses( final String lookupWindow ) {
+   static private List<SimpleStatus> getReceptorStatuses( final String lookupWindow ) {
       if ( lookupWindow.length() < 3 ) {
          return new ArrayList<>();
       }
@@ -191,7 +192,7 @@ final public class StatusFinder {
       return statuses;
    }
 
-   static List<SimpleStatus> getReceptorStatuses2( final String lookupWindow ) {
+   static private List<SimpleStatus> getReceptorStatuses2( final String lookupWindow ) {
       if ( lookupWindow.length() < 3 ) {
          return Collections.emptyList();
       }

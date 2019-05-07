@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.healthnlp</groupId>
         <artifactId>deepphe</artifactId>
-        <version>0.2.0</version>
+        <version>0.3.0</version>
     </parent>
     <artifactId>deepphe-distribution</artifactId>
     <name>deepphe-distribution</name>
@@ -218,8 +218,6 @@
                                 <argument>org.apache.ctakes.core.pipeline.PiperFileRunner</argument>
                                 <argument>-p</argument>
                                 <argument>data/pipeline/DeepPhe.piper</argument>
-                                <argument>-d</argument>
-                                <argument>Breast</argument>
                                 <argument>-i</argument>
                                 <argument>data/sample/reports</argument>
                                 <argument>-o</argument>

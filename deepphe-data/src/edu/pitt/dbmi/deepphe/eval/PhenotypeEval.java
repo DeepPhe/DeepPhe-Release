@@ -71,6 +71,7 @@ public class PhenotypeEval {
    private static boolean PRINT_DEBUG_FINE_DETAIL;
 
    private static boolean PRINT_WIKI_OUTPUT;
+   private static boolean PRINT_EXCEL_OUTPUT;
 
    private static boolean STRICT_VALUE_CALCULATION;           // input parm
    private static boolean PRINT_RECORD_LEVEL_STATS;           // input parm
@@ -100,6 +101,7 @@ public class PhenotypeEval {
       PRINT_DEBUG_DETAIL = false;      // for debug/development. change to false before runs to give to other people
       PRINT_DEBUG_FINE_DETAIL = false; // for debug/development. change to false before runs to give to other people
       PRINT_WIKI_OUTPUT = true;        // enable when not debugging/developing other parts
+      PRINT_EXCEL_OUTPUT = true;        // enable when not debugging/developing other parts
 
       STRICT_VALUE_CALCULATION = false;   // input parm
       PRINT_RECORD_LEVEL_STATS = false;   // input parm
@@ -505,9 +507,11 @@ public class PhenotypeEval {
             List<String> listB = new ArrayList<>();
             expect(r.compare(listA, listB), 1); // both empty
             listA.add("Ovary");
-            listB.add("Fallopian Tube");
+//            listB.add("Fallopian Tube");
+            listB.add("Fallopian_Tube");
             expect(r.compare(listA, listB), 1); // special case, should match
-            listA.add("Fallopian Tube");
+//            listA.add("Fallopian Tube");
+            listA.add("Fallopian_Tube");
             expect(r.compare(listA, listB), 1); // special case
             listB.add("Other");
             expect(r.compare(listA, listB), 0.5); // consider ovary + fallopian to be a single match with fallopian
@@ -908,8 +912,14 @@ public class PhenotypeEval {
       }
       String locations = record.getLocations();
       String lc = locations.toLowerCase();
-      if (lc.contains("ovary") && lc.contains("fallopian tube") && lc.contains(Record.INTRA_VALUE_DELIMITER)
-              || lc.contains("axilla")) { // for Axillary_Lymph_node and Axilla
+      if ( lc.contains("ovary") && lc.contains("fallopian_tube")
+           && ( lc.contains(",") || lc.contains(Record.INTRA_VALUE_DELIMITER) ) ) {
+         System.out.println("Allowing record with locations " + locations + " to be left in pool of potentials.");
+         return true;
+      }
+//      if (lc.contains("ovary") && lc.contains("fallopian tube") && lc.contains(Record.INTRA_VALUE_DELIMITER)
+//              || lc.contains("axilla")) { // for Axillary_Lymph_node and Axilla
+      if ( lc.contains( "axilla" ) ) {
          System.out.println("Allowing record with locations " + locations + " to be left in pool of potentials.");
          return true;
       }
@@ -1078,6 +1088,14 @@ public class PhenotypeEval {
        addSynonym("Axilla", "Axillary_Lymph_Node"); // discussed 9/5/2018
        addSynonym("Thigh", "Femur");
        addSynonym("Gastric_Tissue", "Stomach"); // from email 9/13/2018
+       addSynonym( "Knee_Joint", "Knee_Skin" ); // Because physicians do not specify non-joint 10/15/18
+       addSynonym( "Elbow_Joint", "Elbow_Skin" ); // Because physicians do not specify non-joint 10/15/18
+       addSynonym( "Leg", "Leg_Skin" ); // Because physicians do not specify skin 10/15/18
+       addSynonym( "Lower_Extremity", "Leg_Skin" ); // Because physicians do not specify skin 10/15/18
+       addSynonym( "Foot", "Foot_Skin" ); // Because physicians do not specify skin 10/15/18
+       addSynonym( "Abdomen", "Abdominal_Skin" ); // Because physicians do not specify skin 10/15/18
+       addSynonym( "Neck", "Neck_Skin" ); // Because physicians do not specify skin 10/15/18
+       addSynonym( "Eye", "Conjunctiva" ); // Because physicians may not specify membrane 10/15/18
     }
 
     private static void addSynonym(String key , String synonym) {
@@ -1374,17 +1392,19 @@ public class PhenotypeEval {
       private boolean locationIsJustSkin() {
          return toStringSafely(getLocations()).toLowerCase().equals("skin");
       }
-      private void fixLocationsWithLaterality() {
 
-         String indicator = Record.PRIMARY_KEY_INDICATOR;
-         String locationField = Fields.bodyLocationField;
-         if (locationField.startsWith(indicator)) locationField = locationField.substring(indicator.length());
-
-         String lateralityFieldSuffix = Fields.lateralityField;
-         if (lateralityFieldSuffix.startsWith(indicator)) lateralityFieldSuffix = lateralityFieldSuffix.substring(indicator.length());
-         fixLocation(this, locationField, lateralityFieldSuffix);
-
-      }
+      //  THIS SHOULD NEVER HAVE BEEN DONE !!!  THE CORRECT WAY TO HANDLE THIS IS WITH THE ONTOLOGY !!!  THIS ACTUALLY BROKE THINGS !!!
+//      private void fixLocationsWithLaterality() {
+//
+//         String indicator = Record.PRIMARY_KEY_INDICATOR;
+//         String locationField = Fields.bodyLocationField;
+//         if (locationField.startsWith(indicator)) locationField = locationField.substring(indicator.length());
+//
+//         String lateralityFieldSuffix = Fields.lateralityField;
+//         if (lateralityFieldSuffix.startsWith(indicator)) lateralityFieldSuffix = lateralityFieldSuffix.substring(indicator.length());
+//         fixLocation(this, locationField, lateralityFieldSuffix);
+//
+//      }
 
       private String latFieldWithoutIndicator = null;
       private String getLaterality() {
@@ -1405,16 +1425,16 @@ public class PhenotypeEval {
          return "";
       }
 
-      private static void fixLocation(Record r, String locField, String lateralityFieldSuffix) {
-         String lateralityValue = r.getLaterality(lateralityFieldSuffix);
-         if (lateralityValue!=null && lateralityValue.length()>0) {
-            for (String field: r.fields.getAllFieldNames()) {
-               if (field.endsWith(locField) && r.getValue(field)!=null) {
-                  r.addField(field, removePrependedLaterality(r.getValue(field)));
-               }
-            }
-         }
-      }
+//      private static void fixLocation(Record r, String locField, String lateralityFieldSuffix) {
+//         String lateralityValue = r.getLaterality(lateralityFieldSuffix);
+//         if (lateralityValue!=null && lateralityValue.length()>0) {
+//            for (String field: r.fields.getAllFieldNames()) {
+//               if (field.endsWith(locField) && r.getValue(field)!=null) {
+//                  r.addField(field, removePrependedLaterality(r.getValue(field)));
+//               }
+//            }
+//         }
+//      }
 
       public static Record loadRecord(Fields fields, String line, DataSet whichSet, String typeOfAnnotation) {
          if (fields == null) throw new RuntimeException("fields == null");
@@ -1791,33 +1811,39 @@ public class PhenotypeEval {
          List<String> lower1Collapsed = lowercase(list1Collapsed);
          List<String> lower2Collapsed = lowercase(list2Collapsed);
 
-         // change ovary to fallopian tube to allow them to match up for scoring purposes
-         // remove ovary if both ovary and fallopian tube appear in same list so don't count twice
-         if (lower1Collapsed.contains("ovary") && lower1Collapsed.contains("fallopian tube")) {
-            list1Collapsed.remove("Ovary");
-            list1Collapsed.remove("ovary");
-            lower1Collapsed.remove("ovary");
-         }
-         if (lower2Collapsed.contains("ovary") && lower2Collapsed.contains("fallopian tube")) {
-            list2Collapsed.remove("Ovary");
-            list2Collapsed.remove("ovary");
-            lower2Collapsed.remove("ovary");
-         }
+//          change ovary to fallopian tube to allow them to match up for scoring purposes
+//          remove ovary if both ovary and fallopian tube appear in same list so don't count twice
+//         if (lower1Collapsed.contains("ovary") && lower1Collapsed.contains("fallopian tube")) {
+//            list1Collapsed.remove("Ovary");
+//            list1Collapsed.remove("ovary");
+//            lower1Collapsed.remove("ovary");
+//         }
+//         if (lower2Collapsed.contains("ovary") && lower2Collapsed.contains("fallopian tube")) {
+//            list2Collapsed.remove("Ovary");
+//            list2Collapsed.remove("ovary");
+//            lower2Collapsed.remove("ovary");
+//         }
+//
+//         if (lower1Collapsed.contains("ovary") && !lower1Collapsed.contains("fallopian tube")) {
+//            list1Collapsed.remove("Ovary");
+//            list1Collapsed.remove("ovary");
+//            lower1Collapsed.remove("ovary");
+//            list1Collapsed.add("Fallopian Tube");
+//            lower1Collapsed.add("fallopian tube");
+//         }
+//         if (lower2Collapsed.contains("ovary") && !lower2Collapsed.contains("fallopian tube")) {
+//            list2Collapsed.remove("Ovary");
+//            list2Collapsed.remove("ovary");
+//            lower2Collapsed.remove("ovary");
+//            list2Collapsed.add("Fallopian Tube");
+//            lower2Collapsed.add("fallopian tube");
+//         }
 
-         if (lower1Collapsed.contains("ovary") && !lower1Collapsed.contains("fallopian tube")) {
-            list1Collapsed.remove("Ovary");
-            list1Collapsed.remove("ovary");
-            lower1Collapsed.remove("ovary");
-            list1Collapsed.add("Fallopian Tube");
-            lower1Collapsed.add("fallopian tube");
-         }
-         if (lower2Collapsed.contains("ovary") && !lower2Collapsed.contains("fallopian tube")) {
-            list2Collapsed.remove("Ovary");
-            list2Collapsed.remove("ovary");
-            lower2Collapsed.remove("ovary");
-            list2Collapsed.add("Fallopian Tube");
-            lower2Collapsed.add("fallopian tube");
-         }
+         // Replace extra Fallopian_Tube in second list with Ovary if the number of Ovary in first list is greater
+         shiftOvaryTubes( list1Collapsed, list2Collapsed, false );
+         shiftOvaryTubes( list2Collapsed, list1Collapsed, false );
+         shiftOvaryTubes( lower1Collapsed, lower2Collapsed, true );
+         shiftOvaryTubes( lower2Collapsed, lower1Collapsed, true );
 
 
          // if strict calculation, no partial scoring
@@ -1876,6 +1902,41 @@ public class PhenotypeEval {
             (new RuntimeException("Unexpected score: " + result)).printStackTrace();
          }
          return result;
+      }
+
+       /**
+        * According to OvCa domain experts, "Ovary" is sometimes specified in place of "Fallopian_Tube".
+        * Therefore we can make an equivalency for -overlapping- entries of those locations.
+        * This will iterate through list2 and replace "Fallopian_Tube" with "Ovary" iff list1 has more Ovary entries
+        * and list2 has more Fallopian_Tube entries.
+        * This does not take into account laterality or any other attributes, so it is suboptimal.
+        * @param list1 List that might have more Ovary entries
+        * @param list2 List that might have more Fallopian_Tube entries
+        * @param lowerCase if the list entries are lowercase for list2
+        */
+      static private void shiftOvaryTubes( final List<String> list1, final List<String> list2, final boolean lowerCase ) {
+         final long ovaryCount1 = list1.stream().filter( "Ovary"::equalsIgnoreCase ).count();
+         final long ovaryCount2 = list2.stream().filter( "Ovary"::equalsIgnoreCase ).count();
+         if ( ovaryCount1 <= ovaryCount2 ) {
+            return;
+         }
+         final long tubeCount1 = list1.stream().filter( "Fallopian_Tube"::equalsIgnoreCase ).count();
+         final long tubeCount2 = list2.stream().filter( "Fallopian_Tube"::equalsIgnoreCase ).count();
+         if ( tubeCount1 >= tubeCount2 ) {
+            return;
+         }
+         final String replacement = lowerCase ? "ovary" : "Ovary";
+         final long shiftMax = Math.min( ovaryCount1-ovaryCount2, tubeCount2-tubeCount1 );
+         long shifted = 0;
+         for ( int i=0; i<list2.size(); i++ ) {
+            if ( list2.get( i ).equalsIgnoreCase( "Fallopian_Tube" ) ) {
+               list2.set( i, replacement );
+               shifted++;
+               if ( shifted >= shiftMax ) {
+                  return;
+               }
+            }
+         }
       }
 
       /**
@@ -2019,7 +2080,7 @@ public class PhenotypeEval {
             }
 
             if (INCLUDE_THOSE_WITHOUT_LOCATION) {
-               record.fixLocationsWithLaterality();
+//               record.fixLocationsWithLaterality();
 
                record.setId(lineNumber);
                annotations.add(record);
@@ -2040,7 +2101,7 @@ public class PhenotypeEval {
                } else if (isTumorRecord(type) && whichSet.equals(DataSet.GOLD) && !hasLocation(record)) {
                   System.out.println("INFO: Ignoring " + whichSet.toString().toLowerCase() + " " + type + " because it doesn't have a body location: " + record.getPatientName() + " " + record.getDiagnosis());
                } else {
-                  record.fixLocationsWithLaterality();
+//                  record.fixLocationsWithLaterality();
                   record.setId(lineNumber);
                   annotations.add(record);
                }
@@ -2097,12 +2158,12 @@ public class PhenotypeEval {
    private LinkedHashMap<String, List<Record>> indexByPatient(List<Record> annotations) {
 
       LinkedHashMap<String, List<Record>> mapByPatient = new LinkedHashMap<>();
-      ArrayList<String> patients = new ArrayList<>();
+      List<String> patients = new ArrayList<>();
       for (Record r: annotations) {
          patients.add(r.getPatientName());
       }
       final Comparator<String> comparator = new NumberedSuffixComparator();
-      Collections.sort(patients, comparator);
+      patients.sort( comparator );
 
       // Create the lists so later we can just do an add without checking for null,
       // and so they get inserted in order
@@ -2497,6 +2558,12 @@ public class PhenotypeEval {
          System.out.println("** ==>> Skipping writing output formatted for confluence wiki.");
       }
 
+      if ( PRINT_EXCEL_OUTPUT ) {
+         writeExcelColumns( System.out, label, totalConfusion, attributeConfusions );
+      } else {
+         System.out.println( "** ==>> Skipping writing output formatted for confluence wiki." );
+      }
+
       if (PRINT_DEBUG_FINE_DETAIL) printLocations(goldMapByPatientName, candMapByPatientName);
 
    }
@@ -2675,13 +2742,73 @@ public class PhenotypeEval {
       out.println("|}");
    }
 
+   static private void writeExcelColumns( final PrintStream out,
+                                          final String label,
+                                          final ConfusionMatrix totalConfusion,
+                                          final Map<String, ConfusionMatrix> attributeConfusions ) {
+      out.println();
+      final String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+      out.print( "Date," + label );
+      for ( String attribute : attributeConfusions.keySet() ) {
+         out.print( "," + attribute );
+      }
+      out.print( ",,Auditable" );
+      out.println();
+      out.print( "\"" + date + "\"" + columnize( totalConfusion ) );
+      for ( ConfusionMatrix matrix : attributeConfusions.values() ) {
+         out.print( columnize( matrix ) );
+      }
+      // Auditable represents the percent of elements that can be corrected by simply verifying the output.
+      // In other words, without reading all of the notes from scratch a certain percent will always be missed.
+      //   - An auditor can easily get rid of FP.  They cannot easily get rid of FN.
+      // This comes out to the Recall' and an F1' based upon P=1 F1' = 2R/(1+R)
+      final double recallP = totalConfusion.TPP/(totalConfusion.TPP+totalConfusion.FN);
+      out.print( ",," + percent( recallP )
+                 + "    " + dot4( 2*recallP/(1+recallP) ) );
+      out.println();
+      out.println();
+   }
+
+   static private final String columnize( final ConfusionMatrix matrix ) {
+      return ",\""
+             + noDot( matrix.TPP )
+             + "," + noDot( matrix.FP )
+             + "," + noDot( matrix.FN )
+             + "  " + percent( matrix.getAccuracy() ) + "  "
+             + "  "  + dot4( matrix.getFscore() )
+             + "\"";
+   }
+
+   static private String dot4( final double value ) {
+      if ( Double.isNaN( value ) ) {
+         return "-";
+      }
+      return String.format( "%.4f", value );
+   }
+
+   static private String percent( final double value ) {
+      if ( Double.isNaN( value ) ) {
+         return "-";
+      }
+      return String.format( "%.0f", value*100 ) + "%";
+   }
+
+   static private String noDot( final double value ) {
+      if ( Double.isNaN( value ) ) {
+         return "-";
+      }
+      return String.format( "%.0f", value );
+   }
+
 
    static private List<String> readFile(File file) throws IOException {
       List<String> lines = new ArrayList<>();
       try (BufferedReader br = new BufferedReader(new FileReader(file))) {
          String line = br.readLine();
          while (line != null) {
-            lines.add(line);
+            if ( !line.startsWith( "//" ) ) {
+               lines.add( line );
+            }
             line = br.readLine();
          }
       } catch (IOException e) {

@@ -1,5 +1,8 @@
 package org.apache.ctakes.cancer.concept.instance;
 
+import jdk.nashorn.internal.ir.annotations.Immutable;
+import org.apache.ctakes.cancer.uri.UriConstants;
+import org.apache.ctakes.core.semantic.SemanticGroup;
 import org.apache.ctakes.neo4j.Neo4jOntologyConceptUtil;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.Event;
@@ -64,6 +67,12 @@ public interface ConceptInstance extends IdOwner {
        * @return id of the document with annotation
        */
    String getDocumentId( IdentifiedAnnotation annotation );
+
+   /**
+    *
+    * @return map of documentId to collection of annotations in document
+    */
+   Map<String,Collection<IdentifiedAnnotation>> getDocAnnotations();
 
    /**
     * @param annotation -
@@ -161,12 +170,6 @@ public interface ConceptInstance extends IdOwner {
 
 
 
-   /**
-    * @return concept instances related to this concept instance and the name of the relation, recursive
-    */
-   default Map<String, Collection<ConceptInstance>> getForwardRelated() {
-      return ConceptInstanceUtil.getRelations( this, ConceptInstanceUtil.RelationDirection.FORWARD );
-   }
 
    /**
     * @return concept instances related to this concept instance and the name of the relation
@@ -195,34 +198,6 @@ public interface ConceptInstance extends IdOwner {
     */
    void addRelated( final String type, ConceptInstance related );
 
-   /**
-    * Reverse relations, as in a relation in which this concept instance is the target, not the source.
-    * @return concept instances related to this concept instance and the name of the relation
-    */
-   Map<String,Collection<ConceptInstance>> getReverseRelated();
-
-   /**
-    * @param relationMap new replacement relations for the concept instance.
-    */
-   default void setReverseRelated( final Map<String, Collection<ConceptInstance>> relationMap ) {
-      clearReverseRelations();
-      for ( Map.Entry<String, Collection<ConceptInstance>> entry : relationMap.entrySet() ) {
-         final String name = entry.getKey();
-         entry.getValue().forEach( ci -> addReverseRelated( name, ci ) );
-      }
-   }
-
-   /**
-    * clear the reverse relations.
-    */
-   void clearReverseRelations();
-
-   /**
-    * Reverse relations, as in a relation in which this concept instance is the target, not the source.
-    * As much as I hated to do it, I removed the standard of immutable CIs in order to better create ci relations
-    * @param related concept instances related to this concept instance and the name of the relation
-    */
-   void addReverseRelated( final String type, ConceptInstance related );
 
    /**
     *
@@ -230,12 +205,11 @@ public interface ConceptInstance extends IdOwner {
     * @return type system EventProperties
     */
    static EventProperties getEventProperties( final IdentifiedAnnotation annotation ) {
-      if ( !EventMention.class.isInstance( annotation ) ) {
-         return null;
-      }
-      final Event event = ((EventMention) annotation).getEvent();
-      if ( event != null ) {
-         return event.getProperties();
+      if ( annotation instanceof EventMention ) {
+         final Event event = ((EventMention)annotation).getEvent();
+         if ( event != null ) {
+            return event.getProperties();
+         }
       }
       return null;
    }
@@ -253,13 +227,14 @@ public interface ConceptInstance extends IdOwner {
    default String toText() {
       final StringBuilder sb = new StringBuilder();
       sb.append( getClass().getSimpleName() ).append( ": " )
-        .append( getPatientId() ).append( "\n" )
+        .append( getPatientId() ).append( "  " )
         .append( getAnnotations().stream()
                                  .map( this::getDocumentId )
                                  .distinct()
                                  .collect( Collectors.joining( "_") ) ).append( "\n" )
         .append( getPreferredText() ).append( "\n" )
-        .append( getUri() ).append( "\n" )
+        .append( getUri() ).append( "  " )
+        .append( getId() ).append( "\n" )
         .append( getCoveredText() )
         .append( " " )
         .append( isNegated() ? "\tnegated" : "" )
@@ -274,7 +249,7 @@ public interface ConceptInstance extends IdOwner {
         .append( getModality().isEmpty() ? "" : "\t" + getModality() );
       for ( Map.Entry<String,Collection<ConceptInstance>> related : getRelated().entrySet() ) {
          sb.append( "\n" ).append( related.getKey() );
-         related.getValue().forEach( ci -> sb.append( "\n   " ).append( ci.getPreferredText() ) );
+         related.getValue().forEach( ci -> sb.append( "\n   " ).append( ci.getPreferredText() ).append( "  " ).append( ci.getId() ) );
       }
       return sb.toString();
    }
@@ -300,5 +275,82 @@ public interface ConceptInstance extends IdOwner {
          return getValue( dtr2 ) - getValue( dtr1 );
       }
    }
+
+
+
+   @Immutable
+   ConceptInstance NULL_INSTANCE = new ConceptInstance() {
+      @Override
+      public String getUri() {
+         return UriConstants.UNKNOWN;
+      }
+
+      @Override
+      public Collection<IdentifiedAnnotation> getAnnotations() {
+         return Collections.emptyList();
+      }
+
+      @Override
+      public String getPreferredText() {
+         return "";
+      }
+
+      @Override
+      public String getSemanticGroup() {
+         return SemanticGroup.UNKNOWN.toString();
+      }
+
+      @Override
+      public String getPatientId() {
+         return "";
+      }
+
+      @Override
+      public String getJoinedDocumentId() {
+         return "";
+      }
+
+      @Override
+      public Collection<String> getDocumentIds() {
+         return Collections.emptyList();
+      }
+
+      @Override
+      public String getDocumentId( final IdentifiedAnnotation annotation ) {
+         return "";
+      }
+
+      @Override
+      public Map<String,Collection<IdentifiedAnnotation>> getDocAnnotations() { return Collections.emptyMap(); }
+
+      @Override
+      public Date getDocumentDate( final IdentifiedAnnotation annotation ) {
+         return null;
+      }
+
+      @Override
+      public String getCoveredText() {
+         return "";
+      }
+
+      @Override
+      public Map<String, Collection<ConceptInstance>> getRelated() {
+         return null;
+      }
+
+      @Override
+      public void clearRelations() {
+      }
+
+      @Override
+      public void addRelated( final String type, final ConceptInstance related ) {
+      }
+
+      @Override
+      public String getId() {
+         return null;
+      }
+   };
+
 
 }

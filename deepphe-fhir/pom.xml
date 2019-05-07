@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.healthnlp</groupId>
     <artifactId>deepphe</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
   </parent>
   <artifactId>deepphe-fhir</artifactId>
   <name>deepphe-fhir</name>

@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
  */
 public interface Type {
 
+   // TODO Remove after migration of StatusType fxality
    String getTitle();
 
    String getUri();

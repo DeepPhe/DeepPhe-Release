@@ -1,27 +1,23 @@
 package org.apache.ctakes.cancer.concept.instance;
 
 
-import org.apache.ctakes.cancer.uri.UriConstants;
-import org.apache.ctakes.core.semantic.SemanticTui;
+import org.apache.ctakes.cancer.ae.coref.CorefUtil;
+import org.apache.ctakes.cancer.uri.UriAnnotationUtil;
+import org.apache.ctakes.cancer.uri.UriUtil;
 import org.apache.ctakes.core.util.*;
-import org.apache.ctakes.neo4j.Neo4jConnectionFactory;
 import org.apache.ctakes.neo4j.Neo4jOntologyConceptUtil;
-import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
-import org.apache.ctakes.typesystem.type.textsem.EventMention;
+import org.apache.ctakes.typesystem.type.relation.CollectionTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
-import org.apache.ctakes.typesystem.type.textsem.TimeMention;
+import org.apache.ctakes.typesystem.type.textsem.Markable;
 import org.apache.log4j.Logger;
-import org.apache.uima.fit.util.JCasUtil;
-import org.apache.uima.jcas.JCas;
-import org.apache.uima.jcas.cas.FSArray;
-import org.healthnlp.deepphe.neo4j.SearchUtil;
-import org.neo4j.graphdb.GraphDatabaseService;
+import org.apache.uima.fit.util.FSCollectionFactory;
+import org.apache.uima.jcas.cas.FSList;
+import org.apache.uima.jcas.tcas.Annotation;
+import org.healthnlp.deepphe.neo4j.RelationConstants;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-
 
 /**
  * @author SPF , chip-nlp
@@ -36,88 +32,212 @@ final public class ConceptInstanceFactory {
    }
 
 
-   /**
-    * This method does not separate CIs by Paragraph like the v1 method.  We trust the corefs to be accurate.
-    * @param jCas ye olde
-    * @return a map of uris and all Concept Instances in the document
-    */
-   static public Map<String,Collection<ConceptInstance>> createUriConceptInstanceMap( final JCas jCas ) {
-      return createUriConceptInstanceMap( jCas, JCasUtil.select( jCas, IdentifiedAnnotation.class ) );
+
+   static private void addRelations( final Collection<Collection<ConceptInstance>> conceptInstanceSet,
+                                     final Collection<BinaryTextRelation> relations ) {
+      final Map<IdentifiedAnnotation,ConceptInstance> annotationConceptInstances
+            = createAnnotationConceptInstanceMap( conceptInstanceSet );
+      for ( Collection<ConceptInstance> conceptInstances : conceptInstanceSet ) {
+         for ( ConceptInstance conceptInstance : conceptInstances ) {
+            final Map<String, Collection<ConceptInstance>> relatedCis
+                  = getCategoryTargetConceptMap( conceptInstance, annotationConceptInstances, relations );
+            for ( Map.Entry<String,Collection<ConceptInstance>> related : relatedCis.entrySet() ) {
+               final String type = related.getKey();
+               for ( ConceptInstance target : related.getValue() ) {
+                  conceptInstance.addRelated( type, target );
+               }
+            }
+         }
+      }
    }
 
+
+
    /**
-    * This method does not separate CIs by Paragraph like the v1 method.  We trust the corefs to be accurate.
-    * @param jCas ye olde
-    * @param annotations all annotations
-    * @return a map of uris and all Concept Instances in the document
+    *
+    * @param patientId -
+    * @param annotationDocs map of annotations to their enclosing documents
+    * @param relations -
+    * @return map of best uri to its concept instances
     */
-   static private Map<String,Collection<ConceptInstance>> createUriConceptInstanceMap( final JCas jCas,
-                                                                     final Collection<IdentifiedAnnotation> annotations ) {
-      final Map<IdentifiedAnnotation, Collection<Integer>> markableCorefs
-            = EssentialAnnotationUtil.createMarkableCorefs( jCas );
-      // essentials contains all EntityMentions, EventMentions, TimeMentions,
-      // plus Annotations required for coreferences and relations
-      final Collection<IdentifiedAnnotation> essentials = EssentialAnnotationUtil.getRequiredAnnotations( jCas,
-            annotations,
-            markableCorefs );
-      for ( IdentifiedAnnotation essential : essentials ) {
-         if ( !Neo4jOntologyConceptUtil.getUris( essential ).isEmpty() ) {
-            // already have uri
+   static public Map<String,Collection<ConceptInstance>> createUriConceptInstanceMap(
+         final String patientId,
+         final Map<IdentifiedAnnotation,String> annotationDocs,
+         final Collection<BinaryTextRelation> relations ) {
+
+      final Map<String,List<IdentifiedAnnotation>> uriAnnotationGroups = UriAnnotationUtil.getAssociatedUriAnnotations( annotationDocs.keySet() );
+
+      final Map<Annotation,Collection<String>> locationUris = new HashMap<>();
+      final Map<Annotation,Collection<String>> lateralityUris = new HashMap<>();
+      buildPlacements( relations, locationUris, lateralityUris );
+
+      final Map<String,Collection<ConceptInstance>> conceptInstances = new HashMap<>();
+      final Collection<IdentifiedAnnotation> usedAnnotations = new ArrayList<>();
+      for ( List<IdentifiedAnnotation> uriAnnotationGroup : uriAnnotationGroups.values() ) {
+         final List<List<IdentifiedAnnotation>> chains = new ArrayList<>();
+         CorefUtil.collateCoref( chains, uriAnnotationGroup, locationUris, lateralityUris );
+         for ( List<IdentifiedAnnotation> chain : chains ) {
+            if ( chain.size() > 1 ) {
+               final String bestUri = UriAnnotationUtil.getMostSpecificUri( chain );
+               final Map<String, Collection<IdentifiedAnnotation>> docAnnotations = new HashMap<>();
+               for ( IdentifiedAnnotation annotation : chain ) {
+                  docAnnotations.computeIfAbsent( annotationDocs.get( annotation ), d -> new HashSet<>() )
+                                .add( annotation );
+               }
+               conceptInstances.computeIfAbsent( bestUri, ci -> new ArrayList<>() )
+                               .add( new CorefConceptInstance( patientId, bestUri, docAnnotations ) );
+               usedAnnotations.addAll( chain );
+            }
+         }
+      }
+      annotationDocs.keySet().removeAll( usedAnnotations );
+      for ( Map.Entry<IdentifiedAnnotation,String> annotationDoc : annotationDocs.entrySet() ) {
+         final String bestUri = Neo4jOntologyConceptUtil.getUri( annotationDoc.getKey() );
+         if ( bestUri.isEmpty() ) {
             continue;
          }
-         if ( essential instanceof TimeMention ) {
-            addUmlsConcept( jCas, essential, UriConstants.CUI_TIME, SemanticTui.T079.name(),
-                  SemanticTui.T079.getSemanticType(), UriConstants.UNKNOWN );
-         } else if ( essential instanceof EventMention ) {
-            addUmlsConcept( jCas, essential, UriConstants.CUI_EVENT, SemanticTui.T051.name(),
-                  SemanticTui.T051.getSemanticType(), UriConstants.EVENT );
-         } else {
-            final String cui = OntologyConceptUtil.getCuis( essential )
-                                                  .stream()
-                                                  .findAny()
-                                                  .orElse( UriConstants.CUI_UNKNOWN );
-            final SemanticTui tui = SemanticTui.getTuis( essential ).stream()
-                                               .findFirst().orElse( SemanticTui.UNKNOWN );
-            addUmlsConcept( jCas, essential, cui, tui.name(), tui.getSemanticType(), UriConstants.UNKNOWN );
-         }
+         conceptInstances
+               .computeIfAbsent( bestUri, ci -> new HashSet<>() )
+               .add( new SimpleConceptInstance( patientId, annotationDoc.getValue(), annotationDoc.getKey() ) );
       }
-      return createUriConceptInstanceMap( jCas, markableCorefs, essentials );
+
+      addRelations( conceptInstances.values(), relations );
+      return conceptInstances;
    }
 
    /**
-    * This method does not separate CIs by Paragraph like the v1 method.  We trust the corefs to be accurate.
-    * @param markableCorefs -
-    * @param essentials -
-    * @return -
+    *
+    * @param patientId -
+    * @param annotationDocs map of annotations to their enclosing documents
+    * @param relations -
+    * @return map of best uri to its concept instances
     */
-   static private Map<String,Collection<ConceptInstance>> createUriConceptInstanceMap( final JCas jCas,
-         final Map<IdentifiedAnnotation, Collection<Integer>> markableCorefs,
-         final Collection<IdentifiedAnnotation> essentials ) {
-      final String patientId = SourceMetadataUtil.getPatientIdentifier( jCas );
-      final String documentId = DocumentIDAnnotationUtil.getDocumentID( jCas );
-      // Create coref CIs
-      final Map<Integer,Collection<IdentifiedAnnotation>> chains = new HashMap<>();
-      for ( Map.Entry<IdentifiedAnnotation,Collection<Integer>> corefEntry : markableCorefs.entrySet() ) {
-         for ( Integer index : corefEntry.getValue() ) {
-            chains.computeIfAbsent( index, a -> new ArrayList<>() ).add( corefEntry.getKey() );
+   static public Map<String,Collection<ConceptInstance>> createUriConceptInstanceMap2(
+         final String patientId,
+         final Map<IdentifiedAnnotation,String> annotationDocs,
+         final Collection<BinaryTextRelation> relations,
+         final Collection<CollectionTextRelation> corefs,
+         final Map<Markable, Collection<IdentifiedAnnotation>> markableAnnotations ) {
+
+      final Map<String,Collection<String>> corefUriLists = new HashMap<>();
+      for ( CollectionTextRelation coref : corefs ) {
+         final FSList chainHead = coref.getMembers();
+         final Collection<Markable> markables = FSCollectionFactory.create( chainHead, Markable.class );
+         final Collection<String> corefUris = markables.stream()
+                                                       .map( markableAnnotations::get )
+                                                       .flatMap( Collection::stream )
+                                                       .map( Neo4jOntologyConceptUtil::getUri )
+                                                       .collect( Collectors.toSet() );
+         for ( String uri : corefUris ) {
+            corefUriLists.computeIfAbsent( uri, u -> new HashSet<>() ).addAll( corefUris );
          }
       }
-      final Map<String,Collection<ConceptInstance>> conceptInstances = new HashMap<>();
-      for ( Collection<IdentifiedAnnotation> chain : chains.values() ) {
-         final String bestUri = getBestIaUri( chain );
-         final Map<String, Collection<IdentifiedAnnotation>> docAnnotations = new HashMap<>( 1 );
-         docAnnotations.put( documentId, chain );
-         conceptInstances.computeIfAbsent( bestUri, ci -> new HashSet<>() )
-                         .add( new CorefConceptInstance( patientId, bestUri, docAnnotations ) );
-         essentials.removeAll( chain );
+
+      final Map<String,List<IdentifiedAnnotation>> uriAnnotationMap = UriAnnotationUtil.mapUriAnnotations( annotationDocs.keySet() );
+
+      final Map<String,Collection<String>> associatedUris = UriUtil.getAssociatedUriMap( uriAnnotationMap.keySet() );
+
+      // TODO associatedUris is a map of uri branches to their best root.
+      // TODO corefUriLists is a map of all uris in a coref to a chain of all uris in corefs.
+
+      final Map<String,Collection<String>> associatedRoots = new HashMap<>( associatedUris.size() );
+
+      for ( Map.Entry<String,Collection<String>> associated : associatedUris.entrySet() ) {
+         final String root = associated.getKey();
+         for ( String uri : associated.getValue() ) {
+            final Collection<String> corefUriList = corefUriLists.get( uri );
+            if ( corefUriList != null ) {
+               for ( String corefUri : corefUriList ) {
+                  for ( Map.Entry<String, Collection<String>> associated2 : associatedUris.entrySet() ) {
+                     if ( associated2.getValue().stream().anyMatch( corefUri::equals ) ) {
+                        associatedRoots.computeIfAbsent( root, u -> new HashSet<>() )
+                                      .add( associated2.getKey() );
+                        associatedRoots.computeIfAbsent( associated2.getKey(), u -> new HashSet<>() )
+                                       .add( root );
+                     }
+                  }
+               }
+            }
+         }
       }
-      essentials
-            .forEach( a -> conceptInstances
-                  .computeIfAbsent( Neo4jOntologyConceptUtil.getUri( a ), ci -> new HashSet<>() )
-                  .add( new SimpleConceptInstance( patientId, documentId, a ) ) );
-      addRelations( jCas, conceptInstances );
+
+      final Collection<Collection<String>> finalBranches = new ArrayList<>( associatedUris.size() );
+      final Collection<String> usedRoots = new HashSet<>( associatedRoots.size() );
+      for ( Map.Entry<String,Collection<String>> associated : associatedUris.entrySet() ) {
+         if ( usedRoots.contains( associated.getKey() ) ) {
+            continue;
+         }
+         final Collection<String> corefRoots = associatedRoots.get( associated.getKey() );
+         if ( corefRoots == null || corefRoots.isEmpty() ) {
+            finalBranches.add( associated.getValue() );
+         } else {
+            final Collection<String> finalCoref = new HashSet<>( associated.getValue() );
+            for ( String corefRoot : corefRoots ) {
+               finalCoref.addAll( associatedUris.get( corefRoot ) );
+               usedRoots.add( corefRoot );
+            }
+            finalBranches.add( finalCoref );
+         }
+      }
+
+
+      final Map<Annotation,Collection<String>> locationUris = new HashMap<>();
+      final Map<Annotation,Collection<String>> lateralityUris = new HashMap<>();
+      buildPlacements( relations, locationUris, lateralityUris );
+
+      final Map<String,Collection<ConceptInstance>> conceptInstances = new HashMap<>();
+      final Collection<IdentifiedAnnotation> usedAnnotations = new ArrayList<>();
+
+      for ( Collection<String> finalBranch : finalBranches ) {
+         final Collection<IdentifiedAnnotation> annotationGroup = finalBranch.stream().map( uriAnnotationMap::get ).flatMap( Collection::stream ).collect( Collectors.toList() );
+         final List<List<IdentifiedAnnotation>> chains = new ArrayList<>();
+         CorefUtil.collateCoref( chains, annotationGroup, locationUris, lateralityUris );
+         for ( List<IdentifiedAnnotation> chain : chains ) {
+            if ( chain.size() > 1 ) {
+               final String bestUri = UriAnnotationUtil.getMostSpecificUri( chain );
+               final Map<String, Collection<IdentifiedAnnotation>> docAnnotations = new HashMap<>();
+               for ( IdentifiedAnnotation annotation : chain ) {
+                  docAnnotations.computeIfAbsent( annotationDocs.get( annotation ), d -> new HashSet<>() )
+                                .add( annotation );
+               }
+               conceptInstances.computeIfAbsent( bestUri, ci -> new ArrayList<>() )
+                               .add( new CorefConceptInstance( patientId, bestUri, docAnnotations ) );
+               usedAnnotations.addAll( chain );
+            }
+         }
+      }
+      annotationDocs.keySet().removeAll( usedAnnotations );
+      for ( Map.Entry<IdentifiedAnnotation,String> annotationDoc : annotationDocs.entrySet() ) {
+         final String bestUri = Neo4jOntologyConceptUtil.getUri( annotationDoc.getKey() );
+         if ( bestUri.isEmpty() ) {
+            continue;
+         }
+         conceptInstances
+               .computeIfAbsent( bestUri, ci -> new HashSet<>() )
+               .add( new SimpleConceptInstance( patientId, annotationDoc.getValue(), annotationDoc.getKey() ) );
+      }
+
+      addRelations( conceptInstances.values(), relations );
       return conceptInstances;
    }
+
+
+   static private void buildPlacements( final Collection<BinaryTextRelation> relations,
+                                        final Map<Annotation,Collection<String>> locationUris,
+                                        final Map<Annotation,Collection<String>> lateralityUris ) {
+      for ( BinaryTextRelation relation : relations ) {
+         if ( relation.getCategory().equals( RelationConstants.DISEASE_HAS_PRIMARY_ANATOMIC_SITE ) ) {
+            final String uri = Neo4jOntologyConceptUtil.getUri( (IdentifiedAnnotation)relation.getArg2().getArgument() );
+            locationUris.computeIfAbsent( relation.getArg1().getArgument(), a -> new HashSet<>() ).add( uri );
+         } else if ( relation.getCategory().equals( RelationConstants.HAS_LATERALITY ) ) {
+            final String uri = Neo4jOntologyConceptUtil.getUri( (IdentifiedAnnotation)relation.getArg2().getArgument() );
+            lateralityUris.computeIfAbsent( relation.getArg1().getArgument(), a -> new HashSet<>() ).add( uri );
+         }
+      }
+   }
+
+
+
 
    static public ConceptInstance createConceptInstance( final String patientId,
                                                         final Map<String, Collection<IdentifiedAnnotation>> docAnnotations ) {
@@ -132,7 +252,7 @@ final public class ConceptInstanceFactory {
             = docAnnotations.values().stream()
                             .flatMap( Collection::stream )
                             .collect( Collectors.toList() );
-      final String bestUri = getBestIaUri( allAnnotations );
+      final String bestUri = UriAnnotationUtil.getMostSpecificUri( allAnnotations );
       return new CorefConceptInstance( patientId, bestUri, docAnnotations );
    }
 
@@ -151,31 +271,17 @@ final public class ConceptInstanceFactory {
    }
 
 
-   static private void addRelations( final JCas jCas,
-                                     final Map<String,Collection<ConceptInstance>> uriConceptInstances ) {
-      final Map<IdentifiedAnnotation,ConceptInstance> annotationConceptInstances
-            = createAnnotationConceptInstanceMap( uriConceptInstances );
-      final Collection<BinaryTextRelation> relations = JCasUtil.select( jCas, BinaryTextRelation.class );
-      for ( Collection<ConceptInstance> conceptInstances : uriConceptInstances.values() ) {
-         for ( ConceptInstance conceptInstance : conceptInstances ) {
-            final Map<String, Collection<ConceptInstance>> relatedCis
-                  = getCategoryTargetConceptMap( conceptInstance, annotationConceptInstances, relations );
-            for ( Map.Entry<String,Collection<ConceptInstance>> related : relatedCis.entrySet() ) {
-               final String type = related.getKey();
-               for ( ConceptInstance target : related.getValue() ) {
-                  conceptInstance.addRelated( type, target );
-                  target.addReverseRelated( type, conceptInstance );
-               }
-            }
-         }
-      }
-   }
 
 
    static public Map<IdentifiedAnnotation,ConceptInstance> createAnnotationConceptInstanceMap(
          final Map<String,Collection<ConceptInstance>> uriConceptInstances ) {
+      return createAnnotationConceptInstanceMap( uriConceptInstances.values() );
+   }
+
+   static public Map<IdentifiedAnnotation,ConceptInstance> createAnnotationConceptInstanceMap(
+         final Collection<Collection<ConceptInstance>> conceptInstanceSet ) {
       final Map<IdentifiedAnnotation,ConceptInstance> map = new HashMap<>();
-      for ( Collection<ConceptInstance> conceptInstances : uriConceptInstances.values() ) {
+      for ( Collection<ConceptInstance> conceptInstances : conceptInstanceSet ) {
          for ( ConceptInstance ci : conceptInstances ) {
             ci.getAnnotations().forEach( a -> map.put( a, ci ) );
          }
@@ -184,215 +290,6 @@ final public class ConceptInstanceFactory {
    }
 
 
-   // TODO move
-
-   /**
-    * Gets a stem uri.  For example, when given "left breast", "upper right breast"
-    * it will return the common parent "breast".
-    *
-    * @param annotations -
-    * @return a uri that covers all the leaves for all the given annotations
-    */
-   static private String getStemIaUri( final Collection<IdentifiedAnnotation> annotations ) {
-      if ( annotations == null || annotations.isEmpty() ) {
-         return null;
-      }
-      final Collection<String> allUris = annotations.stream()
-                                                    .map( Neo4jOntologyConceptUtil::getUris )
-                                                    .flatMap( Collection::stream )
-                                                    .distinct()
-                                                    .collect( Collectors.toList() );
-      final String mostContainedUri = getMostContainedUri( allUris );
-      if ( mostContainedUri != null ) {
-         return mostContainedUri;
-      }
-      return getSmallestRootUri( allUris );
-   }
-
-   /**
-    * Gets a stem uri.  For example, when given "left breast", "upper right breast"
-    * it will return the common parent "breast".
-    *
-    * @param annotations -
-    * @return a uri that covers all the leaves for all the given annotations
-    */
-   static private String getMostContainedIaUri( final Collection<IdentifiedAnnotation> annotations ) {
-      final Collection<String> allUris = annotations.stream()
-                                                    .map( Neo4jOntologyConceptUtil::getUris )
-                                                    .flatMap( Collection::stream )
-                                                    .distinct()
-                                                    .collect( Collectors.toList() );
-      return getMostContainedUri( allUris );
-   }
-
-   /**
-    * Gets a stem uri.  For example, when given "left breast", "upper right breast"
-    * it will return the common parent "breast".
-    *
-    * @param allUris -
-    * @return a uri that covers all the leaves for all the given annotations
-    */
-   static private String getMostContainedUri( final Collection<String> allUris ) {
-      if ( allUris.size() == 1 ) {
-         return allUris.stream()
-                       .findFirst()
-                       .get();
-      }
-      final GraphDatabaseService graphDb = Neo4jConnectionFactory.getInstance()
-                                                                 .getGraph();
-      String mostContainmentUri = "";
-      long mostContainment = 0;
-      for ( String uri : allUris ) {
-         final Collection<String> branch = SearchUtil.getBranchUris( graphDb, uri );
-         final long containment = allUris.stream()
-                                         .filter( branch::contains )
-                                         .count();
-         if ( containment > mostContainment ) {
-            if ( containment == allUris.size() ) {
-               return uri;
-            }
-            mostContainmentUri = uri;
-            mostContainment = containment;
-         }
-      }
-      if ( mostContainment == allUris.size() - 1 ) {
-         return mostContainmentUri;
-      }
-      return null;
-   }
-
-
-   /**
-    * Gets a stem uri.  For example, when given "left breast", "upper right breast"
-    * it will return the common parent "breast".
-    *
-    * @param annotations -
-    * @return a uri that covers all the leaves for all the given annotations
-    */
-   static private String getBestIaUri( final Collection<IdentifiedAnnotation> annotations ) {
-      if ( annotations == null || annotations.isEmpty() ) {
-         return null;
-      }
-      final Collection<String> allUris = annotations.stream()
-                                                    .map( Neo4jOntologyConceptUtil::getUris )
-                                                    .flatMap( Collection::stream )
-                                                    .distinct()
-                                                    .collect( Collectors.toList() );
-      final String bestUri = getMostSpecificUri( allUris );
-      if ( bestUri != null ) {
-         return bestUri;
-      }
-      return getSmallestRootUri( allUris );
-   }
-
-   /**
-    * Gets a "best leaf" uri.  For example, when given "left breast", "breast"
-    * it will return the common leaf "left breast".
-    * This assumes that the uris are in a common branch.
-    * Something like "right breast" "left breast" "breast" would result in the return of "right breast"
-    *
-    * @param allUris -
-    * @return a uri that is the most "specific"
-    */
-   static public String getMostSpecificUri( final Collection<String> allUris ) {
-      if ( allUris.size() == 1 ) {
-         return new ArrayList<>( allUris ).get( 0 );
-      }
-      final GraphDatabaseService graphDb = Neo4jConnectionFactory.getInstance()
-                                                                 .getGraph();
-      final Map<String, Collection<String>> branchMap
-            = allUris.stream()
-                     .distinct()
-                     .collect( Collectors.toMap( Function.identity(), u -> SearchUtil.getBranchUris( graphDb, u ) ) );
-      long bestCount = 0;
-      String bestUri = "";
-      for ( String uri : allUris ) {
-         long count = branchMap.entrySet().stream()
-                               .filter( e -> !uri.equals( e.getKey() ) )
-                               .map( Map.Entry::getValue )
-                               .filter( uris -> uris.contains( uri ) )
-                               .count();
-         if ( count > bestCount ) {
-            bestUri = uri;
-            bestCount = count;
-         } else if ( count == bestCount && uri.length() > bestUri.length() ) {
-            // Not exactly brillant, but assume that something with a longer name is more specific
-            bestUri = uri;
-         }
-      }
-      return bestUri;
-   }
-
-
-   static private String getSmallestRootIaUri( final Collection<IdentifiedAnnotation> annotations ) {
-      final Collection<String> allUris = annotations.stream()
-                                                 .map( Neo4jOntologyConceptUtil::getUris )
-                                                 .flatMap( Collection::stream )
-                                                 .distinct()
-                                                 .collect( Collectors.toList() );
-      return getSmallestRootUri( allUris );
-   }
-
-   static private String getSmallestRootUri( final Collection<String> allUris ) {
-      long leastLength = Integer.MAX_VALUE;
-      String bestUri = "";
-      for ( String uri : allUris ) {
-         long length = Neo4jOntologyConceptUtil.getRootUris( uri ).size();
-         if ( length < leastLength ) {
-            leastLength = length;
-            bestUri = uri;
-         }
-      }
-      return bestUri;
-   }
-
-   static private String getLongestRootUri( final Collection<String> allUris ) {
-      long longestLength = 0;
-      String bestUri = "";
-      for ( String uri : allUris ) {
-         long length = Neo4jOntologyConceptUtil.getRootUris( uri ).size();
-         if ( length > longestLength ) {
-            longestLength = length;
-            bestUri = uri;
-         }
-      }
-      return bestUri;
-   }
-
-   private static void addUmlsConcept( final JCas jCas, final IdentifiedAnnotation annotation, final String cui,
-                                       final String tui, final String prefText, final String uri ) {
-      int newSize = 1;
-      FSArray newConcepts;
-      final FSArray oldConcepts = annotation.getOntologyConceptArr();
-      if ( oldConcepts != null ) {
-         newConcepts = new FSArray( jCas, oldConcepts.size()+1 );
-         for ( int i=0; i<oldConcepts.size(); i++ ) {
-            newConcepts.set( i, oldConcepts.get( i ) );
-         }
-      } else {
-         newConcepts = new FSArray( jCas, 1 );
-      }
-      final UmlsConcept concept = createUmlsConcept( jCas, UriConstants.DPHE_SCHEME, cui, tui, prefText, uri );
-      newConcepts.set( newConcepts.size()-1, concept );
-      annotation.setOntologyConceptArr( newConcepts );
-   }
-
-   //TODO  Copied this from DefaultUmlsConceptCreator in ctakes where it is private.  Make public and call.
-   private static UmlsConcept createUmlsConcept(JCas jcas, String codingScheme, String cui, String tui, String preferredText, String code) {
-      UmlsConcept umlsConcept = new UmlsConcept( jcas );
-      umlsConcept.setCodingScheme( codingScheme );
-      umlsConcept.setCui(cui);
-      if (tui != null) {
-         umlsConcept.setTui(tui);
-      }
-      if (preferredText != null && !preferredText.isEmpty()) {
-         umlsConcept.setPreferredText(preferredText);
-      }
-      if (code != null) {
-         umlsConcept.setCode(code);
-      }
-      return umlsConcept;
-   }
 
 
 

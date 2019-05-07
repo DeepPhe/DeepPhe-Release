@@ -2,6 +2,7 @@ package org.apache.ctakes.cancer.phenotype.tnm;
 
 
 import org.apache.ctakes.cancer.uri.UriAnnotationFactory;
+import org.apache.ctakes.core.semantic.SemanticGroup;
 import org.apache.ctakes.core.util.Pair;
 import org.apache.ctakes.core.util.regex.RegexSpanFinder;
 import org.apache.ctakes.typesystem.type.textsem.SignSymptomMention;
@@ -31,9 +32,10 @@ public enum TnmFinder {
 
    static private final Collection<Character> PREFIX_CHARS = Arrays.asList( 'c', 'p', 'y', 'r', 'a', 'u' );
    static private final String PREFIX_REGEX = "(?:c|p|y|r|a|u)?";
-   static private final String T_REGEX = "T(?:x|is|a|(?:[I]{1,3}V?)|(?:[0-4][a-z]?))(?![- ](?:weighted|axial))(?:\\((?:m|\\d+)?,?(?:is)?\\))?";
-   static private final String N_REGEX = "N(?:x|(?:[I]{1,3})|(?:[0-3][a-z]?))";
-   static private final String M_REGEX = "M(?:x|I|(?:[0-1][a-z]?))";
+   static private final String T_REGEX
+         = "T=?(?:x|is|a|(?: ?n/a)|(?:[I]{1,3}V?)|(?:[0-4][a-z]?))(?![- ](?:weighted|axial))(?:\\((?:m|\\d+)?,?(?:is)?\\))?";
+   static private final String N_REGEX = "N=?(?:x|(?: ?n/a)|(?:[I]{1,3})|(?:[0-3][a-z]?))";
+   static private final String M_REGEX = "M=?(?:x|I|(?: ?n/a)|(?:[0-1][a-z]?))";
 
    static private final String FULL_T_REGEX = "\\b(?:" + PREFIX_REGEX + T_REGEX + ")"
          + "(?:" + PREFIX_REGEX + N_REGEX + ")?"
@@ -69,11 +71,24 @@ public enum TnmFinder {
       private final int _end;
       private final String _uri;
 
-      private SimpleTnm( final char prefix, final int begin, final int end, final String uri ) {
+      private SimpleTnm( final char prefix, final int begin, final int end, String uri ) {
          _begin = begin;
          _end = end;
-         final String fullUri = prefix + uri + "_Stage_Finding";
-         _uri = fullUri.trim();
+         if ( uri.endsWith( "1m" ) ) {
+            // The ontology has T1mi and N1mi but not m alone
+            uri = uri + "i";
+         }
+         final String fullUri = prefix + getRomanNumber( uri ) + "_Stage_Finding";
+         _uri = fullUri.trim().replace( 'x', 'X' );
+      }
+      static private String getRomanNumber( final String text ) {
+         if ( text.charAt( 1 ) != 'I' ) {
+            return text;
+         }
+         return text.replace( "IV", "4" )
+                    .replace( "III" ,"3" )
+                    .replace( "II", "2" )
+                    .replace( "I", "1" );
       }
    }
 
@@ -88,7 +103,7 @@ public enum TnmFinder {
       for ( SimpleTnm tnm : tnms ) {
          UriAnnotationFactory.createIdentifiedAnnotations( jcas,
                windowStartOffset + tnm._begin,
-               windowStartOffset + tnm._end, tnm._uri );
+               windowStartOffset + tnm._end, tnm._uri, SemanticGroup.FINDING, "T033" );
       }
    }
 
