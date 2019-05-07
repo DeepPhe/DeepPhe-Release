@@ -24,7 +24,7 @@
       <module>deepphe-distribution</module>
       <module>deepphe-data</module>
       <module>deepphe-viz-neo4j</module>
-      <module>deepphe-internal</module>
+      <!--<module>deepphe-internal</module>-->
    </modules>
 
     <dependencyManagement>
