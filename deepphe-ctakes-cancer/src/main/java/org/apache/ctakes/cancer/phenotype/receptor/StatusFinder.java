@@ -1,7 +1,7 @@
 package org.apache.ctakes.cancer.phenotype.receptor;
 
 import org.apache.ctakes.cancer.uri.UriAnnotationFactory;
-import org.apache.ctakes.core.semantic.SemanticGroup;
+import org.apache.ctakes.core.util.annotation.SemanticGroup;
 import org.apache.log4j.Logger;
 import org.apache.uima.cas.text.AnnotationFS;
 import org.apache.uima.jcas.JCas;

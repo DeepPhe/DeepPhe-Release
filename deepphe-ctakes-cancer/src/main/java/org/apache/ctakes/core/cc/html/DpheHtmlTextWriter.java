@@ -3,8 +3,8 @@ package org.apache.ctakes.core.cc.html;
 
 import org.apache.ctakes.core.cc.AbstractJCasFileWriter;
 import org.apache.ctakes.core.pipeline.PipeBitInfo;
-import org.apache.ctakes.core.semantic.SemanticGroup;
-import org.apache.ctakes.core.semantic.SemanticTui;
+import org.apache.ctakes.core.util.annotation.SemanticGroup;
+import org.apache.ctakes.core.util.annotation.SemanticTui;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.apache.ctakes.core.util.OntologyConceptUtil;
 import org.apache.ctakes.core.util.textspan.DefaultTextSpan;

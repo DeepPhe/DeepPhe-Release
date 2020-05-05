@@ -7,7 +7,7 @@ import org.apache.ctakes.cancer.summary.CiContainer;
 import org.apache.ctakes.cancer.summary.CiContainerFactory;
 import org.apache.ctakes.cancer.uri.UriConstants;
 import org.apache.ctakes.cancer.uri.UriUtil;
-import org.apache.ctakes.core.note.NoteSpecs;
+import org.apache.ctakes.core.util.doc.NoteSpecs;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.apache.ctakes.neo4j.Neo4jOntologyConceptUtil;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;

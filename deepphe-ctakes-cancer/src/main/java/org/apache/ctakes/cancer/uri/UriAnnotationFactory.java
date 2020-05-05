@@ -1,6 +1,6 @@
 package org.apache.ctakes.cancer.uri;
 
-import org.apache.ctakes.core.semantic.SemanticGroup;
+import org.apache.ctakes.core.util.annotation.SemanticGroup;
 import org.apache.ctakes.dictionary.lookup2.consumer.AllTuiTermConsumer;
 import org.apache.ctakes.neo4j.Neo4jConnectionFactory;
 import org.apache.ctakes.typesystem.type.constants.CONST;

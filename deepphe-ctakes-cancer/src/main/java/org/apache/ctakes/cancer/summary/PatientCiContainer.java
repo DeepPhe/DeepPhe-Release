@@ -2,7 +2,7 @@ package org.apache.ctakes.cancer.summary;
 
 
 import org.apache.ctakes.cancer.concept.instance.ConceptInstance;
-import org.apache.ctakes.core.note.NoteSpecs;
+import org.apache.ctakes.core.util.doc.NoteSpecs;
 import org.healthnlp.deepphe.neo4j.UriConstants;
 
 import java.text.DateFormat;

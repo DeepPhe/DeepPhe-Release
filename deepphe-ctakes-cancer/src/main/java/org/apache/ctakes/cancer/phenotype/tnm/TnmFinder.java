@@ -2,7 +2,7 @@ package org.apache.ctakes.cancer.phenotype.tnm;
 
 
 import org.apache.ctakes.cancer.uri.UriAnnotationFactory;
-import org.apache.ctakes.core.semantic.SemanticGroup;
+import org.apache.ctakes.core.util.annotation.SemanticGroup;
 import org.apache.ctakes.core.util.Pair;
 import org.apache.ctakes.core.util.regex.RegexSpanFinder;
 import org.apache.ctakes.typesystem.type.textsem.SignSymptomMention;

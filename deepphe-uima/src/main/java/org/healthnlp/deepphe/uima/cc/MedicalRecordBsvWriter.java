@@ -1,6 +1,6 @@
 package org.healthnlp.deepphe.uima.cc;
 
-import org.apache.ctakes.core.note.NoteSpecs;
+import org.apache.ctakes.core.util.doc.NoteSpecs;
 import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.neo4j.Neo4jOntologyConceptUtil;
 import org.apache.log4j.Logger;

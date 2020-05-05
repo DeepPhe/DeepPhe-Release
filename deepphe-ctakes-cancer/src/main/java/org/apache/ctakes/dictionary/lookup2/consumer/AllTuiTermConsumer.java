@@ -1,8 +1,8 @@
 package org.apache.ctakes.dictionary.lookup2.consumer;
 
 
-import org.apache.ctakes.core.semantic.SemanticGroup;
-import org.apache.ctakes.core.semantic.SemanticTui;
+import org.apache.ctakes.core.util.annotation.SemanticGroup;
+import org.apache.ctakes.core.util.annotation.SemanticTui;
 import org.apache.ctakes.core.util.collection.CollectionMap;
 import org.apache.ctakes.core.util.collection.HashSetMap;
 import org.apache.ctakes.dictionary.lookup2.concept.Concept;

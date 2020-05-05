@@ -1,7 +1,7 @@
 package org.apache.ctakes.cancer.ae;
 
 import org.apache.ctakes.cancer.uri.UriConstants;
-import org.apache.ctakes.core.note.NoteSpecs;
+import org.apache.ctakes.core.util.doc.NoteSpecs;
 import org.apache.ctakes.core.pipeline.PipeBitInfo;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.apache.ctakes.core.util.SourceMetadataUtil;

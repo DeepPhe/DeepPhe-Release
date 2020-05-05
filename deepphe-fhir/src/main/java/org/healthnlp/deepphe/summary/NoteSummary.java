@@ -4,7 +4,7 @@ package org.healthnlp.deepphe.summary;
 import org.apache.ctakes.cancer.ae.DocEpisodeTagger;
 import org.apache.ctakes.cancer.concept.instance.ConceptInstance;
 import org.apache.ctakes.cancer.type.textspan.Episode;
-import org.apache.ctakes.core.note.NoteSpecs;
+import org.apache.ctakes.core.util.doc.NoteSpecs;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.log4j.Logger;

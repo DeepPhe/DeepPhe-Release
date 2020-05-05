@@ -5,7 +5,7 @@ import org.apache.ctakes.cancer.concept.instance.ConceptInstance;
 import org.apache.ctakes.cancer.concept.instance.ConceptInstanceUtil;
 import org.apache.ctakes.cancer.summary.*;
 import org.apache.ctakes.core.cc.AbstractStoreDataWriter;
-import org.apache.ctakes.core.note.NoteSpecs;
+import org.apache.ctakes.core.util.doc.NoteSpecs;
 import org.apache.ctakes.core.pipeline.PipeBitInfo;
 import org.apache.ctakes.neo4j.Neo4jConnectionFactory;
 import org.apache.ctakes.neo4j.Neo4jOntologyConceptUtil;

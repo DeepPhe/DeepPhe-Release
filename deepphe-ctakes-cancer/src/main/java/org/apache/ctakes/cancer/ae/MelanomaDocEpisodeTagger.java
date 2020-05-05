@@ -3,7 +3,7 @@ package org.apache.ctakes.cancer.ae;
 import com.google.common.collect.Lists;
 import org.apache.ctakes.cancer.ae.section.Sectionizer;
 import org.apache.ctakes.cancer.type.textspan.Episode;
-import org.apache.ctakes.core.note.NoteSpecs;
+import org.apache.ctakes.core.util.doc.NoteSpecs;
 import org.apache.ctakes.core.util.MutableUimaContext;
 import org.apache.ctakes.core.util.OntologyConceptUtil;
 import org.apache.ctakes.core.util.SourceMetadataUtil;

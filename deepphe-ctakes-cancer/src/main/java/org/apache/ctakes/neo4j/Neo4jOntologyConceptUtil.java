@@ -3,7 +3,7 @@ package org.apache.ctakes.neo4j;
 
 import org.apache.ctakes.cancer.uri.UriConstants;
 import org.apache.ctakes.cancer.uri.UriUtil;
-import org.apache.ctakes.core.semantic.SemanticGroup;
+import org.apache.ctakes.core.util.annotation.SemanticGroup;
 import org.apache.ctakes.core.util.OntologyConceptUtil;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.log4j.Logger;

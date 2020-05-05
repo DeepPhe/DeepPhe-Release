@@ -1,6 +1,6 @@
 package org.apache.ctakes.cancer.summary;
 
-import org.apache.ctakes.core.note.NoteSpecs;
+import org.apache.ctakes.core.util.doc.NoteSpecs;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;

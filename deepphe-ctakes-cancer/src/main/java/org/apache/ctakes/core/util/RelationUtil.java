@@ -2,7 +2,7 @@ package org.apache.ctakes.core.util;
 
 
 import org.apache.ctakes.cancer.uri.UriConstants;
-import org.apache.ctakes.core.semantic.SemanticGroup;
+import org.apache.ctakes.core.util.annotation.SemanticGroup;
 import org.apache.ctakes.neo4j.Neo4jOntologyConceptUtil;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;

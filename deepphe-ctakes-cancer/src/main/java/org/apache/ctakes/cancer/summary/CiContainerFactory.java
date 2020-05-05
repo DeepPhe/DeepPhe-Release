@@ -4,7 +4,7 @@ import org.apache.ctakes.cancer.ae.DocEpisodeTagger;
 import org.apache.ctakes.cancer.concept.instance.*;
 import org.apache.ctakes.cancer.type.textspan.Episode;
 import org.apache.ctakes.cancer.uri.UriConstants;
-import org.apache.ctakes.core.note.NoteSpecs;
+import org.apache.ctakes.core.util.doc.NoteSpecs;
 import org.apache.ctakes.core.patient.PatientViewUtil;
 import org.apache.ctakes.core.util.DocumentIDAnnotationUtil;
 import org.apache.ctakes.core.util.DpheEssentialAnnotationUtil;

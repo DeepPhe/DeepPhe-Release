@@ -1,7 +1,7 @@
 package org.apache.ctakes.dictionary.lookup2.concept;
 
 
-import org.apache.ctakes.core.semantic.SemanticTui;
+import org.apache.ctakes.core.util.annotation.SemanticTui;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package org.healthnlp.deepphe.summary;
 
-import org.apache.ctakes.core.note.NoteSpecs;
+import org.apache.ctakes.core.util.doc.NoteSpecs;
 import org.apache.log4j.Logger;
 
 import java.text.DateFormat;

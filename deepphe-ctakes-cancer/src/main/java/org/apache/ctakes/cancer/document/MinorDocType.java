@@ -1,6 +1,6 @@
 package org.apache.ctakes.cancer.document;
 
-import org.apache.ctakes.core.note.NoteSpecs;
+import org.apache.ctakes.core.util.doc.NoteSpecs;
 
 import java.util.Arrays;
 import java.util.Collection;
