@@ -39,4 +39,5 @@ add CiTumorsBsvWriter SubDirectory=CI_EVAL
 add PatientNeo4jWriter
 
 //  Alert User that the pipeline is Finished.
+package org.apache.ctakes.core.util.log
 addLast FinishedLogger
