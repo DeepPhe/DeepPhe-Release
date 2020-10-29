@@ -13,7 +13,7 @@
       <maven.compiler.target>1.8</maven.compiler.target>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <neo4j.version>3.5.1</neo4j.version>
-      <luceneVersion>5.5.0</luceneVersion>
+      <luceneVersion>7.1.0</luceneVersion>
    </properties>
 
    <modules>
