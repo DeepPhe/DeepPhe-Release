@@ -12,7 +12,7 @@
 
 
 //  Set packages in which DeepPhe annotation engines are contained.
-package org.apache.ctakes.core.util
+package org.apache.ctakes.core.util.log
 package org.apache.ctakes.core.patient
 package org.apache.ctakes.cancer.ae
 package org.apache.ctakes.cancer.summary
@@ -39,5 +39,4 @@ add CiTumorsBsvWriter SubDirectory=CI_EVAL
 add PatientNeo4jWriter
 
 //  Alert User that the pipeline is Finished.
-package org.apache.ctakes.core.util.log
 addLast FinishedLogger
