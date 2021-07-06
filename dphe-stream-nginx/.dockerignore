@@ -1,0 +1,11 @@
+**/*.png
+
+**/.git
+
+**/.gitignore
+
+Dockerfile
+
+.dockerignore
+
+**/*.md

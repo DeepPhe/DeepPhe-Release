@@ -1,0 +1,89 @@
+===================================================================
+Report ID.....................2,doc2
+Patient ID....................pt123456789
+Patient Name..................PatientX
+Principal Date................20100130 1215
+Record Type...................SP
+===================================================================
+[Report de-identified (Limited dataset compliant) by De-ID v.6.24.5.1]
+
+
+FINAL DIAGNOSIS:
+PART 1:  BREAST, LEFT, MODIFIED RADICAL MASTECTOMY
+A.	INVASIVE DUCTAL CARCINOMA IN UPPER OUTER QUADRANT, 1.3 CM IN
+GREATEST DIMENSION ASSOCIATED WITH MICROCALCIFICATIONS.
+B.	NOTTINGHAM SCORE 8/9 (TUBULES 2, NUCLEAR GRADE 3, MITOTIC RATE 3)
+NOTTINGHAM GRADE 3.
+C.	NO DEFINITE LYMPHOVASCULAR INVASION IDENTIFIED.
+D.	SURGICAL MARGINS ARE NEGATIVE.
+E.	TUMOR IS ESTROGEN RECEPTOR NEGATIVE, PROGESTERONE RECEPTOR NEGATIVE,
+HER-2/NEU NEGATIVE WITH A KI-67 INDEX OF 45%.
+F.	NO EVIDENCE OF IN-SITU COMPONENT SEEN.
+PART 2: AXILLARY LYMPH NODES, LEFT, BIOPSY
+A. TWO OUT OF TEN AXILLARY LYMPH NODES POSITIVE FOR METASTATIC 
+CARCINOMA (2/10).
+B. LARGEST METASTATIC TUMOR MEASURES 2.5 CM IN GREATEST DIMENSION.
+C. NO EXTRACAPSULAR EXTENSION IS IDENTIFIED.
+
+COMMENT:
+Immunostaining for AE1/AE3 supports the status of the axillary lymph node.
+
+Pathologist:  Person9, M.D.
+** Report Electronically Signed Out **
+By Pathologist:  Person9, M.D.
+1/30/2010 15:21
+My signature is attestation that I have personally reviewed the submitted
+material(s) and the final diagnosis reflects that evaluation.
+
+GROSS DESCRIPTION:
+The specimen is received fixed, labeled with the patient's name, initials,
+medical record number and "left radical modified breast mastectomy". 
+
+CASE SYNOPSIS:
+SYNOPTIC - PRIMARY INVASIVE CARCINOMA OF BREAST
+LATERALITY:      Left
+PROCEDURE:      Modified radical mastectomy
+LOCATION:      Upper outer quadrant
+Clock position: 12:30
+SIZE OF TUMOR:      Maximum dimension invasive component:  13 mm
+MULTICENTRICITY/MULTIFOCALITY OF INVASIVE FOCI:
+No
+TUMOR AGGREGATE SIZE:      Sum of the sizes of multiple invasive tumors: 
+TUMOR TYPE (invasive component): Ductal adenocarcinoma
+NOTTINGHAM SCORE: 8     Nuclear grade: 3
+Tubule formation: 2
+Mitotic activity score: 3
+Nottingham grade (1, 2, 3): 3
+ANGIOLYMPHATIC INVASION:      No
+DERMAL LYMPHATIC INVASION:      No
+CALCIFICATION:      Yes
+TUMOR TYPE, IN SITU:      Not present
+Percent of tumor occupied by in situ component: 0 %
+SURGICAL MARGINS INVOLVED BY INVASIVE COMPONENT:
+No
+Distance of invasive tumor to closest margin: 10 mm
+SURG MARGINS INVOLVED BY IN SITU COMPONENT:
+No
+Distance of in situ disease to closest margin: 
+PAGET's DISEASE OF NIPPLE:      No
+LYMPH NODES POSITIVE:      2
+LYMPH NODES EXAMINED:      10
+METHOD(S) OF LYMPH NODE EXAMINATION:
+H/E stain
+ONLY KERATIN POSITIVE CELLS ARE PRESENT:
+No
+SIZE OF NODAL METASTASES:      Diameter of largest lymph node metastasis: 15 mm
+LYMPH NODE METASTASIS(-ES) WITH EXTRACAPSULAR EXTENSION:
+No
+METASTASES TO IPSILATERAL INTERNAL MAMMARY LYMPH NODE (IF APPLICABLE):
+No
+SKIN INVOLVED (ULCERATION):      No
+NON-NEOPLASTIC BREAST TISSUE:      ADH, FCD
+T STAGE, PATHOLOGIC:      pT1c
+N STAGE, PATHOLOGIC:      pN1a
+M STAGE:      Not applicable
+ESTROGEN RECEPTORS:      negative, H-score:  0
+PROGESTERONE RECEPTORS:      negative, H-score:  0
+HER2/NEU:      negative, 0
+HER2/NEU (FISH):      Not applicable
+--------------------------------------------------------

@@ -7,3 +7,8 @@
 /deepphe.iml
 *.iml
 /git.Pull.manual.history.txt
+*.log
+*.gz
+
+# Ignore __pycache__ directories in any path
+**/__pycache__

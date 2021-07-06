@@ -1,0 +1,54 @@
+version: "3.7"
+services:
+
+  dphe-stream:
+    build:
+      context: ./dphe-stream
+    # Build the image with name and tag
+    image: dphe-stream:0.1.0-cr
+    hostname: dphe-stream
+    container_name: dphe-stream
+    init: true
+    restart: always
+    environment:
+      - HOST_GID=${HOST_GID:-1000}
+      - HOST_UID=${HOST_UID:-1000}
+    ports:
+      # Only for testing directly against the container
+      # dphe-stream container listens on port 8080 for the rest api
+      - "8181:8080"
+    volumes:
+      # Make log accessible on host
+      - "./dphe-stream/logs:/usr/src/app/v0.1.0-cr-release/dphe-stream-rest/logs"
+    networks:
+      - dphe-stream-network
+
+  dphe-stream-nginx:
+    build: ./dphe-stream-nginx
+    # Build the image with name and tag
+    image: dphe-stream-nginx:0.1.0-cr
+    hostname: dphe-stream-nginx
+    container_name: dphe-stream-nginx
+    init: true
+    restart: always
+    environment:
+      - HOST_GID=${HOST_GID:-1000}
+      - HOST_UID=${HOST_UID:-1000}
+    ports:
+      # Map host machine port 8080 to container port 8080 (since nginx runs as non-root)
+      - "8080:8080"
+    volumes:
+      # Make log accessible on host
+      - "./dphe-stream-nginx/logs:/usr/src/app/logs"
+      # Mount nginx configuration file from host to container
+      - "./dphe-stream-nginx/dphe-stream.conf:/etc/nginx/conf.d/dphe-stream.conf"
+      # Mount the integration test
+      - "./dphe-stream-nginx/integration-test:/usr/src/app/integration-test"
+    depends_on: 
+      # nginx reverse proxy forwarding requires the upstream servers running when nginx starts
+      - dphe-stream
+    networks:
+      - dphe-stream-network
+
+networks:
+  dphe-stream-network:
