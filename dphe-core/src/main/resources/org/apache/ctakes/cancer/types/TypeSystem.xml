@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <name>org.apache.ctakes.cancer.types.TypeSystem</name>
+    <description/>
+    <version>1.0</version>
+    <vendor>Mayo Clinic</vendor>
+    <types>
+        <typeDescription>
+            <name>org.apache.ctakes.cancer.type.textspan.Episode</name>
+            <description>An annotation within a text span for an Episode.</description>
+            <supertypeName>uima.tcas.Annotation</supertypeName>
+            <features>
+  				<featureDescription>
+    				<name>EpisodeType</name>
+    				<description/>
+    				<rangeTypeName>uima.cas.String</rangeTypeName>
+  				</featureDescription>
+			</features>
+        </typeDescription>
+    </types>
+</typeSystemDescription>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?> <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration debug="true"
+	xmlns:log4j='http://jakarta.apache.org/log4j/'>
+	<appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss} %5p %c{1} - %m%n" />
+		</layout>
+	</appender>
+   <!-- noEolAppender  prints a message without prefix or newline -->
+   <appender name="noEolAppender" class="org.apache.log4j.ConsoleAppender">
+      <layout class="org.apache.log4j.PatternLayout">
+         <param name="ConversionPattern" value="%m"/>
+      </layout>
+   </appender>
+   <!-- eolAppender  prints a message and newline without prefix -->
+   <appender name="eolAppender" class="org.apache.log4j.ConsoleAppender">
+      <layout class="org.apache.log4j.PatternLayout">
+         <param name="ConversionPattern" value="%m%n"/>
+      </layout>
+   </appender>
+   <!-- ProgressAppender is useful for dynamically logging progress dots ... -->
+   <logger name="ProgressAppender" additivity="false">
+      <level value="INFO"/>
+      <appender-ref ref="noEolAppender"/>
+   </logger>
+   <!-- ProgressDone is useful for ending the dynamic logging of progress dots ... -->
+   <logger name="ProgressDone" additivity="false">
+      <level value="INFO"/>
+      <appender-ref ref="eolAppender"/>
+   </logger>
+   <root>
+      <level value="INFO"/>
+      <appender-ref ref="consoleAppender" />
+	</root>
+</log4j:configuration> 

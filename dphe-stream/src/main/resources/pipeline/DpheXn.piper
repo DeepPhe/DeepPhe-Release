@@ -1,0 +1,177 @@
+//cli OverwriteGraph=n
+cli StartNeo4j=n
+cli Neo4jUri=r
+cli Neo4jUser=user
+cli Neo4jPass=pass
+
+//  Ignore dos/windows carriage return characters when reading files.
+set CRtoSpace=true
+
+package org.apache.ctakes.core.patient
+package org.healthnlp.deepphe.nlp.ae
+
+package org.healthnlp.deepphe.core.ae
+
+
+// Connect to local ontology graph embedded db.
+add Neo4jEmbeddedConnectAe
+
+// Connect to remote data graph server db
+//////// add Neo4jServerConnectAe    TODO
+
+//  Discover sections.
+package org.healthnlp.deepphe.nlp.ae.section
+add Sectionizer
+
+//  Discover items in University of Pittsburgh / University of Pittsburgh Medical Center -style note headers.
+add PittHeaderAnnotator
+
+//  Remove sections that should not be used by the rest of the pipeline.
+//add SectionRemover
+
+
+//  Detect sentences using a machine learning model.
+addLogged SentenceDetectorAnnotatorBIO classifierJarPath=/org/apache/ctakes/core/sentdetect/model.jar
+//add SentenceDetector
+
+add MrsDrSentenceJoiner
+
+//  Use the DeepPhe paragraph expressions for paragraph discovery.
+set PARAGRAPH_TYPES_PATH=org/healthnlp/deepphe/paragraph/ParagraphRegex.bsv
+//  Discover paragraphs.
+add ParagraphAnnotator
+
+add WtfSectionFixer
+
+//  Fix sentences so that no sentence spans across two or more paragraphs.
+add ParagraphSentenceFixer
+
+
+set LIST_TYPES_PATH=org/healthnlp/deepphe/list/CancerListRegex.bsv
+//  Discover formatted lists and tables.
+add ListAnnotator
+
+//  Fix sentences so that no sentence spans across two or more list entries.
+add ListSentenceFixer
+
+//add EolSentenceFixer
+
+//  Tokenize by penn treebank rules.
+add TokenizerAnnotatorPTB
+
+// Tokenize multi-token types such as dates, fractions and measurements.
+add ContextDependentTokenizerAnnotator
+
+// Approximate a document creation time using TimeAnnotation normalization.
+//add DocTimeApproximator ApproximateDocTime=True
+
+//  Tag word part of speech.
+addDescription POSTagger
+
+//  Add phrase chunkers.
+//load ChunkerSubPipe
+
+// Structured (non-prose) text ruins pos entirely.
+set exclusionTags=""
+///  Set the path to the xml file containing information for dictionary lookup configuration.
+set LookupXml=org/apache/ctakes/dictionary/lookup/fast/ncit_plus_16ab.xml
+//  Annotate concepts based upon default algorithms.
+add DefaultJCasTermAnnotator
+
+//  Filter various concepts using context.
+add MassFilter
+
+// Add the cleartk package for cleartk class lookups
+package org.apache.ctakes.assertion.medfacts.cleartk
+package org.apache.ctakes.assertion.medfacts.cleartk.windowed
+
+//  Assign such as negation and uncertainty using machine-learning models.
+// Add the cleartk attribute engines, logging for them as a block
+add StartFinishLogger LOGGER_NAME=CleartkAnalysisEngine LOGGER_TASK="Assigning Attributes" IS_START=true
+addDescription PolarityCleartkAnalysisEngineWindowed
+addDescription UncertaintyCleartkAnalysisEngineWindowed
+
+//  Assign such as negation and uncertainty using context.
+set MaxRightScopeSize=12
+load NeContextsSubPipe
+
+//  Find modifiers for disease attributes such as negation and uncertainty and make appropriate assignments.
+add DiseaseAttributeFinder
+
+// Adjust attributes in list entries
+add ListEntryNegator
+
+// Adjust attributes by text
+add CancerAttributeAdjuster
+
+// Negate any cancers that are alone in a paragraph and any 1 is negated
+add LonerNegator
+
+//  Fix the Subject type (patient, family member) by section type.
+add SubjectSectionFixer
+
+//  Find phenotype attributes not declared in the ontology by special means.
+//add PhenotypeFinder
+
+//add PsaFinder
+
+//add GleasonFinder
+
+//add Ki67Finder
+
+add BiomarkerFinder
+
+add GradeFinder
+
+// Adjust Subjects for entities
+add SubjectAdjuster
+
+//  Set the section type in which each element was discovered to that element.
+add SectionIdSetter
+
+// Adjust Historic for entities
+add HistoryAdjuster
+
+//  Find relations declared in the ontology.
+add InDocUriRelationFinder
+
+//  Find relations not declared in the ontology by special means.
+//  Modified this to make "v5" faster.
+add NonGraphedRelationFinder
+
+//  Tag the overall Episode for each document.
+add DocEpisodeTagger
+add MelanomaDocEpisodeTagger
+
+// TODO - Use Stream Summarization
+//  Collect notes for a patient for later summarization.
+//add PatientNoteCollector
+// These collectors can be removed if all of the writers / consumers that need them implement AbstractFileWriter and store the patient/note in their createData method.
+//add PatientNodeCollector
+
+//  Summarize the patient phenotype.
+//add PatientSummarizer
+
+// Write the patient phenotypes from Multi-Cancer CI creation
+//add CiCancersBsvWriter SubDirectory=CI_EVAL
+//add CiTumorsBsvWriter SubDirectory=CI_EVAL
+
+//  Write patient phenotypes to the neo4j graph database.
+//add PatientNeo4jWriter
+///////////// add NeoplasmNeo4jWriter  TODO
+
+//add JsonNodeCreator    Duplicate of PatientNodeCollector
+add html.HtmlTextWriter SubDirectory=HTML
+add pretty.plaintext.PrettyTextWriterFit SubDirectory=TEXT
+
+// add PatientJsonFileWriter SubDirectory=JSON
+package org.healthnlp.deepphe.summary.writer
+cli CancerEvalFile=c
+add EvalFileWriterXn SubDirectory=EVAL
+
+addLast PatientSummaryCleaner
+
+//  Alert User that the pipeline is Finished.
+package org.apache.ctakes.core.util.log
+addLast FinishedLogger
+addLast PipelineStopper

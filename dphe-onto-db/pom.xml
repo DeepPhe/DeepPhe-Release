@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.healthnlp</groupId>
+   <artifactId>deepphe-onto-db</artifactId>
+   <version>0.4.0</version>
+   <name>deepphe-onto-db</name>
+   <description>Cancer Deep Phenotype Extraction (DeepPhe) Ontology Database module</description>
+   <packaging>jar</packaging>
+   <properties>
+      <ctakes.version>4.0.1-SNAPSHOT</ctakes.version>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+   </properties>
+
+   <dependencies>
+   </dependencies>
+
+   <repositories>
+
+   </repositories>
+
+   <build>
+      <!-- It's good practice to explicitly declare versions for all plugins -->
+<!--      <resources>-->
+<!--         <resource>-->
+<!--            <directory>src/main/resources</directory>-->
+<!--            <includes>-->
+<!--               <include>**/*</include>-->
+<!--            </includes>-->
+<!--         </resource>-->
+<!--      </resources>-->
+
+      <plugins>
+        </plugins>
+   </build>
+</project>

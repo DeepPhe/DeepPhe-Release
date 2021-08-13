@@ -1,0 +1,36 @@
+//////////////////////////////////////////////////////////////////////////
+//
+//       Commands and parameters to run the Deep Phenome v0.5.0 pipeline
+//          deals with entity discovery and filtering.
+//
+//       For more information on piper files see the Apache cTAKES wiki:
+//          https://cwiki.apache.org/confluence/display/CTAKES/Piper+Files
+//
+//       Modify with care.
+//
+//////////////////////////////////////////////////////////////////////////
+
+//  Set packages in which DeepPhe annotation engines are contained.
+package org.apache.ctakes.core.patient
+package org.healthnlp.deepphe.nlp.ae
+
+package org.healthnlp.deepphe.core.ae
+
+//  Tokenize by penn treebank rules.
+add TokenizerAnnotatorPTB
+
+// Tokenize multi-token types such as dates, fractions and measurements.
+add ContextDependentTokenizerAnnotator
+
+//  Tag word part of speech.
+addDescription POSTagger
+
+//  Do not exclude words of any part of speech tag for dictionary lookup.  RB* = Adverb
+set exclusionTags=""
+//  Set the path to the xml file containing information for dictionary lookup configuration.
+set LookupXml=org/apache/ctakes/dictionary/lookup/fast/ncit_plus_21aa.xml
+//  Annotate concepts based upon default algorithms.
+add DefaultJCasTermAnnotator
+
+//  Filter various concepts using context.
+add MassFilter

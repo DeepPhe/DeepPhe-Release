@@ -1,0 +1,10 @@
+/resources
+/bin
+/target/
+/.idea/
+/.settings/
+/.classpath
+/.project
+*.iml
+/git.Pull.manual.history.txt
+.DS_Store

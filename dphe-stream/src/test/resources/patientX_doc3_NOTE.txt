@@ -1,0 +1,29 @@
+===================================================================
+Report ID.....................3,doc3
+Patient ID....................pt123456789
+Patient Name..................PatientX
+Principal Date................20101202
+Record Type...................NOTE
+===================================================================
+[Report de-identified (Limited dataset compliant) by De-ID v.6.24.5.1]
+
+
+DIAGNOSIS:  Stage IIA (T1 N1 M0) infiltrating ductal carcinoma, left breast, 
+triple negative.
+
+Therapy completed 9 cycles of weekly Abraxane.
+
+REASON FOR VISIT:  Assess response to neoadjuvant chemotherapy.
+
+Patient92 returns to the office today for ongoing management of biopsy-proven left breast cancer with axillary lymph node metastasis.
+Her initial office visit was on September 30, 2010.
+Her clinical breast examination at that time was significant for a 2 cm palpable mass in the upper outer aspect of the left breast extending from 12:30 o'clock.
+She also had multiple abnormally enlarged left axillary lymph nodes.
+
+She has now completed 9 of a planned 12 cycles of weekly Abraxane.
+She has tolerated her chemotherapy overall without significant sequela.
+She denies any hospitalizations.
+
+Her past medical history, surgical history, medications, and allergies were reviewed as noted in the electronic medical record.
+
+IMPRESSION:  Partial response to neoadjuvant chemotherapy for a locally advanced, triple negative, left breast cancer.

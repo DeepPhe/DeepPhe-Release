@@ -1,0 +1,7 @@
+package org.healthnlp.deepphe.core.ae
+
+// Connect to local ontology graph embedded db
+add Neo4jEmbeddedConnectAe
+
+// Connect to remote data graph server db
+add Neo4jServerConnectAe

@@ -1,0 +1,56 @@
+//////////////////////////////////////////////////////////////////////////
+//
+//       Commands and parameters to run the Deep Phenome v0.4.0 pipeline
+//          deals with document reading and large item discovery.
+//
+//       For more information on piper files see the Apache cTAKES wiki:
+//          https://cwiki.apache.org/confluence/display/CTAKES/Piper+Files
+//
+//       Modify with care.
+//
+//////////////////////////////////////////////////////////////////////////
+
+
+//  Set packages in which DeepPhe annotation engines are contained.
+package org.healthnlp.deepphe.core.ae
+package org.apache.ctakes.core.patient
+package org.healthnlp.deepphe.nlp.ae
+package org.healthnlp.deepphe.nlp.ae.section
+
+//  Ignore dos/windows carriage return characters when reading files.
+set CRtoSpace=true
+
+// Connect to local ontology graph embedded db
+add Neo4jEmbeddedConnectAe
+
+// Connect to remote data graph server db
+add Neo4jServerConnectAe
+
+//  Discover sections.
+add Sectionizer
+
+//  Discover items in University of Pittsburgh / University of Pittsburgh Medical Center -style note headers.
+add PittHeaderAnnotator
+
+//  Detect sentences using a machine learning model.
+addLogged SentenceDetectorAnnotatorBIO classifierJarPath=/org/apache/ctakes/core/sentdetect/model.jar
+
+add MrsDrSentenceJoiner
+
+//  Use the DeepPhe paragraph expressions for paragraph discovery.
+set PARAGRAPH_TYPES_PATH=org/healthnlp/deepphe/paragraph/ParagraphRegex.bsv
+//  Discover paragraphs.
+add ParagraphAnnotator
+
+add WtfSectionFixer
+
+//  Fix sentences so that no sentence spans across two or more paragraphs.
+add ParagraphSentenceFixer
+
+set LIST_TYPES_PATH=org/healthnlp/deepphe/list/CancerListRegex.bsv
+//  Discover formatted lists and tables.
+add ListAnnotator
+
+//  Fix sentences so that no sentence spans across two or more list entries.
+add ListSentenceFixer
+

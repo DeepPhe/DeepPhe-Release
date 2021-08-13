@@ -1,0 +1,21 @@
+/resources
+/bin
+target/
+/.idea/
+/.settings/
+/.classpath
+/.project
+*.iml
+/git.Pull.manual.history.txt
+.DS_Store
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+# https://github.com/takari/maven-wrapper#usage-without-binary-jar
+.mvn/wrapper/maven-wrapper.jar
+cTAKES.error.log

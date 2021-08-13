@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.healthnlp</groupId>
+   <artifactId>dphe-cli</artifactId>
+   <version>0.4.0</version>
+   <name>deepphe-cli</name>
+   <description>Cancer Deep Phenotype Extraction (DeepPhe) single-stream NLP and summarization module</description>
+   <packaging>jar</packaging>
+   <properties>
+      <ctakes.version>4.0.1-SNAPSHOT</ctakes.version>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+   </properties>
+   <dependencies>
+      <dependency>
+         <groupId>org.healthnlp</groupId>
+         <artifactId>deepphe-stream</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.apache.ctakes</groupId>
+         <artifactId>ctakes-gui</artifactId>
+         <version>${ctakes.version}</version>
+      </dependency>
+
+   </dependencies>
+
+   <repositories>
+      <repository>
+         <id>apache.snapshots</id>
+         <name>Apache Development Snapshot Repository</name>
+         <url>https://repository.apache.org/content/groups/snapshots/</url>
+         <releases>
+            <enabled>false</enabled>
+         </releases>
+         <snapshots>
+            <enabled>true</enabled>
+         </snapshots>
+      </repository>
+   </repositories>
+
+   <build>
+      <!-- It's good practice to explicitly declare versions for all plugins -->
+         <plugins>
+<!-- TODO : Add the dPhe OG graph db -->
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-dependency-plugin</artifactId>
+               <version>3.1.2</version>
+               <executions>
+                  <execution>
+                     <id>resource-dependencies</id>
+                     <phase>compile</phase>
+                     <goals>
+                        <goal>unpack</goal>
+                     </goals>
+                     <configuration>
+                        <artifactItems>
+                           <artifactItem>
+                              <groupId>org.healthnlp</groupId>
+                              <artifactId>deepphe-onto-db</artifactId>
+                              <version>${project.version}</version>
+                              <type>jar</type>
+                              <overWrite>true</overWrite>
+                              <outputDirectory>${basedir}/resources</outputDirectory>
+                           </artifactItem>
+                        </artifactItems>
+                        <includes>graph/**,org/**</includes>
+                        <outputDirectory>${basedir}/resources</outputDirectory>
+                     </configuration>
+                  </execution>
+               </executions>
+            </plugin>
+
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-resources-plugin</artifactId>
+               <version>3.1.0</version>
+               <executions>
+                  <execution>
+                     <id>copy-resources</id>
+                     <phase>compile</phase>
+                     <goals>
+                        <goal>copy-resources</goal>
+                     </goals>
+                     <configuration>
+                        <outputDirectory>${basedir}/resources</outputDirectory>
+                        <resources>
+                           <resource>
+                              <directory>${basedir}/src/main/resources</directory>
+                              <filtering>true</filtering>
+                           </resource>
+                        </resources>
+                     </configuration>
+                  </execution>
+               </executions>
+            </plugin>
+
+   <!-- PLUGINS FOR BINARY DISTRIBUTION -->
+            <plugin>
+               <artifactId>maven-assembly-plugin</artifactId>
+               <version>2.4</version>
+               <executions>
+                  <execution>
+                     <id>bundle-project-sources</id>
+                     <phase>package</phase>
+                     <goals>
+                        <goal>single</goal>
+                     </goals>
+                     <configuration>
+                        <descriptors>
+                           <descriptor>src/main/assembly/bin.xml</descriptor>
+                        </descriptors>
+                        <!-- Tar package is only compatible with gnu tar, many files have more
+                            than 100 chars. Right now only javadoc files are too long. -->
+                        <tarLongFileMode>gnu</tarLongFileMode>
+                        <finalName>deepphe-${project.version}</finalName>
+                     </configuration>
+                  </execution>
+               </executions>
+            </plugin>
+         <!-- PLUGINS FOR TESTING -->
+
+            <!-- configure the surefire plugin to run tests in parallel -->
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-surefire-plugin</artifactId>
+               <version>3.0.0-M5</version>
+               <configuration>
+                  <parallel>methods</parallel>
+                  <threadCount>10</threadCount>
+               </configuration>
+            </plugin>
+
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-site-plugin</artifactId>
+               <version>3.7.1</version>
+            </plugin>
+
+         </plugins>
+   </build>
+
+   <profiles>
+   <profile>
+      <id>startGui</id>
+      <activation>
+         <property>
+            <name>startGui</name>
+         </property>
+      </activation>
+      <build>
+         <plugins>
+            <plugin>
+               <groupId>org.codehaus.mojo</groupId>
+               <artifactId>exec-maven-plugin</artifactId>
+               <version>1.2.1</version>
+               <executions>
+                  <execution>
+                     <!-- depends on other modules being on classpath -->
+                     <phase>compile</phase>
+                     <goals>
+                        <!--  Use exec.  The java goal runs in the same jvm as maven, meaning we can't pass Xmx  -->
+                        <goal>exec</goal>
+                     </goals>
+                  </execution>
+               </executions>
+               <configuration>
+                  <executable>java</executable>
+                  <includeProjectDependencies>true</includeProjectDependencies>
+                  <includePluginDependencies>true</includePluginDependencies>
+                  <workingDirectory>${project.parent.basedir}</workingDirectory>
+                  <arguments>
+                     <argument>-classpath</argument>
+                     <classpath/>
+                     <argument>-Xmx4G</argument>
+                     <argument>org.apache.ctakes.gui.pipeline.PiperRunnerGui</argument>
+                     <argument>-p</argument>
+                     <argument>resources/pipeline/DeepPhe.piper</argument>
+<!--                     <argument>-c</argument>-->
+<!--                     <argument>resources/pipeline/PatientX.piper_cli</argument>-->
+                  </arguments>
+               </configuration>
+            </plugin>
+         </plugins>
+      </build>
+   </profile>
+
+   </profiles>
+
+   <reporting>
+         <plugins>
+            <!-- configure the surefire reports to generate on every build -->
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-surefire-report-plugin</artifactId>
+               <version>3.0.0-M5</version>
+            </plugin>
+         </plugins>
+   </reporting>
+   
+</project>
