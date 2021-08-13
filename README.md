@@ -33,10 +33,10 @@ Here is a pictorial example of DeepPhe processing five documents for a single pa
    - This release of DeepPhe requires [neo4j 3.5.x](https://neo4j.com/docs/operations-manual/3.5/). WARNING - do not simply download the latest version of neo4j.
 3. Install a binary installation of the DeepPhe Translational base system:
    - on Windows, execute the build.bat script in the root directory of the source code.
-   - on Linux, follow the directions on the [Manual Tests page](https://github.com/DeepPhe/dphe-manual-tests) starting with step #2.
+   - on Linux, follow the instructions in [linux-build-and-run](linux-build-and-run/README.md) starting with step #2.
 4. Install the [DeepPhe Data Visualizer](https://github.com/DeepPhe/DeepPhe-Viz-v2).
    - The DeepPhe Data Visualizer works best on Linux.
-     - Scripts on the [Manual Tests page](https://github.com/DeepPhe/dphe-manual-tests) can also be used to install and run the Visualizer.
+     - Scripts in [linux-build-and-run](linux-build-and-run/README.md) can also be used to install and run the Visualizer.
 
 
 ## Using DeepPhe
