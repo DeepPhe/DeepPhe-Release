@@ -28,7 +28,7 @@ Here is a pictorial example of DeepPhe processing five documents for a single pa
 1. Obtain the code of the base DeepPhe Translational system using one of three methods:
    - Download a [zip file](https://github.com/DeepPhe/DeepPhe-Release/archive/refs/heads/Translational-v0.4.0.zip).
    - Clone this [branch](https://github.com/DeepPhe/DeepPhe-Release.git).
-   - Visit the [Release page](https://github.com/DeepPhe/DeepPhe-Release/releases/tag/Translational-v0.4.0).
+   - Visit the [Release page](https://github.com/DeepPhe/DeepPhe-Release/releases/tag/xn0.4.0).
 2. Install version 3.5 of [Neo4j](https://neo4j.com/download-center/).
    - This release of DeepPhe requires [neo4j 3.5.x](https://neo4j.com/docs/operations-manual/3.5/). WARNING - do not simply download the latest version of neo4j.
 3. Install a binary installation of the DeepPhe Translational base system:
