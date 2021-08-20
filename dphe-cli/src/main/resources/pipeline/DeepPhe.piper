@@ -17,11 +17,13 @@
 //   OutputDirectory (-o)    The directory to which output should be written.
 //   StartNeo4j (-n)         Location of the Neo4j installation.
 //                           Leave this blank if you do not wish to auto-start Neo4j.
-//                           If you use this option then the neo4j server 
+//                           If you use this option then the neo4j server
 //                             will remain active after the pipeline ends.
-//   Neo4jUri (-r)           URI for the Neo4j Server.  
+//   StopNeo4j (-e)          Must have a value, "yes" will stop the Neo4j service.
+//                           This will be ignored if StartNeo4j is not used.
+//   Neo4jUri (-r)           URI for the Neo4j Server.
 //                           Normally bolt://127.0.0.1:7687
-//   Neo4jUser (--user)      The username for Neo4j.  
+//   Neo4jUser (--user)      The username for Neo4j.
 //                           Normally "neo4j".
 //   Neo4jPass (--pass)      The password for Neo4j.
 //                           Normally "neo4j" until you change it.
@@ -30,6 +32,7 @@
 
 
 cli StartNeo4j=n
+cli StopNeo4j=e
 cli Neo4jUri=r
 cli Neo4jUser=user
 cli Neo4jPass=pass
@@ -48,5 +51,6 @@ load DeepPhe.summary
 
 //  Alert User that the pipeline is Finished.
 package org.apache.ctakes.core.util.log
+addLast Neo4jServerShutdownAe
 addLast FinishedLogger
 addLast PipelineStopper

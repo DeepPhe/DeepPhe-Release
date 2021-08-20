@@ -1,6 +1,8 @@
 package org.healthnlp.deepphe.neo4j.util;
 
 
+//import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Logger;
 import org.apache.log4j.Logger;
 import org.healthnlp.deepphe.neo4j.constant.RelationConstants;
 import org.neo4j.graphdb.*;
@@ -18,7 +20,8 @@ import static org.healthnlp.deepphe.neo4j.constant.Neo4jConstants.NAME_KEY;
  */
 final public class Neo4jRelationUtil {
 
-   static private final Logger LOGGER = Logger.getLogger( "Neo4jRelationUtil" );
+//   static private final Logger LOGGER = LogManager.getLogger( "Neo4jRelationUtil" );
+static private final Logger LOGGER = Logger.getLogger( "Neo4jRelationUtil" );
 
    private Neo4jRelationUtil() {}
 

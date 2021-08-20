@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Date;
 
 /**
+ * TODO Move this to a parallel source tree under "test".  I must have really rushed this.
  * Performs Setup for Neo4j Testing.  Adds two patients and a note to a Neo4j database.
  *
  * @author SPF , chip-nlp
@@ -84,6 +85,9 @@ public enum TestServiceFactory {
    }
 
 
+//   TODO The following do not test the DriverFactory.
+//    They test the writer and should be in a different test class that is in the .writer package.
+//    A service can be created with @BeforeClass and failure reported there.
    static private Patient createPatient( final String id ) {
       final Patient patient = new Patient();
       patient.setId( id );

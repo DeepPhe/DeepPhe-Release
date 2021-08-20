@@ -1,5 +1,6 @@
 //cli OverwriteGraph=n
 cli StartNeo4j=n
+cli StopNeo4j=e
 cli Neo4jUri=r
 cli Neo4jUser=user
 cli Neo4jPass=pass
@@ -173,5 +174,6 @@ addLast PatientSummaryCleaner
 
 //  Alert User that the pipeline is Finished.
 package org.apache.ctakes.core.util.log
+addLast Neo4jServerShutdownAe
 addLast FinishedLogger
 addLast PipelineStopper

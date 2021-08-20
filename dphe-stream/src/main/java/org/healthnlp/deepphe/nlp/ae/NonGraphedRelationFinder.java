@@ -272,7 +272,8 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
                findMetastasis( jCas, neoplasmList, metastasisList );
             }
             if ( !allBreastTumors.isEmpty() ) {
-               findAllStatus( jCas, paragraph, allMassNeoplasmList, allBreastTumors );
+               // We now use BiomarkerFinder for all biomarkers including the brca receptor status
+//               findAllStatus( jCas, paragraph, allMassNeoplasmList, allBreastTumors );
                // if there are breast sites then there may be breast site modifiers
 //               final Collection<IdentifiedAnnotation> breasts
 //                     = Neo4jOntologyConceptUtil.getAnnotationsByUriBranch( jCas, paragraph, UriConstants.BREAST );

@@ -56,6 +56,7 @@ echo Building the DeepPhe Run library, please wait ...
 start "Building the DeepPhe Run library" /WAIT cmd /c scripts\buildCliLibrary.bat
 if not %errorlevel%==0 goto maven_error
 
+
 rem Move the binary installation.
 echo.
 echo  Please enter a location where you would like to place your DeepPhe binary installation.
@@ -67,6 +68,10 @@ if not defined DEEPPHE_BIN (
 echo Copying the DeepPhe binary installation to %DEEPPHE_BIN%, please wait ...
 xcopy dphe-cli\target\deepphe-0.4.0-bin\* "%DEEPPHE_BIN%" /Q /S /E /I /Y
 if not %errorlevel%==0 echo The DeepPhe binary at dphe-cli\target\deepphe-0.4.0-bin could not be copied to %DEEPPHE_BIN%
+echo Copying the log4j configuration to %DEEPPHE_BIN%\config, please wait ...
+if not exist "%DEEPPHE_BIN%\deepphe-0.4.0\config" mkdir "%DEEPPHE_BIN%\deepphe-0.4.0\config"
+copy /Y dphe-core\src\main\resources\log4j.properties "%DEEPPHE_BIN%\deepphe-0.4.0\config"
+copy /Y dphe-core\src\main\resources\log4j.xml "%DEEPPHE_BIN%\deepphe-0.4.0\config"
 
 
 :create_plugin

@@ -9,6 +9,9 @@ import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.healthnlp.deepphe.neo4j.driver.DriverConnection;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.Transaction;
 
 import java.io.*;
 import java.util.concurrent.TimeUnit;
@@ -65,11 +68,10 @@ final public class Neo4jServerConnectAe extends JCasAnnotator_ImplBase {
     */
    @Override
    public void initialize( final UimaContext uimaContext ) throws ResourceInitializationException {
-      LOGGER.info( "Initializing Neo4j Driver ..." );
       // The super.initialize call will automatically assign user-specified values for to ConfigurationParameters.
       super.initialize( uimaContext );
-
       if ( _startNeo4j != null && !_startNeo4j.isEmpty() ) {
+         LOGGER.info( "Initializing Neo4j Driver ..." );
          startNeo4j();
       }
       if ( DriverConnection.getInstance().getDriver() != null ) {

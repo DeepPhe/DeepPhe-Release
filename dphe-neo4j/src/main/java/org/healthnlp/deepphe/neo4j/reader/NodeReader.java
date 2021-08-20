@@ -15,6 +15,8 @@ import org.neo4j.procedure.Name;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -174,7 +176,6 @@ public enum NodeReader {
         patientSummary.setNeoplasms(cancers);
         return patientSummary;
     }
-
 
     /////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -361,7 +362,6 @@ public enum NodeReader {
         return null;
     }
 
-
     /////////////////////////////////////////////////////////////////////////////////////////
     //
     //                            NOTE DATA
@@ -396,8 +396,8 @@ public enum NodeReader {
     }
 
     private List<NewBiomarkerSummary> getBiomarkers(final GraphDatabaseService graphDb,
-                                                 final Log log,
-                                                 final String patientId) {
+                                                    final Log log,
+                                                    final String patientId) {
         final List<NewBiomarkerSummary> biomarkers = new ArrayList<>();
 
         try (Transaction tx = graphDb.beginTx()) {
@@ -525,7 +525,6 @@ public enum NodeReader {
         return note;
     }
 
-
     /////////////////////////////////////////////////////////////////////////////////////////
     //
     //                            SECTION DATA
@@ -577,7 +576,6 @@ public enum NodeReader {
         }
         return null;
     }
-
 
     /////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -708,7 +706,6 @@ public enum NodeReader {
         return corefs;
     }
 
-
     /////////////////////////////////////////////////////////////////////////////////////////
     //
     //                            MENTION RELATION AND COREF HELPER CLASS
@@ -729,6 +726,7 @@ public enum NodeReader {
     }
 
     public static PatientInfo populateNewRandomPatient(NewStructuredPatientData structuredPatientData) throws ParseException {
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         String fed = structuredPatientData.getFirstEncounterDate();
@@ -753,25 +751,19 @@ public enum NodeReader {
         patientInfo.setGender(structuredPatientData.getGender());
         return patientInfo;
 
-
     }
 
     public static NewStructuredPatientData getStructuredPatientDataForPatientId(String actualPatientId) {
         Gson gson = new Gson();
-        try {
-            JsonReader reader = new JsonReader(new FileReader("/Users/johnlevander/dev/dphe-neo4j-plugin/fake_patient_structured_data.json"));
-            List<NewStructuredPatientData> data = gson.fromJson(reader, new TypeToken<List<NewStructuredPatientData>>() {
-            }.getType());
-            for (NewStructuredPatientData structuredPatientData : data) {
-                if (structuredPatientData.getPatientId().equals(actualPatientId)) {
-                    return structuredPatientData;
-                }
+        JsonReader reader = new JsonReader(new InputStreamReader(NodeReader.class.getClassLoader().getResourceAsStream("fake_patient_structured_data.json")));
+        List<NewStructuredPatientData> data = gson.fromJson(reader, new TypeToken<List<NewStructuredPatientData>>() {
+        }.getType());
+        for (NewStructuredPatientData structuredPatientData : data) {
+            if (structuredPatientData.getPatientId().equals(actualPatientId)) {
+                return structuredPatientData;
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
         return null;
-
     }
 
     //TODO: throwing generic exception, make it more specific
@@ -822,7 +814,6 @@ public enum NodeReader {
                     patientSummaryAndStages.getStages().addAll(stages);
                 }
 
-
                 // Add to the set, this doesn't allow duplicates
                 patientSummaryAndStagesList.getPatientSummaryAndStages().add(patientSummaryAndStages);
             }
@@ -868,8 +859,6 @@ public enum NodeReader {
         NewCancerAndTumorSummary cancerAndTumorSummary = new NewCancerAndTumorSummary();
         List<NewCancerSummary> cancers = new ArrayList<>();
         cancerAndTumorSummary.setCancers(cancers);
-
-
 
         List<NeoplasmSummary> neoplasmSummaries = getCancers(graphDb, log, patientId);
 
@@ -1103,7 +1092,6 @@ public enum NodeReader {
                 //.filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-
 //        List<PatientSummary> patientSummaries = new ArrayList<>();
 //        try ( Transaction tx = graphDb.beginTx() ) {
 //            // DataUtil.getAllPatientNodes() is supposed to return all unique patients
@@ -1151,7 +1139,6 @@ public enum NodeReader {
         return patientSummary;
 
     }
-
 
     /////////////////////////////////////////////////////////////////////////////////////////
     //

@@ -33,10 +33,10 @@ Here is a pictorial example of DeepPhe processing five documents for a single pa
    - This release of DeepPhe requires [neo4j 3.5.x](https://neo4j.com/docs/operations-manual/3.5/). WARNING - do not simply download the latest version of neo4j.
 3. Install a binary installation of the DeepPhe Translational base system:
    - on Windows, execute the build.bat script in the root directory of the source code.
-   - on Linux, follow the instructions in [linux-build-and-run](linux-build-and-run/README.md) starting with step #2.
+   - on Linux, follow the directions on the [Manual Tests page](https://github.com/DeepPhe/dphe-manual-tests) starting with step #2.
 4. Install the [DeepPhe Data Visualizer](https://github.com/DeepPhe/DeepPhe-Viz-v2).
    - The DeepPhe Data Visualizer works best on Linux.
-     - Scripts in [linux-build-and-run](linux-build-and-run/README.md) can also be used to install and run the Visualizer.
+     - Scripts on the [Manual Tests page](https://github.com/DeepPhe/dphe-manual-tests) can also be used to install and run the Visualizer.
 
 
 ## Using DeepPhe
@@ -47,7 +47,8 @@ Here is a pictorial example of DeepPhe processing five documents for a single pa
    - Run the system by executing bin\runDeepPhe.   Command-line parameters are required to run in this manner:
      -   InputDirectory (-i)     The directory containing clinical notes.
      -   OutputDirectory (-o)    The directory to which output should be written.
-     -   StartNeo4j (-n)         Location of the Neo4j installation.  Do not use this if you do not wish to auto-start Neo4j.  If you use this option then the neo4j server will remain active after the pipeline ends.
+     -   StartNeo4j (-n)         Location of the Neo4j installation.  Do not use this if you do not wish to auto-start Neo4j.  If you use this option then the neo4j server will remain active after the pipeline ends unless you use StopNeo4j "yes".
+     -   StopNeo4j (-e)          "yes".  Do not use this if you do not wish to auto-stop Neo4j.  If you use this option then the neo4j server will stop after the pipeline ends.
      -   Neo4jUri (-r)           URI for the Neo4j Server.  Normally "bolt://127.0.0.1:7687"
      -   Neo4jUser (--user)      The username for Neo4j.  Normally "neo4j".
      -   Neo4jPass (--pass)      The password for Neo4j.  Normally "neo4j" until you change it.

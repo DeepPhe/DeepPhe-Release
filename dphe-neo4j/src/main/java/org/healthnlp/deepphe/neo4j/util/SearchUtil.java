@@ -8,9 +8,6 @@ import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.traversal.TraversalDescription;
 import org.neo4j.logging.Log;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -535,9 +532,7 @@ final public class SearchUtil {
          tx.success();
          return node;
       } catch ( MultipleFoundException mfE ) {
-
          LOGGER.error( mfE.getMessage(), mfE );
-        //where does this go?
       }
       return null;
    }
@@ -550,6 +545,30 @@ final public class SearchUtil {
          return nodes;
       } catch ( MultipleFoundException mfE ) {
          LOGGER.error( mfE.getMessage(), mfE );
+      }
+      return null;
+   }
+
+   static public Node getOrCreateLabeledNode( final GraphDatabaseService graphDb,
+                                              final Label label,
+                                              final String id ) {
+      final Node extantNode = getLabeledNode( graphDb, label, id );
+      if ( extantNode != null ) {
+         return extantNode;
+      }
+      try ( Transaction tx = graphDb.beginTx() ) {
+         final Node newNode = graphDb.createNode( label );
+         newNode.setProperty( NAME_KEY, id );
+         tx.success();
+         return newNode;
+      } catch ( TransactionFailureException txE ) {
+         LOGGER.error( "Cannot create create Node " + label.name() + " " + id );
+         LOGGER.error( txE.getMessage() );
+      } catch ( Exception e ) {
+         // While it is bad practice to catch pure Exception, neo4j throws undeclared exceptions of all types.
+         LOGGER.error( "Ignoring Exception while creating Node "
+                    + label.name() + " " + id + "\n" + e.getClass().getSimpleName() + "\n" + e.getMessage() );
+         // Attempt to continue.
       }
       return null;
    }

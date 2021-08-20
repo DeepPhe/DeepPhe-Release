@@ -1,6 +1,7 @@
 package org.healthnlp.deepphe.neo4j.driver;
 
 
+import org.apache.log4j.Logger;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
@@ -37,7 +38,7 @@ final public class DriverFactory {
          try {
             driver.close();
          } catch ( LifecycleException | RotationTimeoutException multE ) {
-            // ignore
+            Logger.getLogger( "DriverFactory" ).error( "Could not shut down neo4j driver.", multE );
          }
       } ) );
    }
