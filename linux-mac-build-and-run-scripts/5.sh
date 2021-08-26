@@ -1,2 +1,2 @@
 #start the react client
-(cd ../DeepPhe-Viz-v2/client && npm install && npm start)
+(cd DeepPhe-Viz/client && npm install --save --legacy-peer-deps && npm start)
