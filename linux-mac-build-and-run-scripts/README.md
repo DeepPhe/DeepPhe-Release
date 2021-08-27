@@ -21,9 +21,11 @@
 1. In the linux-mac-build-and-run-scripts folder, edit the 2.sh script to point the NEO4J_HOME variable to your Neo4j installation.
    1.  e.g. NEO4J_HOME="/opt/neo4j-community-3.5.12"
 
-1. Change to the linux-mac-build-and-run-scripts folder and run the shell script 1.sh.  This will build the DeepPhe source code.  
+1. Run 1.sh. This will build the DeepPhe source code.  
 
-1. Run 2.sh, this script starts the Neo4j Server.
+1. Run 2.sh. This script starts the Neo4j Server.
+   1.  <img width="522" alt="Screen Shot 2021-08-27 at 2 26 44 PM" src="https://user-images.githubusercontent.com/11561825/131172594-049f1cdf-92ec-4b8d-b447-ab90596e5098.png">
+ 
 
 1. Login to [http://localhost:7474](localhost:7474) to change the password.  **This is a one-time requirement for new Neo4j installations.**  
    1. You will be prompted for a login and password.  Please enter 'neo4j' for both the username and password. 
@@ -35,14 +37,13 @@
    7. Next terminate the Neo4j database by pressing Control-C in the Neo4j console where you ran 2.sh.  This database was started using the default authentication credentiails, and those are now out of date.
    8. Finally, run 2.sh again to restart the server using the proper credentials 
 
-1. Start a new terminal and run 3.sh.  This runs DeepPhe.  If this runs successfully, a COMPLETE message is displayed.
+1. Open a new terminal and run 3.sh.  This runs DeepPhe.  If this runs successfully, a COMPLETE message is displayed.
    1. <img width="690" alt="Screen Shot 2021-08-27 at 2 13 49 PM" src="https://user-images.githubusercontent.com/11561825/131171207-e247b804-d04b-4950-bbd3-6922ed8ee333.png">
  
-
-
-1. Next, run 4.sh.  This runs the DeepPhe Webservice/API.  There is no visual output, but a the terminal will show that a Node application has sarted.  Leave this terminal window open.
-
-1. Open a new terminal, run 5.sh.  This starts DeepPhe Viz, the visualization interface for DeepPhe.  The initial screen should look similar to this:
+1. Run 4.sh. This runs the DeepPhe Webservice/API.  There is no visual output, but a the terminal will show that a Node application has sarted.  Leave this terminal window open.
+   1. <img width="522" alt="Screen Shot 2021-08-27 at 2 28 58 PM" src="https://user-images.githubusercontent.com/11561825/131172874-8cb443bb-f3b6-42ef-a51c-14122c2bafd4.png">
+ 
+1. Open a new terminal and run 5.sh.  This starts DeepPhe Viz, the visualization interface for DeepPhe.  The initial screen should look similar to this:
 
 ![deepphe](https://user-images.githubusercontent.com/11561825/128786082-e3f427e5-a454-4ff6-9943-deeb7b58914b.png)
 
