@@ -23,3 +23,6 @@
 
 ##We do not want to provide DeepPhe-Viz as part of the release, so let's make sure nobody checks it in by accident
 DeepPhe-Viz/
+
+##We don't want examples as part of the release
+dphe-examples/
