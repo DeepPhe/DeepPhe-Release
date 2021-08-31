@@ -1232,103 +1232,32 @@ public enum NodeReader {
         FactInfoAndGroupedTextProvenances factInfoAndGroupedTextProvenances = new FactInfoAndGroupedTextProvenances();
         List<NeoplasmSummary> cancers = getCancers(graphDb, log, patientId);
 
-        List<NewMentionedTerm> mentionedTerms = new ArrayList<>();
+	List<NewMentionedTerm> mentionedTerms = new ArrayList<>();
         for (NeoplasmSummary cancer : Objects.requireNonNull(cancers)) {
-            List<NeoplasmSummary> tumors = cancer.getSubSummaries();
-            for (NeoplasmSummary tumorSummary : tumors) {
-                List<NeoplasmAttribute> tumorFacts = tumorSummary.getAttributes();
-                for (NeoplasmAttribute fact : tumorFacts) {
-                    if (fact.getId().equalsIgnoreCase(factId)) {  //this currently never matches...
-                        //use direct evidence to build the "mention" datastructure
-                        NewFactInfo factInfo = new NewFactInfo();
-                        factInfo.setName(fact.getName());
-                        factInfo.setId(fact.getId());
-                        factInfo.setPrettyName(DataUtil.getRelationPrettyName(fact.getClassUri()));
-                        factInfoAndGroupedTextProvenances.setSourceFact(factInfo);
-                        for (Mention mention : fact.getDirectEvidence()) {
-                            NewMentionedTerm mentionedTerm = new NewMentionedTerm();
-                            mentionedTerm.setTerm(mention.getClassUri());
-                            mentionedTerm.setReportId(mention.getNoteId());
-                            mentionedTerm.setReportType(mention.getNoteType());
-                            mentionedTerm.setReportName(mention.getNoteId());
-                            mentionedTerm.setBegin(mention.getBegin());
-                            mentionedTerm.setEnd(mention.getEnd());
-                            mentionedTerms.add(mentionedTerm);
-                            System.out.println("FactId: " + factId + "\tMention: " + mention.getClassUri());
-                        }
+            List<NeoplasmAttribute> facts = cancer.getAttributes();
+            for (NeoplasmAttribute fact : facts) {
+                if (fact.getId().equalsIgnoreCase(factId)) {
+                    //use direct evidence to build the "mention" datastructure
+                    NewFactInfo factInfo = new NewFactInfo();
+                    factInfo.setName(fact.getName());
+                    factInfo.setId(fact.getId());
+                    factInfo.setPrettyName(DataUtil.getRelationPrettyName(fact.getClassUri()));
+                    factInfoAndGroupedTextProvenances.setSourceFact(factInfo);
+                    for (Mention mention : fact.getDirectEvidence()) {
+                        NewMentionedTerm mentionedTerm = new NewMentionedTerm();
+                        mentionedTerm.setTerm(mention.getClassUri());
+                        mentionedTerm.setReportId(mention.getNoteId());
+                        mentionedTerm.setReportType(mention.getNoteType());
+                        mentionedTerm.setReportName(mention.getNoteId());
+                        mentionedTerm.setBegin(mention.getBegin());
+                        mentionedTerm.setEnd(mention.getEnd());
+                        mentionedTerms.add(mentionedTerm);
                     }
                 }
             }
         }
+
         factInfoAndGroupedTextProvenances.setMentionedTerms(mentionedTerms);
-//
-//        final Map<String, Object> factData = new HashMap<>();
-//        try (Transaction tx = graphDb.beginTx()) {
-//            final Node factNode = SearchUtil.getObjectNode(graphDb, factId);
-//
-//            if (factNode == null) {
-//                tx.success();
-//                return factData;
-//            }
-//
-//
-//            final Map<String, String> sourceFact = new HashMap<>();
-//            final Node classNode = DataUtil.getInstanceClass(graphDb, factNode);
-//            final String factPrefText = DataUtil.objectToString(classNode.getProperty( PREF_TEXT_KEY ));
-//            final String factUri = DataUtil.objectToString(classNode.getProperty(NAME_KEY));
-//            sourceFact.put("id", factId);
-//            sourceFact.put("name", factUri);
-//            sourceFact.put("prettyName", factPrefText);
-//            // Add the source fact to the map
-//            factData.put("sourceFact", sourceFact);
-//            // A list of text mentions
-//            final List<Map<String, String>> mentionedTerms = new ArrayList<>();
-//            // All text mention nodes from this fact node
-//            final Collection<Node> mentionNodes = SearchUtil.getOutRelatedNodes(graphDb, factNode, FACT_HAS_TEXT_MENTION_RELATION);
-//            for (Node mentionNode : mentionNodes) {
-//                // Each text mention node can only have one source report (note that mentions this term in a specific position)
-//                final Collection<Node> noteNodes = SearchUtil.getInRelatedNodes(graphDb, mentionNode, NOTE_HAS_TEXT_MENTION_RELATION);
-//                if (noteNodes.size() != 1) {
-//                    continue;
-//                }
-//                final Node noteNode = new ArrayList<>(noteNodes).get(0);
-//                final String noteText = DataUtil.objectToString(noteNode.getProperty( NOTE_TEXT ));
-//                final int noteLength = noteText.length();
-//                final String noteType = DataUtil.objectToString(noteNode.getProperty( NOTE_TYPE ));
-//                final String noteId = DataUtil.objectToString(noteNode.getProperty(NAME_KEY));
-//                final String noteName = DataUtil.objectToString(noteNode.getProperty( NOTE_NAME ));
-//                String sourcePatientId = "";
-//                // Find the source patient node
-//                final Collection<Node> patientNodes = SearchUtil.getInRelatedNodes(graphDb, noteNode, SUBJECT_HAS_NOTE_RELATION);
-//                if (patientNodes.size() == 1) {
-//                    sourcePatientId = DataUtil.objectToString(new ArrayList<>(patientNodes).get(0).getProperty(NAME_KEY));
-//                }
-//                // Only care about text mentions for this patient
-//                // because a fact related text mention can belong to a different patient
-//                if (sourcePatientId.equals(patientId)) {
-//                    final int begin = DataUtil.objectToInt(mentionNode.getProperty( TEXT_SPAN_BEGIN ));
-//                    final int end = DataUtil.objectToInt(mentionNode.getProperty( TEXT_SPAN_END ));
-//                    if (begin >= 0 && end > begin && end <= noteLength) {
-//                        Map<String, String> mentionedTerm = new HashMap<>();
-//                        mentionedTerm.put("reportId", noteId);
-//                        mentionedTerm.put("reportName", noteName);
-//                        mentionedTerm.put("reportType", noteType);
-//                        mentionedTerm.put("term", noteText.substring(begin, end));
-//                        // Convert the int to String value to avoid the {"low": n, "high": 0} issue probably due to
-//                        // the javascript neo4j driver doesn't handle integers in neo4j type system correctly - Joe
-//                        mentionedTerm.put("begin", String.valueOf(begin));
-//                        mentionedTerm.put("end", String.valueOf(end));
-//                        // Add to list
-//                        mentionedTerms.add(mentionedTerm);
-//                    }
-//                }
-//            }
-//            // Add the text mentions to the map
-//            factData.put("mentionedTerms", mentionedTerms);
-//            tx.success();
-//        } catch (RuntimeException e) {
-//            throw new RuntimeException("Failed to call getFact()");
-//        }
         return factInfoAndGroupedTextProvenances;
     }
 }
