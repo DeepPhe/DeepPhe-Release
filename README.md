@@ -2,9 +2,9 @@ DeepPhe
 =======
 
 # Cancer Deep Phenotype Extraction (DeepPhe) Translational Project
-## Introduction v0.4.0
+## Introduction v0.4
 
-This documentation describes v0.4.0 of
+This documentation describes v0.4 of
 * the DeepPhe Translational base system, which 
     - is built upon [Apache cTAKES](ctakes.apache.org)&#8482;.
     - extracts cancer-related information from plaintext documents.
