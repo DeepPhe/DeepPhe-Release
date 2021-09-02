@@ -51,6 +51,6 @@
 
 # Troubleshooting
 
-1. After running 2.sh, verify that the fresh database is pre-popluated by visiting: http://120.0.0.1/7474 and logging in.  The user is "neo4j" and the password is "neo4jpass".  Once you connect, click on the database icon in the upper left hand corner and verify that you can see node labels and relationship types and not just empty values.
+1. After running 2.sh, verify that the fresh database is pre-popluated by visiting: http://127.0.0.1/7474 and logging in.  The user is "neo4j" and the password is "neo4jpass".  Once you connect, click on the database icon in the upper left hand corner and verify that you can see node labels and relationship types and not just empty values.
 
 2.  At the end of this process you should have 3 terminals running showing any errors, make sure to check every terminal for errors.
