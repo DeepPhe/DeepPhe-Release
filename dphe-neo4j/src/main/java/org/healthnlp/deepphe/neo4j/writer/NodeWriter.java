@@ -189,29 +189,42 @@ public enum NodeWriter {
     private Node createPatientNode(  final GraphDatabaseService graphDb,
                                      final Log log,
                                      final String patientId ) {
+        log.info("Entered createPatientNode");
         try ( Transaction tx = graphDb.beginTx() ) {
+            log.info("Searching for ClassNode: " + PATIENT_URI);
             Node allPatientsNode = SearchUtil.getClassNode( graphDb, PATIENT_URI );
+
             if ( allPatientsNode == null ) {
+                log.info(PATIENT_URI + " not found!  Calling initializeDphe()");
                 initializeDphe( graphDb, log );
+                log.info("Searching for ClassNode: " + PATIENT_URI + " after calling initialieDphe()");
                 allPatientsNode = SearchUtil.getClassNode( graphDb, PATIENT_URI );
+
             }
             if ( allPatientsNode == null ) {
+                log.error("FATAL: Still unable to find ClassNode: " + PATIENT_URI + " after calling initialieDphe()");
                 log.error(
                         "No class node for uri " + PATIENT_URI
                                 + ".  Cannot create put patient " + patientId + " in graph." );
                 tx.success();
                 return null;
             }
+            log.info("ClassNode " + PATIENT_URI + " found successfully.");
+
+            log.info("Searching for node with Label(patientId): " + PATIENT_LABEL + "(" + patientId + ")");
             Node patientNode = SearchUtil.getLabeledNode( graphDb, PATIENT_LABEL, patientId );
             if ( patientNode == null ) {
+                log.info("Node not found, creating node " + PATIENT_LABEL);
                 patientNode = graphDb.createNode( PATIENT_LABEL );
+                log.info("Setting property " + NAME_KEY + " for patientId: " + patientId);
                 patientNode.setProperty( NAME_KEY, patientId );
             }
+            log.info("Creating relation.");
             setInstanceOf( graphDb, log, patientNode, allPatientsNode );
             tx.success();
             return patientNode;
         } catch ( TransactionFailureException txE ) {
-            log.error( "Cannot create put patient " + patientId + " in graph." );
+            log.error( "Cannot add patient " + patientId );
             log.error( txE.getMessage() );
         } catch ( Exception e ) {
             // While it is bad practice to catch pure Exception, neo4j throws undeclared exceptions of all types.
@@ -226,10 +239,13 @@ public enum NodeWriter {
     private Node getOrCreatePatientNode(  final GraphDatabaseService graphDb,
                                           final Log log,
                                           final String patientId ) {
+        log.info("Searching for pre-existing patientNode w/ patientId: " + patientId);
         final Node patientNode = SearchUtil.getObjectNode( graphDb, patientId );
         if ( patientNode != null ) {
+            log.info("Found pre-existing patientNode!");
             return patientNode;
         }
+        log.info ("Did not find pre-existing patientNode, calling createPatientNode()");
         return createPatientNode( graphDb, log, patientId );
     }
 
@@ -245,11 +261,13 @@ public enum NodeWriter {
                                final Log log,
                                final String patientId,
                                final NeoplasmSummary cancer ) {
+        log.info("Entered addCancerInfo");
         final Node patientNode = getOrCreatePatientNode( graphDb, log, patientId );
         if ( patientNode == null ) {
             log.error( "No Patient Node for " + patientId );
             return;
         }
+        log.info("patientNode found! calling a different addCancerInfo().");
         addCancerInfo( graphDb, log, patientNode, cancer );
     }
 
@@ -257,28 +275,37 @@ public enum NodeWriter {
                                  final Log log,
                                  final Node patientNode,
                                  final NeoplasmSummary cancer ) {
-//      log.info( "Creating Cancer node " + cancer.getId() );
+        log.info("Entered addCancerInfo()");
+      log.info( "Calling createNeoplasmNode for label(id) " + CANCER_LABEL + "(" + cancer.getId() + ")");
+
         final Node cancerNode = createNeoplasmNode( graphDb, log, CANCER_LABEL, cancer );
         if ( cancerNode == null ) {
+            log.info("createNeoplasmNode call failed (returned cancerNode is null!");
             return;
         }
-//      log.info( "Created Cancer node " + cancer.getId() );
+      log.info( "Created Cancer node " + cancer.getId() );
         try ( Transaction tx = graphDb.beginTx() ) {
-//         log.info( "Creating Subject Has Cancer for " + cancer.getId() );
+         log.info( "Creating " + SUBJECT_HAS_CANCER_RELATION + " relation for cancer " + cancer.getId() );
             createRelation( graphDb, log, patientNode, cancerNode, SUBJECT_HAS_CANCER_RELATION );
-//         log.info( "created" );
+         log.info( "Relation created." );
+
             final Collection<NeoplasmSummary> tumors = cancer.getSubSummaries();
+
+
             if ( tumors != null && !tumors.isEmpty() ) {
+                log.info("This cancer has " + tumors.size() + " tumors.");
                 for ( NeoplasmSummary tumor : tumors ) {
-//               log.info( "Creating Tumor node for " + tumor.getId() );
+               log.info( "Creating Tumor node for " + tumor.getId() );
                     final Node tumorNode = createNeoplasmNode( graphDb, log, TUMOR_LABEL, tumor );
-//               log.info( "created" );
+               log.info( "TurmorNode created!" );
                     if ( tumorNode != null ) {
-//                  log.info( "Creating Cancer has Tumor for " + tumor.getId() );
+                  log.info( "Creating " + CANCER_HAS_TUMOR_RELATION + " for cancerNode " + cancerNode.getId() + " tumorNode " + tumorNode.getId() );
                         createRelation( graphDb, log, cancerNode, tumorNode, CANCER_HAS_TUMOR_RELATION );
-//                  log.info( "created" );
+                  log.info( "Relation Created!" );
                     }
                 }
+            } else {
+                log.info("This cancer has 0 tumors.");
             }
             tx.success();
         } catch ( TransactionFailureException txE ) {
@@ -287,7 +314,7 @@ public enum NodeWriter {
             // While it is bad practice to catch pure Exception, neo4j throws undeclared exceptions of all types.
             log.error( "Ignoring Exception while adding Cancer information "
                     + cancer.getId() + "\n" + e.getClass().getSimpleName() + "\n" + e.getMessage() );
-            // Attempt to continue.
+            e.printStackTrace();
         }
     }
 
@@ -1032,26 +1059,29 @@ public enum NodeWriter {
                                         final Node node,
                                         final Node relatedNode,
                                         final RelationshipType relationshipType ) {
+        log.info("Entered createReleation()");
         try ( Transaction tx = graphDb.beginTx() ) {
+            log.info("Searching for outgoing relationships of type " + relationshipType);
             for ( Relationship existing : node.getRelationships( relationshipType, Direction.OUTGOING ) ) {
+                log.info("Found relationships!");
                 if ( existing.getOtherNode( node ).equals( relatedNode ) ) {
                     // Relation already exists
-                    log.info( "Relationship " + relationshipType.name() + " already exists" );
+                    log.info( "Relationship " + relationshipType.name() + " already exists!" );
                     tx.success();
                     return existing;
                 }
             }
+            log.info("Relationship did not exist! " + relationshipType);
+            log.info("Creating " +relationshipType+ " releationship to " + relatedNode.getId());
             final Relationship relationship = node.createRelationshipTo( relatedNode, relationshipType );
+            log.info("Relationship " +relationshipType+ " to " + relatedNode.getId() + " created!");
             tx.success();
             return relationship;
-
         } catch ( MultipleFoundException mfE ) {
             log.error( mfE.getMessage() );
         } catch ( Exception e ) {
-            // While it is bad practice to catch pure Exception, neo4j throws undeclared exceptions of all types.
             log.error( "Ignoring Exception while creating relation "
                     + relationshipType.name() + "\n" + e.getClass().getSimpleName() + "\n" + e.getMessage() );
-            // Attempt to continue.
         }
         return null;
     }

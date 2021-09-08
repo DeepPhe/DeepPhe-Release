@@ -77,26 +77,25 @@ final public class WriteFunctions {
    @Procedure( name="deepphe.addPatientSummary", mode=Mode.WRITE )
    @Description( "Creates or appends to a Patient node and cancer summary." )
    public Stream<ProcedureString> addPatientSummary( @Name( "patientSummaryJson" ) String patientSummaryJson ) {
+      log.info("Entered addPatientSummary");
       final String realJson = JsonUtil.unpackFromNeo4j( patientSummaryJson );
+      log.info("Unpacking JSON fron neo4j");
       final Gson gson = new Gson();
       final PatientSummary patientSummary = gson.fromJson( realJson, PatientSummary.class );
+      log.info("Unmarshalling patientSummary from JSON");
       final Patient patient = patientSummary.getPatient();
-      System.out.println("writing " + patient.getId());
-       NodeWriter.getInstance().addPatientInfo( graphDb, log, patient );
-      System.out.println("wrote " + patient.getId());
-      System.out.println("getting neoplasms for " + patient.getId());
+
+      log.info("Patient information for patient: " + patient.getId() + " extracted.");
+      log.info("Calling addPatientInfo for patient : " + patient.getId());
+      NodeWriter.getInstance().addPatientInfo( graphDb, log, patient );
+      log.info("addPatientInfo succeeded for patient: " + patient.getId());
+      log.info("Getting neoplasms for " + patient.getId());
       final List<NeoplasmSummary> neoplasms = patientSummary.getNeoplasms();
-      System.out.println("got neoplasms for " + patient.getId());
+      log.info("There are " + neoplasms.size() + " neoplasms for patientId: " + patient.getId());
 
       for ( NeoplasmSummary neoplasm : neoplasms ) {
-
-         //jdl: talking with sean, we probably want to always just call addCancerInfo
-         //if (neoplasm instanceof CancerSummary) {
-         System.out.println("adding cancer info for " + patient.getId());
+         log.info("Writing neoplasm  " + neoplasm.getId() + " to datqbase");
          NodeWriter.getInstance().addCancerInfo(graphDb, log, patient.getId(), neoplasm);
-         //} else {
-         //   NodeWriter.getInstance().addNeoplasmInfo(graphDb, log, patient.getId(), neoplasm);
-        // }
       }
       final ProcedureString joke
             = new ProcedureString( "Patient Summary " + patientSummary.getId() + " added to DeepPhe graph." );
