@@ -114,12 +114,12 @@ fi
 echo "Building DeepPhe from source..."
 
 
-#buildProject dphe-onto-db
-#buildProject dphe-neo4j
-#buildProject dphe-neo4j-plugin
-#buildProject dphe-core
-#buildProject dphe-stream
-#buildProject dphe-cli
+buildProject dphe-onto-db
+buildProject dphe-neo4j
+buildProject dphe-neo4j-plugin
+buildProject dphe-core
+buildProject dphe-stream
+buildProject dphe-cli
 
 
 #####
