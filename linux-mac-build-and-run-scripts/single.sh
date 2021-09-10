@@ -50,7 +50,7 @@ handleError() {
 ### Script Logic Start
 
 #####
-##### STEP 1 -SATISFY PREREQUISITE PROGRAMS ARE INSTALLED
+##### STEP 1 -CONFIRM PREREQUISITE PROGRAMS ARE INSTALLED
 #####
 
 #determine if mvn is installed, if not, exit
