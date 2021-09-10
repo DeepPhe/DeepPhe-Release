@@ -20,6 +20,7 @@
 /output_graph
 /deepphe-neo4j/target/
 /deepphe-viz-neo4j/target/
+/linux-mac-build-and-run-scripts/logs/
 .DS_Store
 ##We do not want to provide DeepPhe-Viz as part of the release, so let's make sure nobody checks it in by accident
 DeepPhe-Viz/
