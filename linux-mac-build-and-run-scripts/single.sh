@@ -31,12 +31,13 @@ echo "* Welcome to the DeepPhe install script for MacOS and Linux systems.  If *
 echo "* this is your first time running, you will be prompted for the location *"
 echo "* of your Neo4j installation directory.                                  *"
 echo "*                                                                        *"
-echo "* Note: This project requires the Neo4j Graph Database Platform.  If you *"
-echo "* do not have Neo4j installed, please cancel this script and refer to    *"
-echo "* the README.md file in the same directory as this script for download   *"
+echo "* Note: This project requires the Neo4j Graph Database Platform, the     *"
+echo "* Apache Maven project majagement tool, and the Git software tracking    *"
+echo "* software in order to build the project from the source code.           *"
+echo "*                                                                        *"                                           
+echo "* If you do not have all of these scripts installed, please cancel this  *"
+echo "* script and refer to the README.md file in this directory for download  *"
 echo "* instructions.                                                          *"
-echo "* This project also requires maven, git                                    *"
-echo "*                                                                        *"
 echo "*                                                                        *"
 echo "* Copyright 2021, Boston Childrens Hospital, University of Pittsburgh,   *"
 echo "*   and Vanderbilt University Medical Center                             *"                           
@@ -170,7 +171,7 @@ fi
 ##### STEP 6 - RUN DEEPPHE
 #####
 echo -e "\n"
-read -p "DeepPhe is configured and is ready to run, please press enter to run DeepPhe on the reports in the dphe-examples folder: [ENTER]"
+echo "DeepPhe is configured and is ready to run, please press enter to run DeepPhe on the reports in the dphe-examples folder: [ENTER]"
 (cd ../dphe-cli/target/deepphe-0.4.0-bin/deepphe-0.4.0 && java -Xmx3g -Xms512M -classpath ./resources/:./lib/* org.apache.ctakes.core.pipeline.PiperFileRunner -p pipeline/DeepPhe.piper -i $_dir/dphe-examples/reports/ -o $_dir/output -r bolt://localhost:7687 --user neo4j --pass neo4jpass)
 
 
