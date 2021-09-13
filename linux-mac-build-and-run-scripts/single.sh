@@ -226,7 +226,13 @@ if  ! type -P "node" ; then
             ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
         else
             brew update
-        fi     
+        fi
+
+        #if npm is not installed, attempt to install it     
+        if ! type -P "npm" ; then
+          brew install npm
+        fi
+
         npm install node
     elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
         wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
@@ -240,10 +246,8 @@ if [ ! -d ./DeepPhe-Viz ]; then
   echo "Downloading Visualizer..."
   git clone --depth 1 --branch v20210826 https://github.com/DeepPhe/DeepPhe-Viz.git
 else
-  echo -e "\nSkipping download of visualizer, visualizer directory DeepPhe-Viz already found!\n" 
+  echo -e "\nSkipping download of Visualizer, Visualizer directory DeepPhe-Viz already found!\n" 
 fi
-
-##assuming if node is installed, npm is installed
 
 echo "Building DeepPhe Webservice API..."
 (cd DeepPhe-Viz/api && npm install > ../../logs/webservice-api-install.log 2>&1)
@@ -265,6 +269,9 @@ if [ $rc -ne 0 ] ; then
 else
   echo "...Success!" 
 fi
+
+#unset the HOST environment variable for local installations
+unset HOST
 
 echo -e "\nBuilding DeepPhe Visualizer..."
 (cd DeepPhe-Viz/client && npm install --save --legacy-peer-deps > ../../logs/visualizer-install.log 2>&1)
