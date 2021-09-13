@@ -1,6 +1,6 @@
 # Welcome
 
-This directory contains instructions for developers that want to run DeepPhe and/or DeepPhe-Viz on a MacOS or Linux system.
+This file contains instructions for developers that want to run DeepPhe and/or DeepPhe-Viz on a MacOS or Linux system.
 
 # How to run this script
 
@@ -42,3 +42,5 @@ This directory contains instructions for developers that want to run DeepPhe and
 1. Verify that the fresh database is pre-popluated by visiting: http://127.0.0.1/7474 and logging in.  The user is "neo4j" and the password is "neo4jpass".  Once you connect, click on the database icon in the upper left hand corner and verify that you can see node labels and relationship types and not just empty values.
 
 2.  Check the logs direcotry for any errors.
+
+3.  Please feel free to submit bugs or questions to the issue tracker: [https://github.com/DeepPhe/DeepPhe-Release/issues](https://github.com/DeepPhe/DeepPhe-Release/issues)
