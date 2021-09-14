@@ -93,7 +93,7 @@ else
   #NEO4J_HOME is set in the properties file, so load it
   . ${filename}
 
-  #neo4j_path varabile is used above so it will be used here for clarity
+   #neo4j_path varabile is used above so it will be used here for clarity
   neo4j_path=$NEO4J_HOME
 
   #validate neo4j install, if invalid, exit
@@ -101,11 +101,48 @@ else
   echo "    Verifying the following directories exist: ${neo4j_path}/bin/, ${neo4j_path}/conf/, ${neo4j_path}/data"
   if [ -d ${neo4j_path}/bin/ ] &&  [ -d ${neo4j_path}/conf/ ] &&  [ -d ${neo4j_path}/data/ ]  ; then
         echo -e "    The provided Neo4j home folder is valid."
+      
   else
     echo The Neo4j location does not appear to be a working Neo4j install.
     echo Please delete the file: $filename and run this script again.
     exit 1
   fi
+
+  echo "    Validating Neo4j configuration file..."
+  active_db=$(grep dbms\.active_database /opt/neo4j-community-3.5.12/conf/neo4j.conf | cut -d'=' -f2 | tr '[:upper:]' '[:lower:]') 
+
+  if [ "$active_db" = "ontology.db" ] ; then
+    echo "      Valid!"
+  else
+    
+    while true; do
+      read -p "The dbms\.active_database property in the neo4j.conf file needs to be changed to 'ontology.db'.  Would you like this script to attempt to change the variable for you? [YN]" yn
+      case $yn in
+        [Yy]* ) break;;
+        [Nn]* ) echo "Goodbye."; exit;;
+        * ) echo "Please answer Y or N.";;
+      esac
+    done
+    #try to set the variable....
+
+    #set special sed parameters for macOs
+    sedparams=""
+    if [ "$(uname)" == "Darwin" ]; then
+      $(sed -i '' "s/dbms\.active_database=.*$/dbms\.active_database=ontology.db/" $neo4j_path/conf/neo4j.conf)
+    else 
+      $(sed -i  "s/dbms\.active_database=.*$/dbms\.active_database=ontology.db/" $neo4j_path/conf/neo4j.conf)
+    fi
+   
+    active_db=$(grep dbms\.active_database /opt/neo4j-community-3.5.12/conf/neo4j.conf | cut -d'=' -f2 | tr '[:upper:]' '[:lower:]') 
+
+    if [ "$active_db" = "ontology.db" ] ; then
+      echo "    ....Success!"
+    else 
+      echo "    ....Error:  Please set dbms.active_database=ontology.db manually in neo4j.conf."
+      exit
+    fi
+    
+  fi    
 fi
 
 #kill neo4j if it is running
@@ -196,16 +233,15 @@ fi
 ##### STEP 5 - RUN VISUALIZER
 #####
 
-### Install visualizer speicifc preprequisite: Node
-echo  
- while true; do
-      read -p "DeepPhe completed successfully, would you like to install or run the visualizer? [Y/N]" yn
-      case $yn in
-          [Yy]* ) break;;
-          [Nn]* ) echo "Goodbye."; exit;;
-          * ) echo "Please answer Y or N.";;
-      esac
-    done
+  
+while true; do
+  read -p "DeepPhe completed successfully, would you like to install or run the visualizer? [Y/N]" yn
+  case "$yn" in
+    [Yy]* ) break;;
+    [Nn]* ) echo "Goodbye."; exit;;
+    * ) echo "Please answer Y or N.";;
+  esac
+done
 
 ## If Node is not installed, ask the user if they want to try to install it, if not, exit
 
