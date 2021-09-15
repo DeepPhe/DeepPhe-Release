@@ -1,5 +1,22 @@
 @echo off
 
+echo ******************************************************
+echo **                                                  **
+echo **    Welcome to the DeepPhe Windows setup Tool.    **
+echo **                                                  **
+echo **     For information on installation and use,     **
+echo **     please visit DeepPhe.github.io               **
+echo **                                                  **
+echo **     Note: The DeepPhe software requires:         **
+echo **     - Java Software Development Kit version 8    **
+echo **     - Neo4j Graph Database Server version 3.5    **
+echo **                                                  **
+echo **     This setup tool requires:                    **
+echo **     - Apache Maven version 3.5                   **
+echo **                                                  **
+echo ******************************************************
+echo.
+
 rem create user and log directories
 if not exist user mkdir user
 if not exist logs mkdir logs
@@ -94,6 +111,7 @@ if not exist "%NEO4J_HOME%\bin\neo4j.bat" goto no_neo4j_home
 :have_neo4j_bat
 rem Copy DeepPhe neo4j resources to the neo4j installation.
 echo Copying the DeepPhe Ontology database to %NEO4J_HOME%\data\databases, please wait ...
+if not exist "%NEO4J_HOME%\pre_deepphe_data" xcopy "%NEO4J_HOME%\data" "%NEO4J_HOME%\pre_deepphe_data" /Q /S /E /I /Y
 xcopy dphe-onto-db\src\main\resources\graph\neo4j\* "%NEO4J_HOME%\data\databases" /Q /S /E /I /Y
 if not %errorlevel%==0 echo The DeepPhe Ontology database at dphe-onto-db\src\main\resources\graph\neo4j could not be copied to %NEO4J_HOME%\data\databases
 
@@ -103,6 +121,8 @@ xcopy dphe-neo4j-plugin\conf\* "%NEO4J_HOME%\conf" /Q /S /E /I /Y
 if not %errorlevel%==0 echo The DeepPhe Neo4j configuration at dphe-neo4j-plugin\conf could not be copied to %NEO4J_HOME%\conf
 
 echo Copying the DeepPhe Neo4j plugin to %NEO4J_HOME%\plugins, please wait ...
+if not exist "%NEO4J_HOME%\pre_deepphe_plugins" xcopy "%NEO4J_HOME%\plugins" "%NEO4J_HOME%\pre_deepphe_plugins" /Q /S /E /I /Y
+erase /S /F /Q "%NEO4J_HOME%\plugins\*.*"
 copy /Y dphe-neo4j-plugin\target\deepphe-neo4j-plugin-0.4.0.jar "%NEO4J_HOME%\plugins"
 if not %errorlevel%==0 echo The DeepPhe Neo4j plugin dphe-neo4j-plugin\target\deepphe-neo4j-plugin-0.4.0.jar could not be copied to %NEO4J_HOME%\plugins
 
