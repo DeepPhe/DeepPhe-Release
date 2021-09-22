@@ -1,2 +1,0 @@
-dependency parser model -res in ctakes main includes a 230MB clearparser model that is not used.
-To get around including that the whole ctakes main -res module is excluded, but the non-clearparser models are here.
