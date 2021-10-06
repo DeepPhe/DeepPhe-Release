@@ -6,7 +6,7 @@ This file contains instructions for developers that want to run DeepPhe on Windo
 1. A recent version of the Java 8 JDK.  Both the Oracle and Zulu OpenJDK distribution has been tested, but we can only officialy support the Oracle JDK at this time.
 2. A Maven installation, version 3.6 or earlier, configured to use the Java 8 JDK.  [Maven Download Page](https://maven.apache.org/download.cgi)
 3. The Git command line client. [Git Install Instructions](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-4. Privlidgnes to create directories and run 3rd party software on your machine.
+4. Rights to create directories and run 3rd party software on your machine.
 
 ## Instructions
 1. Install Neo4j Community 3.5.12
