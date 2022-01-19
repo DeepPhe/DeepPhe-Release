@@ -143,7 +143,7 @@ call bin\runDeepPheGui.bat
 goto end
 
 :maven_error
-echo Some error occured while attemping to execute a maven process:
+echo Some error occurred while attempting to execute a maven process:
 type logs\errorLog.txt
 type logs\mavenLog.txt
 goto end
