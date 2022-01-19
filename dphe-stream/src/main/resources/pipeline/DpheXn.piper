@@ -167,8 +167,9 @@ add pretty.plaintext.PrettyTextWriterFit SubDirectory=TEXT
 
 // add PatientJsonFileWriter SubDirectory=JSON
 package org.healthnlp.deepphe.summary.writer
-cli CancerEvalFile=c
-add EvalFileWriterXn SubDirectory=EVAL
+//cli CancerEvalFile=c
+//add EvalFileWriterXn SubDirectory=EVAL
+add DeepPheSummaryWriter
 
 addLast PatientSummaryCleaner
 
