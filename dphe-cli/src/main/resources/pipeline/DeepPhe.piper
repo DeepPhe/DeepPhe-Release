@@ -53,4 +53,7 @@ load DeepPhe.summary
 package org.apache.ctakes.core.util.log
 addLast Neo4jServerShutdownAe
 addLast FinishedLogger
-addLast PipelineStopper
+
+// If you are not using the StopNeo4j (-e) option and your the neo4j connection stays open
+// uncomment the line below.
+//addLast PipelineStopper
