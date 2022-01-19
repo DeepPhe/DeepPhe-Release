@@ -49,11 +49,12 @@ load DeepPhe.attribute
 //  Load the piper file that contains summarization.
 load DeepPhe.summary
 
+// Write discovered Cancers and Tumors in comma-separated-value files.
+package org.healthnlp.deepphe.summary.writer
+add DeepPheSummaryWriter SubDirectory=summary
+
 //  Alert User that the pipeline is Finished.
 package org.apache.ctakes.core.util.log
 addLast Neo4jServerShutdownAe
 addLast FinishedLogger
-
-// If you are not using the StopNeo4j (-e) option and your the neo4j connection stays open
-// uncomment the line below.
-//addLast PipelineStopper
+addLast PipelineStopper
