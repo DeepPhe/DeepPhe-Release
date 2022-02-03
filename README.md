@@ -18,7 +18,7 @@ The system has been tested using documents from three cancer domains:
 
 There are two versions of DeepPhe:
 
-* __DeepPhe Translational__: the full suite of tools, designed to support cohort discovery for cancer clinical research.  This is the version that must users will want to start with. Installation instructions are available on the [release page](https://github.com/DeepPhe/DeepPhe-Release/releases/tag/xn0.4.1).
+* __DeepPhe Translational__: the full suite of tools, designed to support cohort discovery for cancer clinical research.  This is the version that most users will want to start with. Installation instructions are available on the [Windows Installation](https://github.com/DeepPhe/DeepPhe-Release/wiki/Windows-Installation-Instructions) or [Mac Installation](https://github.com/DeepPhe/DeepPhe-Release/wiki/Mac-Installation-Instructions)
 * __DeepPhe-CR__: a web-service version of DeepPhe designed to support cancer registries. Requires Docker for [installation](https://github.com/DeepPhe/DeepPhe-Release/tree/v0.1.0-cr).
 
 
