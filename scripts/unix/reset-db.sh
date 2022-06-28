@@ -31,6 +31,12 @@ handleError() {
 neo4j_path=$NEO4J_HOME
 
 printf "\n"
+
+printf "Updating neo4j.conf file...\n"
+
+sed -i 's/#dbms\.active_database=graph.db/dbms\.active_database=ontology.db/' ${neo4j_path}/conf/neo4j.conf
+handleError
+
 printf "Copying a clean database from\n\t${source_location}dphe-onto-db/src/main/resources/graph/neo4j/ontology.db\n   to\n\t${neo4j_path}/data/databases"
 
 (rm -rf ${neo4j_path}/data/databases/ontology.db && cd ${source_location}dphe-onto-db && cp -R src/main/resources/graph/neo4j/ontology.db ${neo4j_path}/data/databases)
