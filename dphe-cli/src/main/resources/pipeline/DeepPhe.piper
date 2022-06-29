@@ -31,6 +31,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 
+//cli OverwriteGraph=n
 cli StartNeo4j=n
 cli StopNeo4j=e
 cli Neo4jUri=r
@@ -45,6 +46,9 @@ load DeepPhe.entity
 
 //  Load the piper file that contains entity attribute and relation extraction.
 load DeepPhe.attribute
+
+//  Load the piper file that contains image file writers.
+//load DeepPhe.imager.piper
 
 //  Load the piper file that contains summarization.
 load DeepPhe.summary

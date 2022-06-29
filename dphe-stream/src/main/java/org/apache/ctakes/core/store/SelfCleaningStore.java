@@ -18,9 +18,13 @@ public class SelfCleaningStore<T> implements ObjectStore<T> {
 
    static private final Object LOCK = new Object();
    // 1 Hour
-   static private final long TIMEOUT = 1000 * 60 * 60;
+//   static private final long TIMEOUT = 1000 * 60 * 60;
+   // 5 minutes
+   static private final long TIMEOUT = 1000 * 60 * 5;
 
-   static private final long PERIOD = TIMEOUT / 4;
+
+//   static private final long PERIOD = TIMEOUT / 4;
+   static private final long PERIOD = TIMEOUT / 5;
    static private final long START = TIMEOUT + PERIOD;
 
    private final ObjectStore<T> _delegate;

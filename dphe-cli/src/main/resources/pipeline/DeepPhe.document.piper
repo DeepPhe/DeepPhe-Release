@@ -28,9 +28,13 @@ add Neo4jServerConnectAe
 
 //  Discover sections.
 add Sectionizer
+//add SimpleSegmentAnnotator
 
 //  Discover items in University of Pittsburgh / University of Pittsburgh Medical Center -style note headers.
 add PittHeaderAnnotator
+
+//  Remove sections that should not be used by the rest of the pipeline.
+//add SectionRemover
 
 //  Detect sentences using a machine learning model.
 addLogged SentenceDetectorAnnotatorBIO classifierJarPath=/org/apache/ctakes/core/sentdetect/model.jar
@@ -40,7 +44,8 @@ add MrsDrSentenceJoiner
 //  Use the DeepPhe paragraph expressions for paragraph discovery.
 set PARAGRAPH_TYPES_PATH=org/healthnlp/deepphe/paragraph/ParagraphRegex.bsv
 //  Discover paragraphs.
-add ParagraphAnnotator
+//add ParagraphAnnotator
+add ParagraphFinder
 
 add WtfSectionFixer
 

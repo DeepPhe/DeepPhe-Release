@@ -16,6 +16,8 @@ package org.healthnlp.deepphe.nlp.ae
 package org.healthnlp.deepphe.nlp.ae.temporal
 
 //  Assign such as negation and uncertainty using machine-learning models.
+//load WindowedAttributeCleartkSubPipe
+
 package org.apache.ctakes.assertion.medfacts.cleartk
 package org.apache.ctakes.assertion.medfacts.cleartk.windowed
 
@@ -44,6 +46,18 @@ add LonerNegator
 //  Fix the Subject type (patient, family member) by section type.
 add SubjectSectionFixer
 
+//  Extract semantic modifiers.
+//add ModifierExtractorAnnotator classifierJarPath=/org/apache/ctakes/relationextractor/models/modifier_extractor/model.jar
+
+//  Find phenotype attributes not declared in the ontology by special means.
+//add PhenotypeFinder
+
+//add PsaFinder
+
+//add GleasonFinder
+
+//add Ki67Finder
+
 add BiomarkerFinder
 
 add GradeFinder
@@ -63,15 +77,29 @@ add InDocUriRelationFinder
 //  Find relations not declared in the ontology by special means.
 add NonGraphedRelationFinder
 
-//
-//  The following are possible output file writers.
-//  Uncomment to use them.
-//
+// 'Generic' Events.  Use addDescription and let the EventAnnotator set itself up with defaults.
+//addDescription EventAnnotator
+
+// Times.  Use addLogged to log start and finish of processing.  There aren't default models, so set specifically
+//add BackwardsTimeAnnotator classifierJarPath=/org/apache/ctakes/temporal/ae/timeannotator/model.jar
+
+// DocTimeRel: the relation bin for Events to the Document Creation Time.
+//add DocTimeRelAnnotator classifierJarPath=/org/apache/ctakes/temporal/ae/doctimerel/model.jar
+
+// Temporal has a knack for doubling entities/events
+//add DoubledEventRemover
+
+//  Alert User that the (sometimes long) temporal information extraction phase is finished.
+//add StartFinishLogger LOGGER_NAME=TemporalPipeline LOGGER_TASK="Extracting Temporal Information"
+
+//  Discover semantically-alike co-referent cancers, tumors and attributes.
+//    See the file SemanticCoref.piper for more information.
+//load SemanticCoref
 
 //add html.HtmlTextWriter SubDirectory=HTML
 
 //add pretty.plaintext.PrettyTextWriterFit SubDirectory=POS
-
+//
 //package org.apache.ctakes.fhir.cc
 //add FhirJsonFileWriter SubDirectory=FHIR
 

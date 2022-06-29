@@ -21,9 +21,9 @@ LOG4J_PARM=-Dlog4j.configuration=file:$DEEPPHE_HOME/resources/log4j.xml
 PIPE_RUNNER=org.apache.ctakes.core.pipeline.PiperFileRunner
 PIPER_FILE=resources/pipeline/DeepPhe.piper
 
-echo "To use this script you must have use the following Parameters (-i,o,-r,--user,--pass):"
+echo "To use this script you must use the following Parameters (-i,o,-r,--user,--pass):"
 echo "  InputDirectory (-i)     The directory containing clinical notes."
-echo "  OutputDirectory (-o)    The directory to which output should be written."
+echo "  OutputDirectory (-o)    The directory to which output files should be written."
 echo "  StartNeo4j (-n)         Location of the Neo4j installation."
 echo "                          Leave this blank if you do not wish to auto-start Neo4j."
 echo "                          If you use this option then the neo4j server "

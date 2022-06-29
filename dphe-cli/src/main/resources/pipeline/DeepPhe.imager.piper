@@ -1,0 +1,30 @@
+//////////////////////////////////////////////////////////////////////////
+//
+//       Commands and parameters to run the Deep Phenome v0.4.0 pipeline
+//          deals with summarization.
+//
+//       For more information on piper files see the Apache cTAKES wiki:
+//          https://cwiki.apache.org/confluence/display/CTAKES/Piper+Files
+//
+//       Modify with care.
+//
+//////////////////////////////////////////////////////////////////////////
+
+
+//  Set packages in which DeepPhe annotation engines are contained.
+package org.apache.ctakes.core.cc.image
+
+add DocTextImageWriter SubDirectory=IMAGE
+
+add AnatomicSiteImageWriter SubDirectory=IMAGE
+add AssertionImageWriter SubDirectory=IMAGE
+add BaseTokenImageWriter SubDirectory=IMAGE
+add DisorderImageWriter SubDirectory=IMAGE
+add FindingImageWriter SubDirectory=IMAGE
+add LabImageWriter SubDirectory=IMAGE
+add MedicationImageWriter SubDirectory=IMAGE
+add ModifierImageWriter SubDirectory=IMAGE
+add PosImageWriter SubDirectory=IMAGE
+add ProcedureImageWriter SubDirectory=IMAGE
+add RareSemanticImageWriter SubDirectory=IMAGE
+add TemporalImageWriter SubDirectory=IMAGE

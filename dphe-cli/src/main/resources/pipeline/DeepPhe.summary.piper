@@ -28,8 +28,29 @@ add MelanomaDocEpisodeTagger
 //  Collect notes for a patient for later summarization.
 add PatientNodeCollector
 
+//  Summarize the patient phenotype.
+//add PatientSummarizer
+
+// Write the patient phenotypes from Multi-Cancer CI creation
+//add CiCancersBsvWriter SubDirectory=CI_EVAL
+//add CiTumorsBsvWriter SubDirectory=CI_EVAL
+
 //  Write patient phenotypes to the neo4j graph database.
+//add PatientNeo4jWriter
 add NeoplasmNeo4jWriter
 
-// Cleanup Patient summary cache when summarization is complete.
+// Use a collector AE that creates doc json and stores it in a Store
+// Create an AE that extends some kind of store writer
+// make an AE like the AbstractPatientConsumer.  Something like AbstractDataStoreConsumer.
+// Like the ctakes version it can pop from store.  Store indicates patient done like the ctakes patient store.
+// add DocNodeStorer
+// add DocXxxWriter
+// add PatientNodeStorer
+// add PatientXxxWriter
+
+add html.HtmlTextWriter SubDirectory=HTML
+//add pretty.plaintext.PrettyTextWriterFit SubDirectory=POS
+//
+add PatientJsonFileWriter SubDirectory=JSON
+//
 addLast PatientSummaryCleaner

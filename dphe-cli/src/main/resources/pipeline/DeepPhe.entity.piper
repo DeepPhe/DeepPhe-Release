@@ -22,11 +22,20 @@ add TokenizerAnnotatorPTB
 // Tokenize multi-token types such as dates, fractions and measurements.
 add ContextDependentTokenizerAnnotator
 
+// Approximate a document creation time using TimeAnnotation normalization.
+//add DocTimeApproximator ApproximateDocTime=True
+
 //  Tag word part of speech.
 addDescription POSTagger
 
+//  Add phrase chunkers.
+//load ChunkerSubPipe
+
 //  Do not exclude words of any part of speech tag for dictionary lookup.  RB* = Adverb
+//set exclusionTags="RB,WRB,RBR,RBS"
 set exclusionTags=""
+//  Use span of 2 for dictionary lookup.
+//set minimumSpan=2
 //  Set the path to the xml file containing information for dictionary lookup configuration.
 set LookupXml=org/apache/ctakes/dictionary/lookup/fast/ncit_plus_21aa.xml
 //  Annotate concepts based upon default algorithms.
