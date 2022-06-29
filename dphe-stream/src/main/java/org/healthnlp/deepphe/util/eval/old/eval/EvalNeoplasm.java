@@ -66,7 +66,7 @@ final class EvalNeoplasm extends AbstractEvalObject {
          }
          final String goldValue = getGoldAttribute( name );
          final String systemValue = getSystemAttribute( name );
-         if ( !MatchUtil.isAnyMatch( goldValue, systemValue ) ) {
+         if ( !MatchUtil.isAnyMatch( name, goldValue, systemValue ) ) {
             return false;
          }
       }
@@ -83,7 +83,7 @@ final class EvalNeoplasm extends AbstractEvalObject {
          }
          final String goldValue = getGoldAttribute( name );
          final String systemValue = getSystemAttribute( name );
-         if ( !MatchUtil.isAnyMatch( goldValue, systemValue ) ) {
+         if ( !MatchUtil.isAnyMatch( name, goldValue, systemValue ) ) {
             return 0;
          }
       }
@@ -116,7 +116,7 @@ final class EvalNeoplasm extends AbstractEvalObject {
       for ( String name : getScoringNames() ) {
          final String gold = getGoldAttribute( name );
          final String system = getSystemAttribute( name );
-         final EvalUris evalUris = new EvalUris( gold, system );
+         final EvalUris evalUris = new EvalUris( name, gold, system );
          score += evalUris.getTP_();
       }
       score += getRequiredNames().size() - 1;
@@ -151,7 +151,7 @@ final class EvalNeoplasm extends AbstractEvalObject {
       for ( String name : getScoringNames() ) {
          final String gold = getGoldAttribute( name );
          final String system = getSystemAttribute( name );
-         final EvalUris evalUris = new EvalUris( gold, system );
+         final EvalUris evalUris = new EvalUris( name, gold, system );
          score += evalUris.getFP_();
       }
       return score;
@@ -165,7 +165,7 @@ final class EvalNeoplasm extends AbstractEvalObject {
       for ( String name : getScoringNames() ) {
          final String gold = getGoldAttribute( name );
          final String system = getSystemAttribute( name );
-         final EvalUris evalUris = new EvalUris( gold, system );
+         final EvalUris evalUris = new EvalUris( name, gold, system );
          score += evalUris.getFN_();
       }
       return score;

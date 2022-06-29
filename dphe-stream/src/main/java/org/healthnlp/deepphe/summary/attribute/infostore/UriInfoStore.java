@@ -25,19 +25,19 @@ public abstract class UriInfoStore {
    public int _maxDepth;
 
    public UriInfoStore( final Collection<String> uris ) {
-      NeoplasmSummaryCreator.DEBUG_SB.append( "  URIs:  " )
-                                     .append( String.join( " ", uris ) )
-                                     .append( "\n" );
+      NeoplasmSummaryCreator.addDebug( "  URIs:  "
+                                     +  String.join( " ", uris )
+                                     +  "\n" );
       _uris = uris;
    }
 
    public void setUriStrengths( final Map<String, Integer> uriStrengths ) {
-      NeoplasmSummaryCreator.DEBUG_SB.append( "  URI Strengths:  " )
-                                     .append( uriStrengths.entrySet()
+      NeoplasmSummaryCreator.addDebug( "  URI Strengths:  "
+                                     +  uriStrengths.entrySet()
                                                           .stream()
                                                           .map( e -> e.getKey() + "=" + e.getValue() )
-                                                          .collect( Collectors.joining( " " ) ) )
-                                     .append( "\n" );
+                                                          .collect( Collectors.joining( " " ) )
+                                     +  "\n" );
       _uriStrengths = uriStrengths;
       _strengthUriMap = getStrengthUriMap( _uriStrengths );
       _sortedStrengths = getSortedStrengths( _strengthUriMap.keySet() );
@@ -51,13 +51,13 @@ public abstract class UriInfoStore {
                             .max( Comparator.comparingInt( String::length ) )
                             .orElse( "" );
       }
-//      NeoplasmSummaryCreator.DEBUG_SB.append( "   " ).append( _bestUri.isEmpty() ? "NONE" : _bestUri )
-//                                     .append( "   " )
-//                                     .append( uriStrengths.entrySet()
+//      NeoplasmSummaryCreator.addDebug( "   " )+  _bestUri.isEmpty() ? "NONE" : _bestUri )
+//                                     +  "   " )
+//                                     +  uriStrengths.entrySet()
 //                                                          .stream()
 //                                                          .map( e -> e.getKey() +  ":" + e.getValue() )
 //                                                          .collect(  Collectors.joining(" " ) ) )
-//                                     .append( "\n" );
+//                                     +  "\n" );
    }
 
    static private Map<Integer,Collection<String>> getStrengthUriMap( final Map<String,Integer> uriStrengths ) {

@@ -54,18 +54,14 @@ public interface SpecificAttribute {
                                           features );
    }
 
+   // Todo  prettyName    prettyValue
    static NeoplasmAttribute createAttributeWithFeatures( final String name, final String value,
                                                          final String uri,
                                                          final List<Mention> directEvidence,
                                              final List<Mention> indirectEvidence,
                                              final List<Mention> notEvidence,
                                              final List<Integer> features ) {
-      NeoplasmSummaryCreator.DEBUG_SB.append( name )
-                                     .append( "=" )
-                                     .append( value )
-                                     .append( ":" )
-                                     .append( uri )
-                                     .append( "\n" );
+      NeoplasmSummaryCreator.addDebug( name + "=" + value + ":" + uri + "\n" );
       final NeoplasmAttribute attribute = new NeoplasmAttribute();
       attribute.setName( name );
       attribute.setValue( value );

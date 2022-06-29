@@ -83,7 +83,7 @@
 //                                                   final Collection<ConceptAggregate> patientNeoplasms,
 //                                                   final Collection<String> validTopoMorphs ) {
 ////                                                   final String topographyCode ) {
-//      NeoplasmSummaryCreator.DEBUG_SB.append( "Histology  " );
+//      NeoplasmSummaryCreator.addDebug( "Histology  " );
 //      final MorphologyInfoStore patientStore = new MorphologyInfoStore( patientNeoplasms,
 //                                                                        validTopoMorphs );
 //      final MorphologyInfoStore neoplasmStore = new MorphologyInfoStore( neoplasm,

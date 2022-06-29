@@ -25,9 +25,9 @@ public class HistologyInfoStore extends AttributeInfoStore<HistologyUriInfoVisit
    }
 
    public void initCodeInfoStore( final Map<String,String> dependencies ) {
-//      NeoplasmSummaryCreator.DEBUG_SB.append( "  Initializing All Uri Store  (Not Standard):\n" );
+//      NeoplasmSummaryCreator.addDebug( "  Initializing All Uri Store  (Not Standard):\n" );
       initCodeInfoStore( _allUriStore, dependencies );
-//      NeoplasmSummaryCreator.DEBUG_SB.append( "  Initializing Main Uri Store  (Standard):\n" );
+//      NeoplasmSummaryCreator.addDebug( "  Initializing Main Uri Store  (Standard):\n" );
 //      initCodeInfoStore( _mainUriStore, dependencies );
    }
 

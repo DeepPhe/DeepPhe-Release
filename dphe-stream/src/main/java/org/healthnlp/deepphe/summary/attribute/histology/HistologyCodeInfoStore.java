@@ -80,11 +80,7 @@ public class HistologyCodeInfoStore implements CodeInfoStore {
                .distinct()
                .sorted()
                .collect( Collectors.toList() );
-         NeoplasmSummaryCreator.DEBUG_SB.append( "Onto URI: " )
-                                        .append( uri )
-                                        .append( " " )
-                                        .append( String.join( " ",codes ) )
-                                        .append( "\n" );
+         NeoplasmSummaryCreator.addDebug( "Onto URI: " + uri +" " + String.join( " ",codes ) + "\n" );
          uriOntoMorphCodesMap.put( uri, codes );
       }
       return uriOntoMorphCodesMap;
@@ -100,7 +96,7 @@ public class HistologyCodeInfoStore implements CodeInfoStore {
 //                                                      .distinct()
 //                                                      .sorted()
 //                                                      .collect( Collectors.toList() );
-//         NeoplasmSummaryCreator.DEBUG_SB.append( "Broad URI: " )
+//         NeoplasmSummaryCreator.addDebug( "Broad URI: " )
 //                                        .append( uri )
 //                                        .append( " " )
 //                                        .append( String.join( " ",codes ) )
@@ -120,11 +116,7 @@ static private Map<String, List<String>> getUrisBroadMorphCodesMap( final Collec
                                                    .sorted()
                                                    .map( c -> c + "/3" )
                                                    .collect( Collectors.toList() );
-      NeoplasmSummaryCreator.DEBUG_SB.append( "Broad URI: " )
-                                     .append( uri )
-                                     .append( " " )
-                                     .append( String.join( " ",codes ) )
-                                     .append( "\n" );
+      NeoplasmSummaryCreator.addDebug( "Broad URI: " + uri + " " +String.join( " ",codes ) + "\n" );
       uriBroadMorphCodesMap.put( uri, codes );
    }
    return uriBroadMorphCodesMap;
@@ -137,11 +129,7 @@ static private Map<String, List<String>> getUrisBroadMorphCodesMap( final Collec
          if ( !exactCode.isEmpty() && !exactCode.startsWith( "800" ) ) {
             uriExactMorphCodesMap.put( uri, Collections.singletonList( exactCode ) );
          }
-         NeoplasmSummaryCreator.DEBUG_SB.append( "Exact URI: " )
-                                        .append( uri )
-                                        .append( " " )
-                                        .append( exactCode )
-                                        .append( "\n" );
+         NeoplasmSummaryCreator.addDebug( "Exact URI: " + uri + " " +exactCode + "\n" );
       }
       return uriExactMorphCodesMap;
    }
@@ -233,11 +221,9 @@ static private Map<String, List<String>> getUrisBroadMorphCodesMap( final Collec
       ontoStrengths.keySet().retainAll( allCodes );
       exactStrengths.keySet().retainAll( allCodes );
       broadStrengths.keySet().retainAll( allCodes );
-      NeoplasmSummaryCreator.DEBUG_SB.append( "\n    Hit Counts: " )
-                                     .append( hitCounts.entrySet().stream()
+      NeoplasmSummaryCreator.addDebug( "\n    Hit Counts: " + hitCounts.entrySet().stream()
                                                      .map( e -> e.getKey() +" " + e.getValue() )
-                                                     .collect(  Collectors.joining(",") ) )
-                                     .append( "\n" );
+                                                     .collect(  Collectors.joining(",") ) + "\n" );
       return hitCounts;
    }
 
@@ -249,7 +235,7 @@ static private Map<String, List<String>> getUrisBroadMorphCodesMap( final Collec
          final int strength = uriStrengths.get( uri );
 //         final Collection<String> codes = getOntoMorphCodes( uri );
          final Collection<String> codes = uriOntoMorphCodes.getOrDefault( uri, Collections.emptyList() );
-         NeoplasmSummaryCreator.DEBUG_SB.append( codes.isEmpty() ? "" : ("  Onto " + uri + " " + codes + "\n") );
+         NeoplasmSummaryCreator.addDebug( codes.isEmpty() ? "" : ("  Onto " + uri + " " + codes + "\n") );
          for ( String code : codes ) {
 //            final int previousStrength = ontoMorphStrengths.getOrDefault( code, 0 );
 //            ontoMorphStrengths.put( code, previousStrength + strength );
@@ -267,7 +253,7 @@ static private Map<String, List<String>> getUrisBroadMorphCodesMap( final Collec
          final int strength = uriStrengths.get( uri );
 //         final String code = TopoMorphValidator.getInstance().getExactMorphCode( uri );
          final List<String> codes = uriExactMorphCodes.getOrDefault( uri, Collections.emptyList() );
-         NeoplasmSummaryCreator.DEBUG_SB.append( codes.isEmpty() ? "" : ("  Exact " + uri + " " + codes + "\n") );
+         NeoplasmSummaryCreator.addDebug( codes.isEmpty() ? "" : ("  Exact " + uri + " " + codes + "\n") );
          for ( String code : codes ) {
 //            final int previousStrength = ontoMorphStrengths.getOrDefault( code, 0 );
 //            ontoMorphStrengths.put( code, previousStrength + strength );
@@ -285,7 +271,7 @@ static private Map<String, List<String>> getUrisBroadMorphCodesMap( final Collec
          final int strength = uriStrengths.get( uri );
 //         final Collection<String> codes = TopoMorphValidator.getInstance().getBroadMorphCode( uri );
          final Collection<String> codes = uriBroadMorphCodes.getOrDefault( uri, Collections.emptyList() );
-         NeoplasmSummaryCreator.DEBUG_SB.append( codes.isEmpty() ? "" : ("  Broad " + uri + " " + codes + "\n") );
+         NeoplasmSummaryCreator.addDebug( codes.isEmpty() ? "" : ("  Broad " + uri + " " + codes + "\n") );
          for ( String code : codes ) {
 //            final int previousStrength = ontoMorphStrengths.getOrDefault( code, 0 );
 //            ontoMorphStrengths.put( code, previousStrength + strength );

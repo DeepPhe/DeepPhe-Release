@@ -125,7 +125,7 @@ final public class UriConstants {
 
 
    //
-   //          PROCEDURE         Therapeutic or Inteventional Procedure
+   //          PROCEDURE         Therapeutic or Interventional Procedure
    //
 
    static public final String DIAGNOSTIC_TEST = "Diagnostic_Procedure";
@@ -216,6 +216,9 @@ final public class UriConstants {
    static public final String STAGE = "Tumor_Stage_Finding";
    static public final String STAGE_UNKNOWN = "Stage_Unknown";
 
+   static public final String GRADE = "Finding_Of_Grade";
+
+
    static public final String LYMPH_NODE = "Lymph_Node";
 
    // Semantic Type "Body Part, Organ, or Organ Component".  Parent of "Left_Breast", "Right_Breast".
@@ -291,6 +294,12 @@ final public class UriConstants {
 
    static private final Collection<String> PRIMARY_URIS = new HashSet<>();
    static public Collection<String> getPrimaryUris( final GraphDatabaseService graphDb ) {
+      initializeUris( graphDb );
+      return PRIMARY_URIS;
+   }
+
+   static private final Collection<String> UNKOWN_PRIMARY_URIS = new HashSet<>();
+   static public Collection<String> getUnknownPrimaryUris( final GraphDatabaseService graphDb ) {
       initializeUris( graphDb );
       return PRIMARY_URIS;
    }
@@ -400,6 +409,12 @@ final public class UriConstants {
       return CANCER_STAGES;
    }
 
+   static private final Collection<String> CANCER_GRADES = new ArrayList<>();
+
+   static public Collection<String> getCancerGrades( final GraphDatabaseService graphDb ) {
+      initializeUris( graphDb );
+      return CANCER_GRADES;
+   }
 
 
    static private final Object URI_LOCK = new Object();
@@ -453,6 +468,8 @@ final public class UriConstants {
             GENERIC_URIS.removeAll( BENIGN_URIS );
             GENERIC_URIS.removeAll( PRIMARY_URIS );
             GENERIC_URIS.removeAll( METASTASIS_URIS );
+
+            UNKOWN_PRIMARY_URIS.addAll( SearchUtil.getBranchUris( graphDb, "Neoplasms__Unknown_Primary" ) );
 
             CANCER_TYPE_MAP.put( "Carcinoma", SearchUtil.getBranchUris( graphDb, "Carcinoma" ) );
             CANCER_TYPE_MAP.put( "Sarcoma", SearchUtil.getBranchUris( graphDb, "Sarcoma" ) );
@@ -535,6 +552,10 @@ final public class UriConstants {
                       .filter( u -> u.length() < 12 )
                       .forEach( CANCER_STAGES::add );
 
+            SearchUtil.getBranchUris( graphDb, GRADE ).stream()
+                      .filter( u -> u.length() < 12 )
+                      .forEach( CANCER_GRADES::add );
+
             LOCATION_URIS.addAll( SearchUtil.getBranchUris( graphDb, ORGAN ) );
             LOCATION_URIS.addAll( SearchUtil.getBranchUris( graphDb, BODY_REGION ) );
             LOCATION_URIS.addAll( SearchUtil.getBranchUris( graphDb, BODY_CAVITY ) );
@@ -548,10 +569,17 @@ final public class UriConstants {
             LOCATION_URIS.removeAll( SearchUtil.getBranchUris( graphDb, BODY_FLUID ) );
             LOCATION_URIS.removeAll( SearchUtil.getBranchUris( graphDb, BODY_MISC ) );
             LOCATION_URIS.removeAll( SearchUtil.getBranchUris( graphDb, CELL ) );
+            LOCATION_URIS.removeAll( SearchUtil.getBranchUris( graphDb, "Aponeurosis" ) );
+            LOCATION_URIS.removeAll( SearchUtil.getBranchUris( graphDb, "Cranial_Epidural_Space" ) );
+            LOCATION_URIS.removeAll( SearchUtil.getBranchUris( graphDb, "Ligament" ) );
+            LOCATION_URIS.removeAll( SearchUtil.getBranchUris( graphDb, "Cartilage" ) );
+            LOCATION_URIS.removeAll( SearchUtil.getBranchUris( graphDb, "Synovial_Bursa" ) );
             LOCATION_URIS.removeAll( SearchUtil.getBranchUris( graphDb, "Labyrinth_Supporting_Cells" ) );
             LOCATION_URIS.removeAll( SearchUtil.getBranchUris( graphDb, "Skin_Part" ) );
             LOCATION_URIS.removeAll( SearchUtil.getBranchUris( graphDb, LYMPH_NODE ) );
             LOCATION_URIS.removeAll( SearchUtil.getBranchUris( graphDb, "Occipital_Segment_Of_Fusiform_Gyrus" ) );
+            // Some Glands (e.g. prostate) are exocrine, under cutaneous, under skin part.  Not quite right.
+            LOCATION_URIS.addAll( SearchUtil.getBranchUris( graphDb, "Exocrine_Gland" ) );
 
             POSITIVE_VALUE_URIS.add( "Positive" );
             POSITIVE_VALUE_URIS.add( "Negative" );

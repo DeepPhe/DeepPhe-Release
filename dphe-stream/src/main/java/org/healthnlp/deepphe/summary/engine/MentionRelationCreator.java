@@ -1,6 +1,5 @@
 package org.healthnlp.deepphe.summary.engine;
 
-import org.apache.ctakes.core.util.NumberedSuffixComparator;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
  */
 final public class MentionRelationCreator {
 
-   static private final NumberedSuffixComparator SUFFIX_COMPARATOR = new NumberedSuffixComparator();
+   static private final LongNumSuffixComparator SUFFIX_COMPARATOR = new LongNumSuffixComparator();
 
    static private final Comparator<MentionRelation> RELATION_COMPARATOR = ( r1, r2 ) -> {
       final int typeCompare = SUFFIX_COMPARATOR.compare( r1.getType(), r2.getType() );

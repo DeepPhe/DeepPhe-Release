@@ -1,74 +1,91 @@
 package org.healthnlp.deepphe.summary.attribute.topography.minor;
 
-import org.healthnlp.deepphe.core.neo4j.Neo4jOntologyConceptUtil;
-import org.healthnlp.deepphe.neo4j.constant.UriConstants;
+import org.healthnlp.deepphe.neo4j.node.Mention;
+import org.healthnlp.deepphe.neo4j.node.Note;
+import org.healthnlp.deepphe.node.NoteNodeStore;
 import org.healthnlp.deepphe.summary.attribute.infostore.UriInfoVisitor;
 import org.healthnlp.deepphe.summary.concept.ConceptAggregate;
+import org.healthnlp.deepphe.summary.engine.NeoplasmSummaryCreator;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-import static org.healthnlp.deepphe.neo4j.constant.RelationConstants.HAS_CLOCKFACE;
-import static org.healthnlp.deepphe.neo4j.constant.RelationConstants.HAS_QUADRANT;
 
 final public class TopoMinorUriInfoVisitor implements UriInfoVisitor {
 
-   static Collection<String> LUNG_URIS;
-   static Collection<String> BRONCHUS_URIS;
-   static Collection<String> UPPER_LOBE_URIS;
-   static Collection<String> MIDDLE_LOBE_URIS;
-   static Collection<String> LOWER_LOBE_URIS;
-   static Collection<String> TRACHEA_URIS;
-   static Collection<String> QUADRANT_URIS;
-   static private final Predicate<ConceptAggregate> topoUri
-         = c -> c.getAllUris()
-                 .stream()
-                 .anyMatch( u -> LUNG_URIS.contains( u )
-                                 || BRONCHUS_URIS.contains( u )
-                                 || TRACHEA_URIS.contains( u ) );
+   static private final int SITE_LEFT_WINDOW = 25;
+   static private final int SITE_RIGHT_WINDOW = 10;
 
    private Collection<ConceptAggregate> _topoMinorConcepts;
 
    @Override
    public Collection<ConceptAggregate> getAttributeConcepts( final Collection<ConceptAggregate> neoplasms ) {
-      if ( LUNG_URIS == null ) {
-         LUNG_URIS = Neo4jOntologyConceptUtil.getBranchUris( "Lung" );
-         BRONCHUS_URIS = Neo4jOntologyConceptUtil.getBranchUris( "Bronchus" );
-         UPPER_LOBE_URIS = Neo4jOntologyConceptUtil.getBranchUris( "Upper_Lobe_Of_The_Lung" );
-         MIDDLE_LOBE_URIS = Neo4jOntologyConceptUtil.getBranchUris( "Middle_Lobe_Of_The_Right_Lung" );
-         LOWER_LOBE_URIS = Neo4jOntologyConceptUtil.getBranchUris( "Lower_Lung_Lobe" );
-         TRACHEA_URIS = Neo4jOntologyConceptUtil.getBranchUris( "Trachea" );
-         QUADRANT_URIS = Neo4jOntologyConceptUtil.getBranchUris( UriConstants.QUADRANT );
-      }
       if ( _topoMinorConcepts == null ) {
-         final Collection<ConceptAggregate> lungPartConcepts = neoplasms.stream()
-                                                                          .map( ConceptAggregate::getRelatedSites )
-                                                                          .flatMap( Collection::stream )
-//                                                                        .filter( c -> !c.isNegated() )
-                                                                        .filter( topoUri )
-                                                                          .collect( Collectors.toSet() );
-         final Collection<ConceptAggregate> breastConcepts = neoplasms.stream()
-                                      .map( c -> c.getRelated( HAS_CLOCKFACE, HAS_QUADRANT ) )
-                                      .flatMap( Collection::stream )
-//                                                                      .filter( c -> !c.isNegated() )
-                                                                      .collect( Collectors.toSet() );
-         breastConcepts.addAll( neoplasms.stream()
-                                         .map( ConceptAggregate::getRelatedSites )
-                                         .flatMap( Collection::stream )
-                                         .filter( c -> QUADRANT_URIS.contains( c.getUri() ) ).collect(
-                     Collectors.toSet() ) );
-//         final Collection<ConceptAggregate> locations = neoplasms.stream()
-//                                                                      .map( ConceptAggregate::getRelatedSites )
-//                                                                      .flatMap( Collection::stream )
-////                                                                      .filter( c -> !c.isNegated() )
-//                                                                      .collect( Collectors.toSet() );
-         _topoMinorConcepts = new HashSet<>( breastConcepts );
-         _topoMinorConcepts.addAll( lungPartConcepts );
-//         _topoMinorConcepts.addAll( locations );
+         _topoMinorConcepts = new HashSet<>();
+         _topoMinorConcepts.addAll( LungMinorCodifier.getLungParts( neoplasms ) );
+         _topoMinorConcepts.addAll( BreastMinorCodifier.getBreastParts( neoplasms ) );
+         _topoMinorConcepts.addAll( CrcMinorCodifier.getColonParts( neoplasms ) );
+         _topoMinorConcepts.addAll( CrcMinorCodifier.getAnusParts( neoplasms ) );
+         // Added 4/12/2022
+         if ( _topoMinorConcepts.isEmpty() ) {
+            return _topoMinorConcepts;
+         }
+         final Collection<ConceptAggregate> minors = new HashSet<>();
+         for ( ConceptAggregate concept : _topoMinorConcepts ) {
+            for ( Mention mention : concept.getMentions() ) {
+               final int mentionBegin = mention.getBegin();
+               if ( mentionBegin <= SITE_LEFT_WINDOW ) {
+                  continue;
+               }
+               final Note note = NoteNodeStore.getInstance().get( mention.getNoteId() );
+               if ( note == null ) {
+//                  LOGGER.warn( "No Note stored for Note ID " + mention.getNoteId() );
+                  continue;
+               }
+               if ( hasExactPreText( note, mention ) || hasExactPostText( note, mention ) ) {
+                  NeoplasmSummaryCreator.addDebug( "Trimming to minor candidate "
+                                                          + concept.getCoveredText() + "\n" );
+                  minors.add( concept );
+               }
+            }
+         }
+         if ( !minors.isEmpty() ) {
+            _topoMinorConcepts.retainAll( minors );
+         }
       }
       return _topoMinorConcepts;
+   }
+
+   static private boolean hasExactPreText( final Note note, final Mention mention ) {
+      final int mentionBegin = mention.getBegin();
+      if ( mentionBegin <= SITE_LEFT_WINDOW ) {
+         return false;
+      }
+      final String preText = note.getText()
+                                 .substring( mentionBegin - SITE_LEFT_WINDOW, mentionBegin )
+                                 .toLowerCase();
+      NeoplasmSummaryCreator.addDebug( "minor Candidate and pretext "
+                                              + note.getText()
+                                                    .substring( mentionBegin - SITE_LEFT_WINDOW,
+                                                                mention.getEnd() )
+                                              + "\n" );
+      return preText.contains( "tumor site:" ) || preText.contains( "supportive of" );
+   }
+
+   static private boolean hasExactPostText( final Note note, final Mention mention ) {
+      final int mentionEnd = mention.getEnd();
+      final String noteText = note.getText();
+      if ( mentionEnd + SITE_RIGHT_WINDOW > noteText.length() ) {
+         return false;
+      }
+      final String postText = noteText
+            .substring( mentionEnd, mentionEnd + SITE_RIGHT_WINDOW )
+            .toLowerCase();
+      NeoplasmSummaryCreator.addDebug( "minor Candidate and postext "
+                                              + note.getText()
+                                                    .substring( mentionEnd, mentionEnd + SITE_RIGHT_WINDOW )
+                                              + "\n" );
+      return postText.contains( "origin" ) || postText.contains( "primary" );
    }
 
 

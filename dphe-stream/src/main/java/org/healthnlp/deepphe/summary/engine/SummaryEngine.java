@@ -105,11 +105,15 @@ final public class SummaryEngine {
          allAggregates.addAll( conceptsEntry.getValue() );
          final String uri = conceptsEntry.getKey();
          if ( !massNeoplasms.contains( uri ) ) {
+            NeoplasmSummaryCreator.addDebug( "MassNeoplasms URIs do not include " + uri + "\n" );
             continue;
          }
          for ( ConceptAggregate concept : conceptsEntry.getValue() ) {
             if ( concept.isWantedForSummary() && concept.hasWantedRelations() ) {
                neoplasmAggregates.add( concept );
+               NeoplasmSummaryCreator.addDebug( "MassNeoplasm " + uri + " is wanted for summary.\n" );
+            } else {
+               NeoplasmSummaryCreator.addDebug( "MassNeoplasm " + uri + " is not wanted for summary.\n" );
 
 
 //               LOGGER.info( "ConceptAggregate " + concept.getUri() + " " + concept.getId() + " is a neoplasm and will be used for a Summary." );
@@ -156,7 +160,8 @@ final public class SummaryEngine {
 //      LOGGER.info( naaccrCancer );
 
 //      final NeoplasmSummary neoplasmSummary = NeoplasmSummaryCreator.createNeoplasmSummary( naaccrCancer );
-      final NeoplasmSummary neoplasmSummary = NeoplasmSummaryCreator.createNeoplasmSummary( naaccrCancer, allConcepts );
+      final NeoplasmSummary neoplasmSummary
+            = NeoplasmSummaryCreator.createNeoplasmSummary( naaccrCancer, true, allConcepts, false );
 
       final PatientSummary patientSummary = new PatientSummary();
       patientSummary.setId( patientId );

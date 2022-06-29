@@ -60,7 +60,7 @@
 //         if ( strength == null || strength < 25 ) {
 //            continue;
 //         }
-//         NeoplasmSummaryCreator.DEBUG_SB.append( "Adding 50 to diagnosis " )
+//         NeoplasmSummaryCreator.addDebug( "Adding 50 to diagnosis " )
 //                                        .append( uri )
 //                                        .append( " " )
 //                                        .append( strength )

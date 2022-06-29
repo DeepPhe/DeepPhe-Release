@@ -116,6 +116,17 @@ public enum DmsRunner implements Closeable {
       }
    }
 
+   /**
+    * Summarize the entire patient using stored note summaries.
+    * This is a call to be used internally for things like evaluation runs.
+    *
+    * @param patientId     -
+    * @return -
+    */
+   public PatientSummary createPatientSummary( final String patientId ) {
+      final Patient patient = PatientNodeStore.getInstance().getOrCreate( patientId );
+      return SummaryEngine.createPatientSummary( patient );
+   }
 
    ////////////////////////////////////////////////////////////////////////
    //
@@ -232,7 +243,7 @@ public enum DmsRunner implements Closeable {
     * @param docId     -
     * @param text      -
     */
-   private Note runNlp( final String patientId, final String docId, final String text ) {
+   public Note runNlp( final String patientId, final String docId, final String text ) {
       synchronized ( NLP_PIPER_PATH ) {
          try {
             final JCas jCas = _pool.getJCas( -1 );

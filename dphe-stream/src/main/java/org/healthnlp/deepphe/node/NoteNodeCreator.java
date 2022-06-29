@@ -161,6 +161,7 @@ public class NoteNodeCreator {
                       .collect( Collectors.toList() );
       int id = 1;
       for ( Mention mention : mentionList ) {
+         mention.setNoteId( docId );
          mention.setId( docId + MENTION_ID + id );
          id++;
       }

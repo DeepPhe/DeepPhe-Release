@@ -51,9 +51,9 @@ final public class CancerCreator {
 
    static public Cancer createCancer( final ConceptAggregate neoplasm,
                                       final Map<ConceptAggregate, Fact> factMap ) {
-      DEBUG_SB.append( "=======================================================================\n" )
-              .append( neoplasm.getPatientId() )
-              .append( "\n" );
+//      DEBUG_SB.append( "=======================================================================\n" )
+//              .append( neoplasm.getPatientId() )
+//              .append( "\n" );
       final GraphDatabaseService graphDb = EmbeddedConnection.getInstance()
                                                              .getGraph();
       final Collection<String> massNeoplasmUris = UriConstants.getMassNeoplasmUris( graphDb );

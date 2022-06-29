@@ -40,7 +40,8 @@ add MrsDrSentenceJoiner
 //  Use the DeepPhe paragraph expressions for paragraph discovery.
 set PARAGRAPH_TYPES_PATH=org/healthnlp/deepphe/paragraph/ParagraphRegex.bsv
 //  Discover paragraphs.
-add ParagraphAnnotator
+//add ParagraphAnnotator
+add ParagraphFinder
 
 add WtfSectionFixer
 
@@ -50,10 +51,15 @@ add ParagraphSentenceFixer
 
 set LIST_TYPES_PATH=org/healthnlp/deepphe/list/CancerListRegex.bsv
 //  Discover formatted lists and tables.
-add ListAnnotator
+//add ListAnnotator
+//add ListFinder
+add BsvRegexTopicFinder
+add TreeListFinder
+
 
 //  Fix sentences so that no sentence spans across two or more list entries.
-add ListSentenceFixer
+//add ListSentenceFixer
+add ListSentenceSplitter
 
 //add EolSentenceFixer
 
@@ -120,9 +126,10 @@ add SubjectSectionFixer
 
 //add Ki67Finder
 
-add BiomarkerFinder
+add division.BiomarkerFinderNew
 
-add GradeFinder
+//add GradeFinder
+add division.GradeFinderNew
 
 // Adjust Subjects for entities
 add SubjectAdjuster
@@ -162,19 +169,23 @@ add MelanomaDocEpisodeTagger
 ///////////// add NeoplasmNeo4jWriter  TODO
 
 //add JsonNodeCreator    Duplicate of PatientNodeCollector
-add html.HtmlTextWriter SubDirectory=HTML
-add pretty.plaintext.PrettyTextWriterFit SubDirectory=TEXT
+//add html.HtmlTextWriter SubDirectory=HTML
+//add pretty.plaintext.PrettyTextWriterFit SubDirectory=TEXT
+package org.healthnlp.deepphe.nlp.writer
+//add ListsTableFileWriter SubDirectory=LISTS TableType=HTML
+add FormattedListsTableFileWriter SubDirectory=LISTS TableType=HTML
 
 // add PatientJsonFileWriter SubDirectory=JSON
 package org.healthnlp.deepphe.summary.writer
 //cli CancerEvalFile=c
 //add EvalFileWriterXn SubDirectory=EVAL
-add DeepPheSummaryWriter
+
+//add DeepPheSummaryWriter SubDirectory=SUMMARY
 
 addLast PatientSummaryCleaner
 
 //  Alert User that the pipeline is Finished.
 package org.apache.ctakes.core.util.log
-addLast Neo4jServerShutdownAe
+//addLast Neo4jServerShutdownAe
 addLast FinishedLogger
 addLast PipelineStopper

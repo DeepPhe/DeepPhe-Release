@@ -53,22 +53,22 @@ final public class GradeCodeInfoStore implements CodeInfoStore {
          } else {
             return -1;
          }
-      } else if ( uri.equals( "Grade_1" )
+      } else if ( uri.equals( "Grade_1" ) || uri.equals( "Tumor_Grade_G1" )
                   || uri.equals( "Low_Grade" )
                   || uri.equals( "Low_Grade_Malignant_Neoplasm" )
                   || uri.equals( "Well_Differentiated" ) ) {
          return 1;
-      } else if ( uri.equals( "Grade_2" )
+      } else if ( uri.equals( "Grade_2" ) || uri.equals( "G2_Grade" )
                   || uri.equals( "Intermediate_Grade" )
                   || uri.equals( "Intermediate_Grade_Malignant_Neoplasm" )
                   || uri.equals( "Moderately_Differentiated" ) ) {
          return 2;
-      } else if ( uri.equals( "Grade_3" )
+      } else if ( uri.equals( "Grade_3" ) || uri.equals( "Tumor_Grade_G3" )
                   || uri.equals( "High_Grade" )
                   || uri.equals( "High_Grade_Malignant_Neoplasm" )
                   || uri.equals( "Poorly_Differentiated" ) ) {
          return 3;
-      } else if ( uri.equals( "Grade_4" )
+      } else if ( uri.equals( "Grade_4" ) || uri.equals( "G4_Grade" )
                   || uri.equals( "Undifferentiated" )
                   || uri.equals( "Anaplastic" )) {
          return 4;

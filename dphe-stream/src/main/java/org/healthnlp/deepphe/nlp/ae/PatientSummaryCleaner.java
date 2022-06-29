@@ -25,6 +25,10 @@ public class PatientSummaryCleaner extends JCasAnnotator_ImplBase {
 
    static private final Logger LOGGER = Logger.getLogger( "PatientSummaryCleaner" );
 
+   // todo - keep track of currentPatientID.
+   //  If patient changes (new patient) and (previous) currentPatientID doc count == wanted,
+   //  remove previous patient from cache, and reset the currentPatient.
+
    /**
     * {@inheritDoc}
     */

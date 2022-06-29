@@ -7,10 +7,12 @@ package org.healthnlp.deepphe.util.eval.old.eval;
  * @since 5/23/2019
  */
 final class EvalUris extends AbstractEvalObject {
+   private final String _name;
    private final String _gold;
    private final String _system;
 
-   EvalUris( final String gold, final String system ) {
+   EvalUris( final String name, final String gold, final String system ) {
+      _name = name;
       _gold = gold == null ? "" : gold;
       _system = system == null ? "" : system;
    }
@@ -49,16 +51,16 @@ final class EvalUris extends AbstractEvalObject {
    }
 
    public double calcTP_() {
-      if ( MatchUtil.isEmptyMatch( _gold, _system ) ) {
+      if ( MatchUtil.isEmptyMatch( _name, _gold, _system ) ) {
          return 1;
       }
-      if ( MatchUtil.isSpecialMatch( _gold, _system ) ) {
+      if ( MatchUtil.isSpecialMatch( _name, _gold, _system ) ) {
          return 1;
       }
       if (_gold.isEmpty() || _system.isEmpty() ) {
          return 0;
       }
-      return MatchUtil.countMatched( _gold, _system );
+      return MatchUtil.countMatched( _name, _gold, _system );
    }
 
    public double calcTN_() {
@@ -74,14 +76,14 @@ final class EvalUris extends AbstractEvalObject {
       if ( getTN_() > 0 ) {
          return 0;
       }
-      return MatchUtil.countUnMatched( _system, _gold );
+      return MatchUtil.countUnMatched( _name, _system, _gold );
    }
 
    public double calcFN_() {
       if ( getTN_() > 0 ) {
          return 0;
       }
-      return MatchUtil.countUnMatched( _gold, _system );
+      return MatchUtil.countUnMatched( _name, _gold, _system );
    }
 
    public double getFullScore() {

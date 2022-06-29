@@ -141,32 +141,22 @@ public interface UriInfoVisitor {
             final Note note = NoteNodeStore.getInstance()
                                            .get( noteMentions.getKey() );
             if ( note == null ) {
-               NeoplasmSummaryCreator.DEBUG_SB.append( "No Note for attribute " )
-                                              .append( attribute.getUri() )
-                                              .append( " note " )
-                                              .append( noteMentions.getKey() )
-                                              .append( "\n" );
+               NeoplasmSummaryCreator.addDebug( "No Note for attribute " + attribute.getUri()
+                                                + " note " + noteMentions.getKey() + "\n" );
                continue;
             }
             final List<Section> sections = note.getSections();
             if ( sections == null || sections.isEmpty() ) {
-               NeoplasmSummaryCreator.DEBUG_SB.append( "No  Sections for attribute " )
-                                              .append( attribute.getUri() )
-                                              .append( " note " )
-                                              .append( noteMentions.getKey() )
-                                              .append( "\n" );
+               NeoplasmSummaryCreator.addDebug( "No  Sections for attribute " + attribute.getUri() 
+                                                + " note " + noteMentions.getKey() + "\n" );
                continue;
             }
             for ( Section section : sections ) {
                final String type = section.getType();
                if ( type == null || type.isEmpty() ) {
-                  NeoplasmSummaryCreator.DEBUG_SB.append( "No section type for attribute " )
-                                                 .append( attribute.getUri() )
-                                                 .append( " note " )
-                                                 .append( noteMentions.getKey() )
-                                                 .append( " section " )
-                                                 .append( section.getId()  )
-                                                 .append( "\n" );
+                  NeoplasmSummaryCreator.addDebug( "No section type for attribute " + attribute.getUri() 
+                                                   + " note "+ noteMentions.getKey() + " section " + section.getId()  
+                                                   + "\n" );
                   continue;
                }
                if ( type.equals( SectionType.FinalDiagnosis.getName() )
@@ -204,13 +194,12 @@ public interface UriInfoVisitor {
                               .map( Mention::getClassUri )
                               .forEach( u -> microscopicUris.compute( u, (k,v) -> (v == null) ? 1 : v+1) );
                } else {
-                  NeoplasmSummaryCreator.DEBUG_SB.append( "Other section for attribute " )
-                                                 .append( attribute.getUri() )
-                                                 .append( " note " )
-                                                 .append( noteMentions.getKey() )
-                                                 .append( " section " )
-                                                 .append( type )
-                                                 .append( "\n" );
+                  NeoplasmSummaryCreator.addDebug( "Other section for attribute "  +  attribute.getUri()
+                                                 +  " note "
+                                                 +  noteMentions.getKey()
+                                                 +  " section "
+                                                 +  type
+                                                 +  "\n" );
                }
             }
          }
@@ -218,29 +207,29 @@ public interface UriInfoVisitor {
       for ( Map.Entry<String,Integer> uriCounts : diagnosisUris.entrySet() ) {
          final Integer strength = strengths.get( uriCounts.getKey() );
          if ( strength == null || strength < 25 ) {
-            NeoplasmSummaryCreator.DEBUG_SB.append( "No or low strength for uri " )
-                                           .append( uriCounts.getKey() )
-                                           .append( " strength " )
-                                           .append( strength )
-                                           .append( "\n" );
+            NeoplasmSummaryCreator.addDebug( "No or low strength for uri "
+                                           +  uriCounts.getKey()
+                                           +  " strength "
+                                           +  strength
+                                           +  "\n" );
             continue;
          }
-         NeoplasmSummaryCreator.DEBUG_SB.append( "    Adding " )
-                                        .append( (uriCounts.getValue()*10) )
-                                        .append( " to diagnosis " )
-                                        .append( uriCounts.getKey() )
-                                        .append( " " )
-                                        .append( strength )
-                                        .append( "\n" );
+         NeoplasmSummaryCreator.addDebug( "    Adding "
+                                        +  (uriCounts.getValue()*10)
+                                        +  " to diagnosis "
+                                        +  uriCounts.getKey()
+                                        +  " "
+                                        +  strength
+                                        +  "\n" );
          strengths.put( uriCounts.getKey(), strength + (uriCounts.getValue()*10) );
       }
       for ( Map.Entry<String,Integer> uriCounts : historyUris.entrySet() ) {
          final Integer strength = strengths.get( uriCounts.getKey() );
-         NeoplasmSummaryCreator.DEBUG_SB.append( "    Adding 0 to history " )
-                                        .append( uriCounts.getKey() )
-                                        .append( " " )
-                                        .append( strength )
-                                        .append( "\n" );
+         NeoplasmSummaryCreator.addDebug( "    Adding 0 to history "
+                                        +  uriCounts.getKey()
+                                        +  " "
+                                        +  strength
+                                        +  "\n" );
       }
       for ( Map.Entry<String,Integer> uriCounts : microscopicUris.entrySet() ) {
          final String uri = uriCounts.getKey();;
@@ -249,20 +238,20 @@ public interface UriInfoVisitor {
             continue;
          }
          if ( diagnosisUris.containsKey( uri ) || historyUris.containsKey( uri ) ) {
-            NeoplasmSummaryCreator.DEBUG_SB.append( "    Ignoring " )
-                                           .append( uriCounts.getValue() )
-                                           .append( " microscopic mentions of " )
-                                           .append( uri )
-                                           .append( " as it is in diagnosis or history.\n" );
+            NeoplasmSummaryCreator.addDebug( "    Ignoring "
+                                           +  uriCounts.getValue()
+                                           +  " microscopic mentions of "
+                                           +  uri
+                                           +  " as it is in diagnosis or history.\n" );
             continue;
          }
-         NeoplasmSummaryCreator.DEBUG_SB.append( "    Subtracting " )
-                                        .append( (uriCounts.getValue()*5) )
-                                        .append( " to microscopic " )
-                                        .append( uri )
-                                        .append( " " )
-                                        .append( strength )
-                                        .append( "\n" );
+         NeoplasmSummaryCreator.addDebug( "    Subtracting "
+                                        +  (uriCounts.getValue()*5)
+                                        +  " to microscopic "
+                                        +  uri
+                                        +  " "
+                                        +  strength
+                                        +  "\n" );
          strengths.put( uri, strength - (uriCounts.getValue()*5) );
       }
       return strengths;
@@ -298,43 +287,43 @@ public interface UriInfoVisitor {
       for ( Map.Entry<String,Integer> uriCounts : negatedUris.entrySet() ) {
          final Integer strength = strengths.get( uriCounts.getKey() );
          if ( strength != null ) {
-            NeoplasmSummaryCreator.DEBUG_SB.append( "    Subtracting " )
-                                           .append( ( uriCounts.getValue() * 5 ) )
-                                           .append( " to negated " )
-                                           .append( uriCounts.getKey() )
-                                           .append( " " )
-                                           .append( strength )
-                                           .append( "\n" );
+            NeoplasmSummaryCreator.addDebug( "    Subtracting "
+                                           +  ( uriCounts.getValue() * 5 )
+                                           +  " to negated "
+                                           +  uriCounts.getKey()
+                                           +  " "
+                                           +  strength
+                                           +  "\n" );
             strengths.put( uriCounts.getKey(), strength - ( uriCounts.getValue() * 5 ) );
          }
       }
       for ( Map.Entry<String,Integer> uriCounts : historicUris.entrySet() ) {
          if ( nonHistoricUris.containsKey( uriCounts.getKey() ) ) {
-            NeoplasmSummaryCreator.DEBUG_SB.append( "Uri " )
-                                           .append( uriCounts.getKey() )
-                                           .append( " has " )
-                                           .append( nonHistoricUris.get( uriCounts.getKey() ) )
-                                           .append( " non-historic, " )
-                                           .append( historicUris.get( uriCounts.getKey() ) )
-                                           .append( " historic\n" );
+            NeoplasmSummaryCreator.addDebug( "Uri "
+                                           +  uriCounts.getKey()
+                                           +  " has "
+                                           +  nonHistoricUris.get( uriCounts.getKey() )
+                                           +  " non-historic, "
+                                           +  historicUris.get( uriCounts.getKey() )
+                                           +  " historic\n" );
             continue;
          }
          final Integer strength = strengths.get( uriCounts.getKey() );
          if ( strength == null || strength < 25 ) {
-            NeoplasmSummaryCreator.DEBUG_SB.append( "No or low strength for historic uri " )
-                                           .append( uriCounts.getKey() )
-                                           .append( " strength " )
-                                           .append( strength )
-                                           .append( "\n" );
+            NeoplasmSummaryCreator.addDebug( "No or low strength for historic uri "
+                                           +  uriCounts.getKey()
+                                           +  " strength "
+                                           +  strength
+                                           +  "\n" );
             continue;
          }
-         NeoplasmSummaryCreator.DEBUG_SB.append( "    Subtracting " )
-                                        .append( (uriCounts.getValue()*5) )
-                                        .append( " to historic " )
-                                        .append( uriCounts.getKey() )
-                                        .append( " " )
-                                        .append( strength )
-                                        .append( "\n" );
+         NeoplasmSummaryCreator.addDebug( "    Subtracting "
+                                        +  (uriCounts.getValue()*5)
+                                        +  " to historic "
+                                        +  uriCounts.getKey()
+                                        +  " "
+                                        +  strength
+                                        +  "\n" );
          strengths.put( uriCounts.getKey(), strength - (uriCounts.getValue()*5) );
       }
        return strengths;

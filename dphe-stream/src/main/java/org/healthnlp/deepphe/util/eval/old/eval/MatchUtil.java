@@ -3,6 +3,7 @@ package org.healthnlp.deepphe.util.eval.old.eval;
 
 
 import org.apache.ctakes.core.util.StringUtil;
+import org.apache.log4j.Logger;
 import org.healthnlp.deepphe.core.neo4j.Neo4jOntologyConceptUtil;
 import org.healthnlp.deepphe.core.uri.UriUtil;
 
@@ -10,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
+
 
 /**
  * @author SPF , chip-nlp
@@ -21,27 +23,36 @@ final public class MatchUtil {
    private MatchUtil() {
    }
 
-   static double countMatched( final String goldValue, final String systemValue ) {
-      if ( isSpecialMatch( goldValue, systemValue ) ) {
+   static private final String LOCATION = "location";
+   static private final String LATERALITY = "laterality";
+   static private final String TOPO_MINOR = "topography_minor";
+   static private final String CLOCKFACE = "clockface";
+   static private final String STAGE = "stage";
+   static private final String QUADRANT = "quadrant";
+   static private final String TUMOR_TYPE = "tumor_type";
+
+
+   static double countMatched( final String name, final String goldValue, final String systemValue ) {
+      if ( isSpecialMatch( name, goldValue, systemValue ) ) {
          return 1;
       }
-      return countMatched( getUris( goldValue ), getUris( systemValue ) );
+      return countMatched( name, getUris( goldValue ), getUris( systemValue ) );
    }
 
-   static private double countMatched( final Collection<String> uris1, final Collection<String> uris2 ) {
-      final int unmatched = countUnMatched( uris2, uris1 );
-      final double parts = countSpecialMatch( uris2, uris1 );
+   static private double countMatched( final String name, final Collection<String> uris1, final Collection<String> uris2 ) {
+      final int unmatched = countUnMatched( name, uris2, uris1 );
+      final double parts = countSpecialMatch( name, uris2, uris1 );
       return uris2.size() - unmatched + parts;
    }
 
-   static double countUnMatched( final String value1, final String value2 ) {
-      if ( isSpecialMatch( value1, value2 ) || isSpecialMatch( value2, value1 ) ) {
+   static double countUnMatched( final String name, final String value1, final String value2 ) {
+      if ( isSpecialMatch( name, value1, value2 ) || isSpecialMatch( name, value2, value1 ) ) {
          return 0;
       }
-      return countUnMatched( getUris( value1 ), getUris( value2 ) );
+      return countUnMatched( name, getUris( value1 ), getUris( value2 ) );
    }
 
-   static private int countUnMatched( final Collection<String> uris1, final Collection<String> uris2 ) {
+   static private int countUnMatched( final String name, final Collection<String> uris1, final Collection<String> uris2 ) {
       int matchCount = 0;
       for ( String uri : uris1 ) {
          boolean matched = false;
@@ -63,17 +74,20 @@ final public class MatchUtil {
       return uris1.size() - matchCount;
    }
 
-   static private double countSpecialMatch( final Collection<String> uris1, final Collection<String> uris2 ) {
+   static private double countSpecialMatch( final String name, final Collection<String> uris1, final Collection<String> uris2 ) {
       double matchCount = 0;
       for ( String uri : uris1 ) {
          for ( String uri2 : uris2 ) {
-            matchCount += countSpecialMatch( uri, uri2 );
+            matchCount += countSpecialMatch( name, uri, uri2 );
          }
       }
       return matchCount;
    }
 
-   static private double countSpecialMatch( final String uri1, final String uri2 ) {
+   static private double countSpecialMatch( final String name, final String uri1, final String uri2 ) {
+      if ( !name.equalsIgnoreCase( LATERALITY ) ) {
+         return 0;
+      }
       if ( uri1.equalsIgnoreCase( "Bilateral" )
            && (uri2.equalsIgnoreCase( "Left" )
                || uri2.equalsIgnoreCase( "Right" )) ) {
@@ -84,18 +98,28 @@ final public class MatchUtil {
                || uri1.equalsIgnoreCase( "Right" )) ) {
          return 0.5;
       }
+      if ( uri1.equals( "4" )
+           && (uri2.equals( "1" )
+               || uri2.equals( "2" )) ) {
+         return 0.5;
+      }
+      if ( uri2.equals( "4" )
+           && (uri1.equals( "1" )
+               || uri1.equals( "2" )) ) {
+         return 0.5;
+      }
       return 0;
    }
 
-   static boolean isEmptyMatch( final String goldValue, final String systemValue ) {
+   static boolean isEmptyMatch( final String name, final String goldValue, final String systemValue ) {
       if ( goldValue == null ) {
          return false;
       }
       if ( goldValue.equals( "[]" ) ) {
          // [] is used for gold when there should be a value but none was determined.  e.g. hasHistologicType
          return true;
-      } else if ( goldValue.toLowerCase().contains( "results not available" )
-                  || goldValue.toLowerCase().contains( "results not reported" ) ) {
+      } else if ( goldValue.toLowerCase().contains( "not available" )
+                  || goldValue.toLowerCase().contains( "not reported" ) ) {
          return true;
       }
       if ( goldValue.equalsIgnoreCase( "Absent" )
@@ -226,12 +250,73 @@ final public class MatchUtil {
 //      return false;
 //   }
 
-   static boolean isSpecialMatch( final String goldValue1, final String systemValue1 ) {
+   static boolean isSpecialMatch( final String name, final String goldValue1, final String systemValue1 ) {
       final String goldValue = goldValue1.trim();
       final String systemValue = systemValue1.trim();
       // SPECIAL CASE FOR ICDO LATERALITY OR ICDO TOPO_MINOR CODE.  MAKE SURE THAT IT DOESN'T SHOW UP ELSEWHERE.
-      if ( systemValue.isEmpty() && (goldValue.equals( "0" ) || goldValue.equals( "9" )) ) {
-         return true;
+      if ( LOCATION.equalsIgnoreCase( name ) ) {
+         if ( goldValue.equalsIgnoreCase( "Breast" ) && systemValue.endsWith( "_Quadrant" ) ) {
+            return true;
+         }
+         if ( (goldValue.equalsIgnoreCase( "Rectum" )
+               || goldValue.equalsIgnoreCase( "Mesorectum" ) )
+              && ( systemValue.equalsIgnoreCase( "Rectal" )
+                   || systemValue.equalsIgnoreCase( "Rectosigmoid_Colon" )
+                   || systemValue.equalsIgnoreCase( "Anus" )
+                   || systemValue.equalsIgnoreCase( "Anorectal_Junction" ) ) ) {
+            return true;
+         }
+         if ( goldValue.equalsIgnoreCase( "Retroperitoneum" )
+              && systemValue.equalsIgnoreCase( "Retroperitoneal_Space" ) ) {
+            return true;
+         }
+      }
+      if ( LATERALITY.equalsIgnoreCase( name ) ) {
+         if ( goldValue.isEmpty() || goldValue.startsWith( "0" ) || goldValue.startsWith( "9" ) ) {
+            if ( systemValue.isEmpty() || systemValue.startsWith( "0" ) || systemValue.startsWith( "9" ) ) {
+               return true;
+            }
+         }
+      }
+      if ( TOPO_MINOR.equalsIgnoreCase( name ) ) {
+         if ( goldValue.isEmpty() && (systemValue.startsWith( "0" ) || systemValue.startsWith( "9" )) ) {
+            return true;
+         }
+      }
+      if ( CLOCKFACE.equalsIgnoreCase( name ) ) {
+         if ( !goldValue.isEmpty() && !goldValue.equals( "[]" ) ) {
+            final int underscore = goldValue.indexOf( '_' );
+            if ( underscore < 0 ) {
+               Logger.getLogger( "MatchUtil" ).warn( "Invalid gold " + CLOCKFACE + " " + goldValue );
+            } else if ( underscore >= 1 ) {
+               // Gold doesn't seem to have hour:30 values but the system does.
+               final String hour = goldValue.substring( 0, goldValue.indexOf( '_' ) );
+               if ( systemValue.contains( hour + "_30_" ) ) {
+                  return true;
+               }
+            }
+         }
+      }
+      if ( STAGE.equalsIgnoreCase( name ) ) {
+         if ( systemValue.equals( "0" ) && goldValue.isEmpty() ) {
+            return true;
+         }
+      }
+      if ( QUADRANT.equalsIgnoreCase( name ) ) {
+         if ( goldValue.contains( "_Quadrant" ) && systemValue.equalsIgnoreCase( "Overlapping_Quadrant" ) ) {
+            return true;
+         }
+         if ( goldValue.isEmpty() ) {
+            // Unfortunately the gold is often missing quadrant.
+            // Plus, the system calculates quadrant using topo minor made from laterality and clockface.
+            return true;
+         }
+      }
+      if ( TUMOR_TYPE.equalsIgnoreCase( name ) ) {
+         if ( goldValue.equalsIgnoreCase( "Metastatic_Tumor" )
+              && systemValue.toLowerCase().contains( "metasta" ) ) {
+            return true;
+         }
       }
       if ( goldValue.equalsIgnoreCase( systemValue ) ) {
          return true;
@@ -248,8 +333,9 @@ final public class MatchUtil {
 //            return true;
 //         }
 //      }
-      if ( goldValue.isEmpty()
+      if ( ( goldValue.isEmpty() || goldValue.toLowerCase().contains( "not " ) )
            && ( systemValue.equalsIgnoreCase( "Pending" )
+                || systemValue.toLowerCase().contains( "not " )
                 || systemValue.toLowerCase().contains( "n/a" )
                 || systemValue.toLowerCase().contains( "requested" )
                 || systemValue.toLowerCase().contains( "applicable" )
@@ -258,38 +344,40 @@ final public class MatchUtil {
          return true;
       }
       if ( systemValue.startsWith( "[" ) && systemValue.endsWith( "]" ) ) {
-         return isSpecialMatch( goldValue, systemValue.substring( 1, systemValue.length()-1 ).trim() );
+         return isSpecialMatch( name, goldValue, systemValue.substring( 1, systemValue.length()-1 ).trim() );
       }
       if ( systemValue.contains( "," ) ) {
          return Arrays.stream( StringUtil.fastSplit( systemValue, ',' ) )
-                      .anyMatch( v -> isSpecialMatch( goldValue, v.trim() ) );
+                      .anyMatch( v -> isSpecialMatch( name, goldValue, v.trim() ) );
       }
       if ( systemValue.contains( ";" ) ) {
          return Arrays.stream( StringUtil.fastSplit( systemValue, ';' ) )
-                      .anyMatch( v -> isSpecialMatch( goldValue, v.trim() ) );
+                      .anyMatch( v -> isSpecialMatch( name, goldValue, v.trim() ) );
       }
       if ( goldValue.contains( "," ) ) {
          return Arrays.stream( StringUtil.fastSplit( goldValue, ',' ) )
-                      .anyMatch( v -> isSpecialMatch( v.trim(), systemValue ) );
+                      .anyMatch( v -> isSpecialMatch( name, v.trim(), systemValue ) );
       }
       if ( goldValue.contains( ";" ) ) {
          return Arrays.stream( StringUtil.fastSplit( goldValue, ';' ) )
-                      .anyMatch( v -> isSpecialMatch( v.trim(), systemValue ) );
+                      .anyMatch( v -> isSpecialMatch( name, v.trim(), systemValue ) );
       }
       if ( systemValue.contains( "%" ) ) {
          final int percentIndex = systemValue.indexOf( '%' );
-         return isSpecialMatch( goldValue, systemValue.substring( 0, percentIndex ).trim() );
+         return isSpecialMatch( name, goldValue, systemValue.substring( 0, percentIndex ).trim() );
       }
       if ( goldValue.endsWith( "%" ) ) {
-         return isSpecialMatch( goldValue.substring( 0, goldValue.length()-1 ).trim(), systemValue );
+         return isSpecialMatch( name, goldValue.substring( 0, goldValue.length()-1 ).trim(), systemValue );
       }
       if ( goldValue.equalsIgnoreCase( "Present" )
-           && !systemValue.isEmpty()
-           && !systemValue.equalsIgnoreCase( "Absent" ) ) {
+           && ( systemValue.equalsIgnoreCase( "True" )
+                || ( !systemValue.equalsIgnoreCase( "Absent" )
+                     && !systemValue.equalsIgnoreCase( "False" ) ) ) ) {
          return true;
       }
       if ( goldValue.equalsIgnoreCase( "Absent" )
-           && (systemValue.isEmpty() || systemValue.equalsIgnoreCase( "Absent" )) ) {
+           && (systemValue.isEmpty() || systemValue.equalsIgnoreCase( "Absent" ) || systemValue.equalsIgnoreCase(
+                 "False" ) ) ) {
          return true;
       }
       if ( goldValue.equalsIgnoreCase( "Positive" )
@@ -309,6 +397,9 @@ final public class MatchUtil {
            && (systemValue.isEmpty() || systemValue.toLowerCase().contains( "unknown" )) ) {
          return true;
       }
+      if ( goldValue.isEmpty() && systemValue.toLowerCase().contains( "unknown" ) ) {
+         return true;
+      }
       if ( goldValue.contains( "Tis" ) && (systemValue.isEmpty() || systemValue.contains( "T0" )) ) {
          return true;
       }
@@ -321,6 +412,9 @@ final public class MatchUtil {
       }
       if ( (goldValue.contains( "Tx" ) || goldValue.contains( "Nx" ) || goldValue.contains( "Mx" ))
            && systemValue.isEmpty() ) {
+         return true;
+      }
+      if ( goldValue.contains( "M0" ) && ( systemValue.isEmpty() || systemValue.contains( "Mx" ) ) ) {
          return true;
       }
       for ( String tnmKludge : TNM_MATCHES ) {
@@ -362,6 +456,7 @@ final public class MatchUtil {
          return true;
       }
       if ( !goldValue.isEmpty() && !systemValue.isEmpty() ) {
+         Logger.getLogger( "MatchUtil" ).info( "MatchUtil.branches for " + goldValue + " "  + systemValue );
          final Collection<String> goldBranch = Neo4jOntologyConceptUtil.getBranchUris( goldValue );
          final Collection<String> systemBranch = Neo4jOntologyConceptUtil.getBranchUris( systemValue );
          if ( goldBranch.stream().anyMatch( systemBranch::contains )
@@ -381,8 +476,8 @@ final public class MatchUtil {
       return false;
    }
 
-   static boolean isAnyMatch( final String goldValue, final String systemValue ) {
-      if ( isSpecialMatch( goldValue, systemValue ) ) {
+   static boolean isAnyMatch( final String name, final String goldValue, final String systemValue ) {
+      if ( isSpecialMatch( name, goldValue, systemValue ) ) {
          return true;
       }
       if ( goldValue == null || goldValue.isEmpty() ) {

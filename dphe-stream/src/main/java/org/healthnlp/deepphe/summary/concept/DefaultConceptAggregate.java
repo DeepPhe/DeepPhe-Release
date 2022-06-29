@@ -144,6 +144,20 @@ final public class DefaultConceptAggregate implements ConceptAggregate {
     * {@inheritDoc}
     */
    @Override
+   final public void addRelated( final String type, final Collection<ConceptAggregate> related ) {
+      if ( related == null || related.isEmpty() ) {
+         return;
+      }
+      if ( _relatedConceptMap == null ) {
+         _relatedConceptMap = new HashMap<>();
+      }
+      _relatedConceptMap.computeIfAbsent( type, c -> new HashSet<>() ).addAll( related );
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
    final public void clearRelations() {
       if ( _relatedConceptMap != null ) {
          _relatedConceptMap.clear();

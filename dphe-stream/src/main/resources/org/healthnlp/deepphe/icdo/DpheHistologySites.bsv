@@ -125,7 +125,7 @@ C019|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcinoma_Wit
 C019|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C019|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell_Spindle_Cell
 C019|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C019|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C019|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C019|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C019|Root_Of_Tongue|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
 C019|Root_Of_Tongue|872|Melanoma|8720/3|Melanoma
@@ -267,7 +267,7 @@ C020-C024,C028-C029|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8570/3|Ade
 C020-C024,C028-C029|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C020-C024,C028-C029|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell_Spindle_Cell
 C020-C024,C028-C029|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C020-C024,C028-C029|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C020-C024,C028-C029|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C020-C024,C028-C029|Root_Of_Tongue|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C020-C024,C028-C029|Root_Of_Tongue|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
 C020-C024,C028-C029|Root_Of_Tongue|872|Melanoma|8720/3|Melanoma
@@ -583,7 +583,7 @@ C079-C081,C088-C089|Salivary_Gland|857|Adenocarcinoma_With_Metaplasia|8570/3|Ade
 C079-C081,C088-C089|Salivary_Gland|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C079-C081,C088-C089|Salivary_Gland|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell_Spindle_Cell
 C079-C081,C088-C089|Salivary_Gland|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C079-C081,C088-C089|Salivary_Gland|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C079-C081,C088-C089|Salivary_Gland|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C079-C081,C088-C089|Salivary_Gland|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C079-C081,C088-C089|Salivary_Gland|880|Sarcoma|8800/3|Sarcoma
 C079-C081,C088-C089|Salivary_Gland|880|Sarcoma|8801/3|Spindle_Cell_Sarcoma
@@ -888,6 +888,7 @@ C110,C112-C113,C118-C119|Nasopharynx|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoi
 C110,C112-C113,C118-C119|Nasopharynx|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C110,C112-C113,C118-C119|Nasopharynx|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C110,C112-C113,C118-C119|Nasopharynx|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C110,C112-C113,C118-C119|Nasopharynx|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C110,C112-C113,C118-C119|Nasopharynx|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C110,C112-C113,C118-C119|Nasopharynx|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C110,C112-C113,C118-C119|Nasopharynx|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -1064,6 +1065,7 @@ C111|Posterior_Wall_Of_The_Nasopharynx|803|Sarcomatoid_Carcinoma|8033/3|Sarcomat
 C111|Posterior_Wall_Of_The_Nasopharynx|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C111|Posterior_Wall_Of_The_Nasopharynx|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C111|Posterior_Wall_Of_The_Nasopharynx|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C111|Posterior_Wall_Of_The_Nasopharynx|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C111|Posterior_Wall_Of_The_Nasopharynx|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C111|Posterior_Wall_Of_The_Nasopharynx|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C111|Posterior_Wall_Of_The_Nasopharynx|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -1493,6 +1495,7 @@ C150-C155,C158-C159|Esophagus|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carci
 C150-C155,C158-C159|Esophagus|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C150-C155,C158-C159|Esophagus|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C150-C155,C158-C159|Esophagus|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C150-C155,C158-C159|Esophagus|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C150-C155,C158-C159|Esophagus|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C150-C155,C158-C159|Esophagus|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C150-C155,C158-C159|Esophagus|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -1520,7 +1523,7 @@ C150-C155,C158-C159|Esophagus|820|Cribriform_Carcinoma|8201/2|Cribriform_Carcino
 C150-C155,C158-C159|Esophagus|820|Cribriform_Carcinoma|8201/3|Cribriform_Carcinoma
 C150-C155,C158-C159|Esophagus|824|Atypical_Carcinoid_Tumor|8240/3|Atypical_Carcinoid_Tumor
 C150-C155,C158-C159|Esophagus|824|Atypical_Carcinoid_Tumor|8244/3|Adenocarcinoid_Tumor
-C150-C155,C158-C159|Esophagus|824|Atypical_Carcinoid_Tumor|8246/3|Carcinoma__Neuroendocrine
+C150-C155,C158-C159|Esophagus|824|Atypical_Carcinoid_Tumor|8246/3|Neuroendocrine_Neoplasm
 C150-C155,C158-C159|Esophagus|824|Atypical_Carcinoid_Tumor|8249/3|Atypical_Carcinoid_Tumor
 C150-C155,C158-C159|Esophagus|825|Bronchioloalveolar_Adenocarcinoma|8255/3|Adenocarcinoma_With_Mixed_Subtypes
 C150-C155,C158-C159|Esophagus|826|Papillary_Adenocarcinoma|8260/3|Papillary_Adenocarcinoma
@@ -1538,7 +1541,7 @@ C150-C155,C158-C159|Esophagus|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocar
 C150-C155,C158-C159|Esophagus|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C150-C155,C158-C159|Esophagus|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C150-C155,C158-C159|Esophagus|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C150-C155,C158-C159|Esophagus|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C150-C155,C158-C159|Esophagus|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C150-C155,C158-C159|Esophagus|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C150-C155,C158-C159|Esophagus|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
 C150-C155,C158-C159|Esophagus|872|Melanoma|8720/3|Melanoma
@@ -1624,6 +1627,7 @@ C160-C166,C168-C169|Stomach|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carcino
 C160-C166,C168-C169|Stomach|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C160-C166,C168-C169|Stomach|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C160-C166,C168-C169|Stomach|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C160-C166,C168-C169|Stomach|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C160-C166,C168-C169|Stomach|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C160-C166,C168-C169|Stomach|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C160-C166,C168-C169|Stomach|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -1665,7 +1669,7 @@ C160-C166,C168-C169|Stomach|824|Atypical_Carcinoid_Tumor|8242/3|Enterochromaffin
 C160-C166,C168-C169|Stomach|824|Atypical_Carcinoid_Tumor|8243/3|Goblet_Cell_Carcinoid
 C160-C166,C168-C169|Stomach|824|Atypical_Carcinoid_Tumor|8244/3|Adenocarcinoid_Tumor
 C160-C166,C168-C169|Stomach|824|Atypical_Carcinoid_Tumor|8245/3|Adenocarcinoid_Tumor
-C160-C166,C168-C169|Stomach|824|Atypical_Carcinoid_Tumor|8246/3|Carcinoma__Neuroendocrine
+C160-C166,C168-C169|Stomach|824|Atypical_Carcinoid_Tumor|8246/3|Neuroendocrine_Neoplasm
 C160-C166,C168-C169|Stomach|824|Atypical_Carcinoid_Tumor|8249/3|Atypical_Carcinoid_Tumor
 C160-C166,C168-C169|Stomach|825|Bronchioloalveolar_Adenocarcinoma|8255/3|Adenocarcinoma_With_Mixed_Subtypes
 C160-C166,C168-C169|Stomach|826|Papillary_Adenocarcinoma|8260/3|Papillary_Adenocarcinoma
@@ -1685,7 +1689,7 @@ C160-C166,C168-C169|Stomach|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarci
 C160-C166,C168-C169|Stomach|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C160-C166,C168-C169|Stomach|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C160-C166,C168-C169|Stomach|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C160-C166,C168-C169|Stomach|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C160-C166,C168-C169|Stomach|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C160-C166,C168-C169|Stomach|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C160-C166,C168-C169|Stomach|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C160-C166,C168-C169|Stomach|880|Sarcoma|8800/3|Sarcoma
@@ -1791,6 +1795,7 @@ C170-C173,C178-C179|Small_Intestine|802|Carcinoma|8020/3|Undifferentiated_Carcin
 C170-C173,C178-C179|Small_Intestine|802|Carcinoma|8021/3|Anaplastic_Carcinoma_DNE
 C170-C173,C178-C179|Small_Intestine|802|Carcinoma|8022/3|Pleomorphic_Carcinoma
 C170-C173,C178-C179|Small_Intestine|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C170-C173,C178-C179|Small_Intestine|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C170-C173,C178-C179|Small_Intestine|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C170-C173,C178-C179|Small_Intestine|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C170-C173,C178-C179|Small_Intestine|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -1813,7 +1818,7 @@ C170-C173,C178-C179|Small_Intestine|824|Atypical_Carcinoid_Tumor|8242/3|Enteroch
 C170-C173,C178-C179|Small_Intestine|824|Atypical_Carcinoid_Tumor|8243/3|Goblet_Cell_Carcinoid
 C170-C173,C178-C179|Small_Intestine|824|Atypical_Carcinoid_Tumor|8244/3|Adenocarcinoid_Tumor
 C170-C173,C178-C179|Small_Intestine|824|Atypical_Carcinoid_Tumor|8245/3|Adenocarcinoid_Tumor
-C170-C173,C178-C179|Small_Intestine|824|Atypical_Carcinoid_Tumor|8246/3|Carcinoma__Neuroendocrine
+C170-C173,C178-C179|Small_Intestine|824|Atypical_Carcinoid_Tumor|8246/3|Neuroendocrine_Neoplasm
 C170-C173,C178-C179|Small_Intestine|824|Atypical_Carcinoid_Tumor|8249/3|Atypical_Carcinoid_Tumor
 C170-C173,C178-C179|Small_Intestine|825|Bronchioloalveolar_Adenocarcinoma|8255/3|Adenocarcinoma_With_Mixed_Subtypes
 C170-C173,C178-C179|Small_Intestine|826|Papillary_Adenocarcinoma|8260/3|Papillary_Adenocarcinoma
@@ -1829,7 +1834,7 @@ C170-C173,C178-C179|Small_Intestine|857|Adenocarcinoma_With_Metaplasia|8570/3|Ad
 C170-C173,C178-C179|Small_Intestine|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C170-C173,C178-C179|Small_Intestine|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C170-C173,C178-C179|Small_Intestine|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C170-C173,C178-C179|Small_Intestine|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C170-C173,C178-C179|Small_Intestine|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C170-C173,C178-C179|Small_Intestine|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C170-C173,C178-C179|Small_Intestine|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C170-C173,C178-C179|Small_Intestine|871|Malignant_Glomus_Tumor|8710/3|Malignant_Glomus_Tumor
@@ -1955,6 +1960,7 @@ C180, C182-C189, C199|Large_Intestine|803|Sarcomatoid_Carcinoma|8033/3|Sarcomato
 C180, C182-C189, C199|Large_Intestine|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C180, C182-C189, C199|Large_Intestine|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C180, C182-C189, C199|Large_Intestine|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C180, C182-C189, C199|Large_Intestine|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C180, C182-C189, C199|Large_Intestine|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C180, C182-C189, C199|Large_Intestine|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C180, C182-C189, C199|Large_Intestine|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -1994,7 +2000,7 @@ C180, C182-C189, C199|Large_Intestine|824|Atypical_Carcinoid_Tumor|8242/3|Entero
 C180, C182-C189, C199|Large_Intestine|824|Atypical_Carcinoid_Tumor|8243/3|Goblet_Cell_Carcinoid
 C180, C182-C189, C199|Large_Intestine|824|Atypical_Carcinoid_Tumor|8244/3|Adenocarcinoid_Tumor
 C180, C182-C189, C199|Large_Intestine|824|Atypical_Carcinoid_Tumor|8245/3|Adenocarcinoid_Tumor
-C180, C182-C189, C199|Large_Intestine|824|Atypical_Carcinoid_Tumor|8246/3|Carcinoma__Neuroendocrine
+C180, C182-C189, C199|Large_Intestine|824|Atypical_Carcinoid_Tumor|8246/3|Neuroendocrine_Neoplasm
 C180, C182-C189, C199|Large_Intestine|824|Atypical_Carcinoid_Tumor|8249/3|Atypical_Carcinoid_Tumor
 C180, C182-C189, C199|Large_Intestine|825|Bronchioloalveolar_Adenocarcinoma|8255/3|Adenocarcinoma_With_Mixed_Subtypes
 C180, C182-C189, C199|Large_Intestine|826|Papillary_Adenocarcinoma|8260/3|Papillary_Adenocarcinoma
@@ -2018,7 +2024,7 @@ C180, C182-C189, C199|Large_Intestine|857|Adenocarcinoma_With_Metaplasia|8570/3|
 C180, C182-C189, C199|Large_Intestine|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C180, C182-C189, C199|Large_Intestine|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C180, C182-C189, C199|Large_Intestine|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C180, C182-C189, C199|Large_Intestine|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C180, C182-C189, C199|Large_Intestine|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C180, C182-C189, C199|Large_Intestine|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C180, C182-C189, C199|Large_Intestine|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C180, C182-C189, C199|Large_Intestine|880|Sarcoma|8800/3|Sarcoma
@@ -2144,6 +2150,7 @@ C181|Appendix|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carcinoma
 C181|Appendix|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C181|Appendix|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C181|Appendix|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C181|Appendix|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C181|Appendix|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C181|Appendix|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C181|Appendix|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -2182,7 +2189,7 @@ C181|Appendix|824|Atypical_Carcinoid_Tumor|8242/3|Enterochromaffin_like_Cell_Car
 C181|Appendix|824|Atypical_Carcinoid_Tumor|8243/3|Goblet_Cell_Carcinoid
 C181|Appendix|824|Atypical_Carcinoid_Tumor|8244/3|Adenocarcinoid_Tumor
 C181|Appendix|824|Atypical_Carcinoid_Tumor|8245/3|Adenocarcinoid_Tumor
-C181|Appendix|824|Atypical_Carcinoid_Tumor|8246/3|Carcinoma__Neuroendocrine
+C181|Appendix|824|Atypical_Carcinoid_Tumor|8246/3|Neuroendocrine_Neoplasm
 C181|Appendix|824|Atypical_Carcinoid_Tumor|8249/3|Atypical_Carcinoid_Tumor
 C181|Appendix|825|Bronchioloalveolar_Adenocarcinoma|8255/3|Adenocarcinoma_With_Mixed_Subtypes
 C181|Appendix|826|Papillary_Adenocarcinoma|8260/3|Papillary_Adenocarcinoma
@@ -2208,7 +2215,7 @@ C181|Appendix|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcinoma_With_Squa
 C181|Appendix|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C181|Appendix|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C181|Appendix|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C181|Appendix|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C181|Appendix|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C181|Appendix|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C181|Appendix|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C181|Appendix|880|Sarcoma|8800/3|Sarcoma
@@ -2334,6 +2341,7 @@ C209|Rectal|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carcinoma
 C209|Rectal|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C209|Rectal|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C209|Rectal|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C209|Rectal|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C209|Rectal|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C209|Rectal|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C209|Rectal|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -2379,7 +2387,7 @@ C209|Rectal|824|Atypical_Carcinoid_Tumor|8242/3|Enterochromaffin_like_Cell_Carci
 C209|Rectal|824|Atypical_Carcinoid_Tumor|8243/3|Goblet_Cell_Carcinoid
 C209|Rectal|824|Atypical_Carcinoid_Tumor|8244/3|Adenocarcinoid_Tumor
 C209|Rectal|824|Atypical_Carcinoid_Tumor|8245/3|Adenocarcinoid_Tumor
-C209|Rectal|824|Atypical_Carcinoid_Tumor|8246/3|Carcinoma__Neuroendocrine
+C209|Rectal|824|Atypical_Carcinoid_Tumor|8246/3|Neuroendocrine_Neoplasm
 C209|Rectal|824|Atypical_Carcinoid_Tumor|8249/3|Atypical_Carcinoid_Tumor
 C209|Rectal|825|Bronchioloalveolar_Adenocarcinoma|8255/3|Adenocarcinoma_With_Mixed_Subtypes
 C209|Rectal|826|Papillary_Adenocarcinoma|8260/3|Papillary_Adenocarcinoma
@@ -2403,7 +2411,7 @@ C209|Rectal|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcinoma_With_Squamo
 C209|Rectal|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C209|Rectal|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C209|Rectal|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C209|Rectal|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C209|Rectal|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C209|Rectal|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C209|Rectal|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C209|Rectal|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
@@ -2536,6 +2544,7 @@ C210-C212,C218|Anal_Canal|802|Carcinoma|8020/3|Undifferentiated_Carcinoma
 C210-C212,C218|Anal_Canal|802|Carcinoma|8021/3|Anaplastic_Carcinoma_DNE
 C210-C212,C218|Anal_Canal|802|Carcinoma|8022/3|Pleomorphic_Carcinoma
 C210-C212,C218|Anal_Canal|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C210-C212,C218|Anal_Canal|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C210-C212,C218|Anal_Canal|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C210-C212,C218|Anal_Canal|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C210-C212,C218|Anal_Canal|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -2574,7 +2583,7 @@ C210-C212,C218|Anal_Canal|824|Atypical_Carcinoid_Tumor|8242/3|Enterochromaffin_l
 C210-C212,C218|Anal_Canal|824|Atypical_Carcinoid_Tumor|8243/3|Goblet_Cell_Carcinoid
 C210-C212,C218|Anal_Canal|824|Atypical_Carcinoid_Tumor|8244/3|Adenocarcinoid_Tumor
 C210-C212,C218|Anal_Canal|824|Atypical_Carcinoid_Tumor|8245/3|Adenocarcinoid_Tumor
-C210-C212,C218|Anal_Canal|824|Atypical_Carcinoid_Tumor|8246/3|Carcinoma__Neuroendocrine
+C210-C212,C218|Anal_Canal|824|Atypical_Carcinoid_Tumor|8246/3|Neuroendocrine_Neoplasm
 C210-C212,C218|Anal_Canal|824|Atypical_Carcinoid_Tumor|8249/3|Atypical_Carcinoid_Tumor
 C210-C212,C218|Anal_Canal|825|Bronchioloalveolar_Adenocarcinoma|8255/3|Adenocarcinoma_With_Mixed_Subtypes
 C210-C212,C218|Anal_Canal|826|Papillary_Adenocarcinoma|8260/3|Papillary_Adenocarcinoma
@@ -2599,7 +2608,7 @@ C210-C212,C218|Anal_Canal|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcino
 C210-C212,C218|Anal_Canal|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C210-C212,C218|Anal_Canal|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C210-C212,C218|Anal_Canal|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C210-C212,C218|Anal_Canal|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C210-C212,C218|Anal_Canal|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C210-C212,C218|Anal_Canal|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C210-C212,C218|Anal_Canal|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C210-C212,C218|Anal_Canal|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
@@ -2989,6 +2998,7 @@ C239-C241,C248-C249|Extrahepatic_Bile_Duct|802|Carcinoma|8020/3|Undifferentiated
 C239-C241,C248-C249|Extrahepatic_Bile_Duct|802|Carcinoma|8021/3|Anaplastic_Carcinoma_DNE
 C239-C241,C248-C249|Extrahepatic_Bile_Duct|802|Carcinoma|8022/3|Pleomorphic_Carcinoma
 C239-C241,C248-C249|Extrahepatic_Bile_Duct|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C239-C241,C248-C249|Extrahepatic_Bile_Duct|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C239-C241,C248-C249|Extrahepatic_Bile_Duct|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C239-C241,C248-C249|Extrahepatic_Bile_Duct|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C239-C241,C248-C249|Extrahepatic_Bile_Duct|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -3040,7 +3050,7 @@ C239-C241,C248-C249|Extrahepatic_Bile_Duct|857|Adenocarcinoma_With_Metaplasia|85
 C239-C241,C248-C249|Extrahepatic_Bile_Duct|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C239-C241,C248-C249|Extrahepatic_Bile_Duct|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C239-C241,C248-C249|Extrahepatic_Bile_Duct|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C239-C241,C248-C249|Extrahepatic_Bile_Duct|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C239-C241,C248-C249|Extrahepatic_Bile_Duct|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C239-C241,C248-C249|Extrahepatic_Bile_Duct|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C239-C241,C248-C249|Extrahepatic_Bile_Duct|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C239-C241,C248-C249|Extrahepatic_Bile_Duct|880|Sarcoma|8800/3|Sarcoma
@@ -3152,6 +3162,7 @@ C250-C254,C257-C259|Pancreas|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carcin
 C250-C254,C257-C259|Pancreas|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C250-C254,C257-C259|Pancreas|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C250-C254,C257-C259|Pancreas|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C250-C254,C257-C259|Pancreas|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C250-C254,C257-C259|Pancreas|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C250-C254,C257-C259|Pancreas|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C250-C254,C257-C259|Pancreas|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -3195,7 +3206,7 @@ C250-C254,C257-C259|Pancreas|824|Atypical_Carcinoid_Tumor|8242/3|Enterochromaffi
 C250-C254,C257-C259|Pancreas|824|Atypical_Carcinoid_Tumor|8243/3|Goblet_Cell_Carcinoid
 C250-C254,C257-C259|Pancreas|824|Atypical_Carcinoid_Tumor|8244/3|Adenocarcinoid_Tumor
 C250-C254,C257-C259|Pancreas|824|Atypical_Carcinoid_Tumor|8245/3|Adenocarcinoid_Tumor
-C250-C254,C257-C259|Pancreas|824|Atypical_Carcinoid_Tumor|8246/3|Carcinoma__Neuroendocrine
+C250-C254,C257-C259|Pancreas|824|Atypical_Carcinoid_Tumor|8246/3|Neuroendocrine_Neoplasm
 C250-C254,C257-C259|Pancreas|824|Atypical_Carcinoid_Tumor|8249/3|Atypical_Carcinoid_Tumor
 C250-C254,C257-C259|Pancreas|825|Bronchioloalveolar_Adenocarcinoma|8255/3|Adenocarcinoma_With_Mixed_Subtypes
 C250-C254,C257-C259|Pancreas|826|Papillary_Adenocarcinoma|8260/3|Papillary_Adenocarcinoma
@@ -3240,7 +3251,7 @@ C250-C254,C257-C259|Pancreas|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarc
 C250-C254,C257-C259|Pancreas|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C250-C254,C257-C259|Pancreas|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C250-C254,C257-C259|Pancreas|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C250-C254,C257-C259|Pancreas|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C250-C254,C257-C259|Pancreas|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C250-C254,C257-C259|Pancreas|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C250-C254,C257-C259|Pancreas|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C250-C254,C257-C259|Pancreas|880|Sarcoma|8800/3|Sarcoma
@@ -3349,6 +3360,7 @@ C260,C268-C269|Entire_Digestive_Organ|803|Sarcomatoid_Carcinoma|8033/3|Sarcomato
 C260,C268-C269|Entire_Digestive_Organ|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C260,C268-C269|Entire_Digestive_Organ|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C260,C268-C269|Entire_Digestive_Organ|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C260,C268-C269|Entire_Digestive_Organ|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C260,C268-C269|Entire_Digestive_Organ|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C260,C268-C269|Entire_Digestive_Organ|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C260,C268-C269|Entire_Digestive_Organ|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -3402,7 +3414,7 @@ C260,C268-C269|Entire_Digestive_Organ|824|Atypical_Carcinoid_Tumor|8242/3|Entero
 C260,C268-C269|Entire_Digestive_Organ|824|Atypical_Carcinoid_Tumor|8243/3|Goblet_Cell_Carcinoid
 C260,C268-C269|Entire_Digestive_Organ|824|Atypical_Carcinoid_Tumor|8244/3|Adenocarcinoid_Tumor
 C260,C268-C269|Entire_Digestive_Organ|824|Atypical_Carcinoid_Tumor|8245/3|Adenocarcinoid_Tumor
-C260,C268-C269|Entire_Digestive_Organ|824|Atypical_Carcinoid_Tumor|8246/3|Carcinoma__Neuroendocrine
+C260,C268-C269|Entire_Digestive_Organ|824|Atypical_Carcinoid_Tumor|8246/3|Neuroendocrine_Neoplasm
 C260,C268-C269|Entire_Digestive_Organ|824|Atypical_Carcinoid_Tumor|8249/3|Atypical_Carcinoid_Tumor
 C260,C268-C269|Entire_Digestive_Organ|825|Bronchioloalveolar_Adenocarcinoma|8251/3|Bronchioloalveolar_Adenocarcinoma
 C260,C268-C269|Entire_Digestive_Organ|825|Bronchioloalveolar_Adenocarcinoma|8255/3|Adenocarcinoma_With_Mixed_Subtypes
@@ -3438,7 +3450,7 @@ C260,C268-C269|Entire_Digestive_Organ|857|Adenocarcinoma_With_Metaplasia|8570/3|
 C260,C268-C269|Entire_Digestive_Organ|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C260,C268-C269|Entire_Digestive_Organ|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C260,C268-C269|Entire_Digestive_Organ|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C260,C268-C269|Entire_Digestive_Organ|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C260,C268-C269|Entire_Digestive_Organ|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C260,C268-C269|Entire_Digestive_Organ|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C260,C268-C269|Entire_Digestive_Organ|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C260,C268-C269|Entire_Digestive_Organ|869|Malignant_Extra_Adrenal_Paraganglioma|8693/3|Malignant_Extra_Adrenal_Paraganglioma
@@ -3686,7 +3698,7 @@ C300|Nasal_Cartilage|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcinoma_Wi
 C300|Nasal_Cartilage|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C300|Nasal_Cartilage|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C300|Nasal_Cartilage|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C300|Nasal_Cartilage|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C300|Nasal_Cartilage|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C300|Nasal_Cartilage|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C300|Nasal_Cartilage|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
 C300|Nasal_Cartilage|872|Melanoma|8720/3|Melanoma
@@ -3886,7 +3898,7 @@ C301|Middle_Ear|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcinoma_With_Sq
 C301|Middle_Ear|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C301|Middle_Ear|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C301|Middle_Ear|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C301|Middle_Ear|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C301|Middle_Ear|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C301|Middle_Ear|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C301|Middle_Ear|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
 C301|Middle_Ear|872|Melanoma|8720/3|Melanoma
@@ -4086,7 +4098,7 @@ C310-C313, C318|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarci
 C310-C313, C318|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C310-C313, C318|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C310-C313, C318|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C310-C313, C318|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C310-C313, C318|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C310-C313, C318|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C310-C313, C318|Nasal_Sinus|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
 C310-C313, C318|Nasal_Sinus|872|Melanoma|8720/3|Melanoma
@@ -4288,7 +4300,7 @@ C319|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcinoma_With_S
 C319|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C319|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C319|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C319|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C319|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C319|Nasal_Sinus|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C319|Nasal_Sinus|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
 C319|Nasal_Sinus|872|Melanoma|8720/3|Melanoma
@@ -4437,6 +4449,7 @@ C320-C323,C328-C329|Larynx|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carcinom
 C320-C323,C328-C329|Larynx|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C320-C323,C328-C329|Larynx|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C320-C323,C328-C329|Larynx|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C320-C323,C328-C329|Larynx|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C320-C323,C328-C329|Larynx|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C320-C323,C328-C329|Larynx|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C320-C323,C328-C329|Larynx|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -4591,7 +4604,9 @@ C339|Trachea|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C339|Trachea|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C339|Trachea|804|Non_Small_Cell_Carcinoma|8046/2|Lung_Adenocarcinoma
 C339|Trachea|804|Non_Small_Cell_Carcinoma|8046/3|Non_Small_Cell_Carcinoma
+C339|Trachea|804|Non_Small_Cell_Carcinoma|8046/6|Metastatic_Lung_Carcinoma
 C339|Trachea|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C339|Trachea|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C339|Trachea|804|Small_Cell_Carcinoma|8042/3|Oat_Cell
 C339|Trachea|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C339|Trachea|804|Small_Cell_Carcinoma|8044/3|Small_Cell_Intermediate_Cell_Carcinoma
@@ -4669,7 +4684,9 @@ C340-C343,C348-C349|Bronchus|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Car
 C340-C343,C348-C349|Bronchus|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C340-C343,C348-C349|Bronchus|804|Non_Small_Cell_Carcinoma|8046/2|Lung_Adenocarcinoma
 C340-C343,C348-C349|Bronchus|804|Non_Small_Cell_Carcinoma|8046/3|Non_Small_Cell_Carcinoma
+C340-C343,C348-C349|Bronchus|804|Non_Small_Cell_Carcinoma|8046/6|Metastatic_Lung_Carcinoma
 C340-C343,C348-C349|Bronchus|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C340-C343,C348-C349|Bronchus|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C340-C343,C348-C349|Bronchus|804|Small_Cell_Carcinoma|8042/3|Small_Cell_Carcinoma
 C340-C343,C348-C349|Bronchus|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C340-C343,C348-C349|Bronchus|804|Small_Cell_Carcinoma|8044/3|Small_Cell_Intermediate_Cell_Carcinoma
@@ -4713,7 +4730,7 @@ C340-C343,C348-C349|Bronchus|824|Atypical_Carcinoid_Tumor|8242/3|Enterochromaffi
 C340-C343,C348-C349|Bronchus|824|Atypical_Carcinoid_Tumor|8243/3|Goblet_Cell_Carcinoid
 C340-C343,C348-C349|Bronchus|824|Atypical_Carcinoid_Tumor|8244/3|Adenocarcinoid_Tumor
 C340-C343,C348-C349|Bronchus|824|Atypical_Carcinoid_Tumor|8245/3|Adenocarcinoid_Tumor
-C340-C343,C348-C349|Bronchus|824|Atypical_Carcinoid_Tumor|8246/3|Carcinoma__Neuroendocrine
+C340-C343,C348-C349|Bronchus|824|Atypical_Carcinoid_Tumor|8246/3|Neuroendocrine_Neoplasm
 C340-C343,C348-C349|Bronchus|824|Atypical_Carcinoid_Tumor|8249/3|Atypical_Carcinoid_Tumor
 C340-C343,C348-C349|Bronchus|825|Bronchioloalveolar_Adenocarcinoma|8250/2|Non_mucinous_Adenocarcinoma_In_Situ
 C340-C343,C348-C349|Bronchus|825|Bronchioloalveolar_Adenocarcinoma|8250/3|Lepidic_Predominant_Adenocarcinoma
@@ -4744,7 +4761,7 @@ C340-C343,C348-C349|Bronchus|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarc
 C340-C343,C348-C349|Bronchus|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C340-C343,C348-C349|Bronchus|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C340-C343,C348-C349|Bronchus|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C340-C343,C348-C349|Bronchus|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C340-C343,C348-C349|Bronchus|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C340-C343,C348-C349|Bronchus|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C340-C343,C348-C349|Bronchus|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C340-C343,C348-C349|Bronchus|871|Malignant_Glomus_Tumor|8714/3|Malignant_PEComa
@@ -4881,7 +4898,7 @@ C379|Thymus_Gland|824|Atypical_Carcinoid_Tumor|8242/3|Enterochromaffin_like_Cell
 C379|Thymus_Gland|824|Atypical_Carcinoid_Tumor|8243/3|Goblet_Cell_Carcinoid
 C379|Thymus_Gland|824|Atypical_Carcinoid_Tumor|8244/3|Adenocarcinoid_Tumor
 C379|Thymus_Gland|824|Atypical_Carcinoid_Tumor|8245/3|Adenocarcinoid_Tumor
-C379|Thymus_Gland|824|Atypical_Carcinoid_Tumor|8246/3|Carcinoma__Neuroendocrine
+C379|Thymus_Gland|824|Atypical_Carcinoid_Tumor|8246/3|Neuroendocrine_Neoplasm
 C379|Thymus_Gland|824|Atypical_Carcinoid_Tumor|8249/3|Atypical_Carcinoid_Tumor
 C379|Thymus_Gland|858|Malignant_Thymoma|8580/3|Malignant_Thymoma
 C379|Thymus_Gland|858|Malignant_Thymoma|8581/3|Malignant_Type_A_Thymoma
@@ -5291,6 +5308,7 @@ C390,C398-C399|Respiratory_System|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_C
 C390,C398-C399|Respiratory_System|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C390,C398-C399|Respiratory_System|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C390,C398-C399|Respiratory_System|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C390,C398-C399|Respiratory_System|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C390,C398-C399|Respiratory_System|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C390,C398-C399|Respiratory_System|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C390,C398-C399|Respiratory_System|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -5330,7 +5348,7 @@ C390,C398-C399|Respiratory_System|824|Atypical_Carcinoid_Tumor|8242/3|Enterochro
 C390,C398-C399|Respiratory_System|824|Atypical_Carcinoid_Tumor|8243/3|Goblet_Cell_Carcinoid
 C390,C398-C399|Respiratory_System|824|Atypical_Carcinoid_Tumor|8244/3|Adenocarcinoid_Tumor
 C390,C398-C399|Respiratory_System|824|Atypical_Carcinoid_Tumor|8245/3|Adenocarcinoid_Tumor
-C390,C398-C399|Respiratory_System|824|Atypical_Carcinoid_Tumor|8246/3|Carcinoma__Neuroendocrine
+C390,C398-C399|Respiratory_System|824|Atypical_Carcinoid_Tumor|8246/3|Neuroendocrine_Neoplasm
 C390,C398-C399|Respiratory_System|824|Atypical_Carcinoid_Tumor|8249/3|Atypical_Carcinoid_Tumor
 C390,C398-C399|Respiratory_System|825|Bronchioloalveolar_Adenocarcinoma|8250/3|Lepidic_Predominant_Adenocarcinoma
 C390,C398-C399|Respiratory_System|825|Bronchioloalveolar_Adenocarcinoma|8251/3|Bronchioloalveolar_Adenocarcinoma
@@ -5360,7 +5378,7 @@ C390,C398-C399|Respiratory_System|857|Adenocarcinoma_With_Metaplasia|8570/3|Aden
 C390,C398-C399|Respiratory_System|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C390,C398-C399|Respiratory_System|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C390,C398-C399|Respiratory_System|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C390,C398-C399|Respiratory_System|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C390,C398-C399|Respiratory_System|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C390,C398-C399|Respiratory_System|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C390,C398-C399|Respiratory_System|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C390,C398-C399|Respiratory_System|880|Sarcoma|8800/3|Sarcoma
@@ -6101,7 +6119,7 @@ C440-C449|Skin|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcinoma_With_Squ
 C440-C449|Skin|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C440-C449|Skin|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C440-C449|Skin|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C440-C449|Skin|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C440-C449|Skin|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C440-C449|Skin|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C440-C449|Skin|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
 C440-C449|Skin|872|Melanoma|8720/3|Melanoma
@@ -6537,6 +6555,7 @@ C500-C506,C508-C509|Breast|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carcinom
 C500-C506,C508-C509|Breast|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C500-C506,C508-C509|Breast|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C500-C506,C508-C509|Breast|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C500-C506,C508-C509|Breast|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C500-C506,C508-C509|Breast|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C500-C506,C508-C509|Breast|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C500-C506,C508-C509|Breast|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -6621,7 +6640,7 @@ C500-C506,C508-C509|Breast|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcin
 C500-C506,C508-C509|Breast|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C500-C506,C508-C509|Breast|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C500-C506,C508-C509|Breast|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C500-C506,C508-C509|Breast|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C500-C506,C508-C509|Breast|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C500-C506,C508-C509|Breast|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C500-C506,C508-C509|Breast|880|Sarcoma|8800/3|Sarcoma
 C500-C506,C508-C509|Breast|880|Sarcoma|8801/3|Spindle_Cell_Sarcoma
@@ -6814,7 +6833,7 @@ C510-C512,C518, C529|Vagina|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarci
 C510-C512,C518, C529|Vagina|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C510-C512,C518, C529|Vagina|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C510-C512,C518, C529|Vagina|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C510-C512,C518, C529|Vagina|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C510-C512,C518, C529|Vagina|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C510-C512,C518, C529|Vagina|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C510-C512,C518, C529|Vagina|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C510-C512,C518, C529|Vagina|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
@@ -6966,6 +6985,7 @@ C519|Vulva|802|Carcinoma|8020/3|Undifferentiated_Carcinoma
 C519|Vulva|802|Carcinoma|8021/3|Anaplastic_Carcinoma_DNE
 C519|Vulva|802|Carcinoma|8022/3|Pleomorphic_Carcinoma
 C519|Vulva|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C519|Vulva|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C519|Vulva|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C519|Vulva|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
 C519|Vulva|805|Papillary_Carcinoma|8051/3|Verrucous_Carcinoma
@@ -7041,7 +7061,7 @@ C519|Vulva|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcinoma_With_Squamou
 C519|Vulva|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C519|Vulva|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C519|Vulva|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C519|Vulva|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C519|Vulva|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C519|Vulva|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C519|Vulva|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
 C519|Vulva|872|Melanoma|8720/3|Melanoma
@@ -7199,6 +7219,7 @@ C530-C531,C538-C539|Cervix_Uteri|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Ca
 C530-C531,C538-C539|Cervix_Uteri|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C530-C531,C538-C539|Cervix_Uteri|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C530-C531,C538-C539|Cervix_Uteri|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C530-C531,C538-C539|Cervix_Uteri|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C530-C531,C538-C539|Cervix_Uteri|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C530-C531,C538-C539|Cervix_Uteri|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C530-C531,C538-C539|Cervix_Uteri|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -7257,7 +7278,7 @@ C530-C531,C538-C539|Cervix_Uteri|857|Adenocarcinoma_With_Metaplasia|8570/3|Adeno
 C530-C531,C538-C539|Cervix_Uteri|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C530-C531,C538-C539|Cervix_Uteri|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C530-C531,C538-C539|Cervix_Uteri|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C530-C531,C538-C539|Cervix_Uteri|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C530-C531,C538-C539|Cervix_Uteri|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C530-C531,C538-C539|Cervix_Uteri|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C530-C531,C538-C539|Cervix_Uteri|880|Sarcoma|8800/3|Sarcoma
 C530-C531,C538-C539|Cervix_Uteri|880|Sarcoma|8801/3|Spindle_Cell_Sarcoma
@@ -7380,6 +7401,7 @@ C540-C543,C548-C549|Corpus_Uteri|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Ca
 C540-C543,C548-C549|Corpus_Uteri|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C540-C543,C548-C549|Corpus_Uteri|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C540-C543,C548-C549|Corpus_Uteri|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C540-C543,C548-C549|Corpus_Uteri|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C540-C543,C548-C549|Corpus_Uteri|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C540-C543,C548-C549|Corpus_Uteri|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C540-C543,C548-C549|Corpus_Uteri|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -7446,7 +7468,7 @@ C540-C543,C548-C549|Corpus_Uteri|857|Adenocarcinoma_With_Metaplasia|8570/3|Adeno
 C540-C543,C548-C549|Corpus_Uteri|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C540-C543,C548-C549|Corpus_Uteri|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C540-C543,C548-C549|Corpus_Uteri|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C540-C543,C548-C549|Corpus_Uteri|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C540-C543,C548-C549|Corpus_Uteri|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C540-C543,C548-C549|Corpus_Uteri|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C540-C543,C548-C549|Corpus_Uteri|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C540-C543,C548-C549|Corpus_Uteri|880|Sarcoma|8800/3|Sarcoma
@@ -7571,6 +7593,7 @@ C559|Uterus|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carcinoma
 C559|Uterus|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C559|Uterus|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C559|Uterus|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C559|Uterus|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C559|Uterus|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C559|Uterus|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C559|Uterus|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -7638,7 +7661,7 @@ C559|Uterus|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcinoma_With_Squamo
 C559|Uterus|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C559|Uterus|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C559|Uterus|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C559|Uterus|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C559|Uterus|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C559|Uterus|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C559|Uterus|857|Adenocarcinoma_With_Metaplasia|8576/3|Hepatoid_Adenocarcinoma
 C559|Uterus|880|Sarcoma|8800/3|Sarcoma
@@ -7766,6 +7789,7 @@ C569|Ovary|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carcinoma
 C569|Ovary|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C569|Ovary|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C569|Ovary|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C569|Ovary|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C569|Ovary|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C569|Ovary|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
 C569|Ovary|805|Papillary_Carcinoma|8051/3|Verrucous_Carcinoma
@@ -7795,7 +7819,7 @@ C569|Ovary|824|Atypical_Carcinoid_Tumor|8242/3|Enterochromaffin_like_Cell_Carcin
 C569|Ovary|824|Atypical_Carcinoid_Tumor|8243/3|Goblet_Cell_Carcinoid
 C569|Ovary|824|Atypical_Carcinoid_Tumor|8244/3|Adenocarcinoid_Tumor
 C569|Ovary|824|Atypical_Carcinoid_Tumor|8245/3|Adenocarcinoid_Tumor
-C569|Ovary|824|Atypical_Carcinoid_Tumor|8246/3|Carcinoma__Neuroendocrine
+C569|Ovary|824|Atypical_Carcinoid_Tumor|8246/3|Neuroendocrine_Neoplasm
 C569|Ovary|824|Atypical_Carcinoid_Tumor|8249/3|Atypical_Carcinoid_Tumor
 C569|Ovary|825|Bronchioloalveolar_Adenocarcinoma|8255/3|Adenocarcinoma_With_Mixed_Subtypes
 C569|Ovary|826|Papillary_Adenocarcinoma|8260/3|Papillary_Adenocarcinoma
@@ -7839,7 +7863,7 @@ C569|Ovary|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcinoma_With_Squamou
 C569|Ovary|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C569|Ovary|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C569|Ovary|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C569|Ovary|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C569|Ovary|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C569|Ovary|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C569|Ovary|859|Ovarian_Sex_Cord_Stromal_Tumor|8590/3|Ovarian_Sex_Cord_Stromal_Tumor
 C569|Ovary|860|Malignant_Ovarian_Thecoma|8600/3|Malignant_Ovarian_Thecoma
@@ -8025,7 +8049,7 @@ C570|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcinoma_Wit
 C570|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C570|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C570|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C570|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C570|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C570|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C570|Fallopian_Tube|880|Sarcoma|8800/3|Sarcoma
 C570|Fallopian_Tube|880|Sarcoma|8801/3|Spindle_Cell_Sarcoma
@@ -8178,7 +8202,7 @@ C571-C574,C577-C579|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8570/3|Ade
 C571-C574,C577-C579|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C571-C574,C577-C579|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C571-C574,C577-C579|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C571-C574,C577-C579|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C571-C574,C577-C579|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C571-C574,C577-C579|Fallopian_Tube|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C571-C574,C577-C579|Fallopian_Tube|880|Sarcoma|8800/3|Sarcoma
 C571-C574,C577-C579|Fallopian_Tube|880|Sarcoma|8801/3|Spindle_Cell_Sarcoma
@@ -8353,7 +8377,7 @@ C600-C602,C608-C609|Penis|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcino
 C600-C602,C608-C609|Penis|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C600-C602,C608-C609|Penis|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C600-C602,C608-C609|Penis|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C600-C602,C608-C609|Penis|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C600-C602,C608-C609|Penis|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C600-C602,C608-C609|Penis|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C600-C602,C608-C609|Penis|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
 C600-C602,C608-C609|Penis|872|Melanoma|8720/3|Melanoma
@@ -8443,6 +8467,7 @@ C619|Prostate|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carcinoma
 C619|Prostate|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C619|Prostate|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C619|Prostate|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C619|Prostate|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C619|Prostate|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C619|Prostate|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C619|Prostate|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -8507,7 +8532,7 @@ C619|Prostate|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcinoma_With_Squa
 C619|Prostate|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C619|Prostate|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C619|Prostate|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C619|Prostate|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C619|Prostate|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C619|Prostate|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C619|Prostate|880|Sarcoma|8800/3|Sarcoma
 C619|Prostate|880|Sarcoma|8801/3|Spindle_Cell_Sarcoma
@@ -8746,7 +8771,7 @@ C630, C631, C637-C639|Spermatic_Cord|857|Adenocarcinoma_With_Metaplasia|8570/3|A
 C630, C631, C637-C639|Spermatic_Cord|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C630, C631, C637-C639|Spermatic_Cord|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C630, C631, C637-C639|Spermatic_Cord|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C630, C631, C637-C639|Spermatic_Cord|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C630, C631, C637-C639|Spermatic_Cord|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C630, C631, C637-C639|Spermatic_Cord|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C630, C631, C637-C639|Spermatic_Cord|880|Sarcoma|8800/3|Sarcoma
 C630, C631, C637-C639|Spermatic_Cord|880|Sarcoma|8801/3|Spindle_Cell_Sarcoma
@@ -8860,7 +8885,7 @@ C632|Scrotum|857|Adenocarcinoma_With_Metaplasia|8570/3|Adenocarcinoma_With_Squam
 C632|Scrotum|857|Adenocarcinoma_With_Metaplasia|8571/3|Adenocarcinoma_With_Osseous_Metaplasia
 C632|Scrotum|857|Adenocarcinoma_With_Metaplasia|8572/3|Adenocarcinoma_Spindle_Cell
 C632|Scrotum|857|Adenocarcinoma_With_Metaplasia|8573/3|Adenocarcinoma_With_Apocrine_Metaplasia
-C632|Scrotum|857|Adenocarcinoma_With_Metaplasia|8574/3|Carcinoma__Neuroendocrine
+C632|Scrotum|857|Adenocarcinoma_With_Metaplasia|8574/3|Neuroendocrine_Neoplasm
 C632|Scrotum|857|Adenocarcinoma_With_Metaplasia|8575/3|Metaplastic_Carcinoma
 C632|Scrotum|872|Melanoma|8720/2|Stage_0_Skin_Melanoma
 C632|Scrotum|872|Melanoma|8720/3|Melanoma
@@ -8950,6 +8975,7 @@ C649|Kidney|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carcinoma
 C649|Kidney|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C649|Kidney|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C649|Kidney|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C649|Kidney|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C649|Kidney|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C649|Kidney|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C649|Kidney|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -9141,6 +9167,7 @@ C659, C669|Renal_Pelvis|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carcinoma
 C659, C669|Renal_Pelvis|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C659, C669|Renal_Pelvis|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C659, C669|Renal_Pelvis|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C659, C669|Renal_Pelvis|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C659, C669|Renal_Pelvis|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C659, C669|Renal_Pelvis|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C659, C669|Renal_Pelvis|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -9324,6 +9351,7 @@ C670-C679|Urinary_Bladder|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carcinoma
 C670-C679|Urinary_Bladder|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C670-C679|Urinary_Bladder|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C670-C679|Urinary_Bladder|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C670-C679|Urinary_Bladder|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C670-C679|Urinary_Bladder|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C670-C679|Urinary_Bladder|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C670-C679|Urinary_Bladder|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -9493,6 +9521,7 @@ C680-C681,C688-C689|Genitourinary_System|803|Sarcomatoid_Carcinoma|8033/3|Sarcom
 C680-C681,C688-C689|Genitourinary_System|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C680-C681,C688-C689|Genitourinary_System|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C680-C681,C688-C689|Genitourinary_System|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C680-C681,C688-C689|Genitourinary_System|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C680-C681,C688-C689|Genitourinary_System|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C680-C681,C688-C689|Genitourinary_System|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C680-C681,C688-C689|Genitourinary_System|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma
@@ -10975,6 +11004,7 @@ C739|Thyroid_Gland|803|Sarcomatoid_Carcinoma|8033/3|Sarcomatoid_Carcinoma
 C739|Thyroid_Gland|803|Sarcomatoid_Carcinoma|8034/3|Polygonal_Cell_Carcinoma
 C739|Thyroid_Gland|803|Sarcomatoid_Carcinoma|8035/3|Neoplastic_Osteoclast_Like_Giant_Cell
 C739|Thyroid_Gland|804|Small_Cell_Carcinoma|8041/3|Small_Cell_Carcinoma
+C739|Thyroid_Gland|804|Small_Cell_Carcinoma|8041/6|Metastatic_Small_Cell_Carcinoma
 C739|Thyroid_Gland|804|Small_Cell_Carcinoma|8043/3|Small_Cell_Carcinoma__Fusiform_Cell
 C739|Thyroid_Gland|805|Papillary_Carcinoma|8050/2|Papillary_Carcinoma_In_Situ
 C739|Thyroid_Gland|805|Papillary_Carcinoma|8050/3|Papillary_Carcinoma

@@ -7,7 +7,7 @@ package org.healthnlp.deepphe.core.ae
 // Connect to local ontology graph embedded db.
 add Neo4jEmbeddedConnectAe
 
-//  Discover sections.
+//  Discover sections.   TODO try CrSectionizer instead, which will trim any "REFERENCES:" from the report.
 package org.healthnlp.deepphe.nlp.ae.section
 add Sectionizer
 
@@ -20,7 +20,10 @@ add MrsDrSentenceJoiner
 //  Use the DeepPhe paragraph expressions for paragraph discovery.
 set PARAGRAPH_TYPES_PATH=org/healthnlp/deepphe/paragraph/ParagraphRegex.bsv
 //  Discover paragraphs.
-add ParagraphAnnotator
+//add ParagraphAnnotator
+add ParagraphFinder
+
+add WtfSectionFixer
 
 //  Fix sentences so that no sentence spans across two or more paragraphs.
 add ParagraphSentenceFixer
@@ -48,7 +51,17 @@ add DefaultJCasTermAnnotator
 add MassFilter
 
 //  Assign such as negation and uncertainty using machine-learning models.
-load WindowedAttributeCleartkSubPipe
+//load WindowedAttributeCleartkSubPipe
+
+// Add the cleartk package for cleartk class lookups
+package org.apache.ctakes.assertion.medfacts.cleartk
+package org.apache.ctakes.assertion.medfacts.cleartk.windowed
+
+//  Assign such as negation and uncertainty using machine-learning models.
+// Add the cleartk attribute engines, logging for them as a block
+add StartFinishLogger LOGGER_NAME=CleartkAnalysisEngine LOGGER_TASK="Assigning Attributes" IS_START=true
+addDescription PolarityCleartkAnalysisEngineWindowed
+addDescription UncertaintyCleartkAnalysisEngineWindowed
 
 //  Assign such as negation and uncertainty using context.
 set MaxRightScopeSize=12
@@ -71,13 +84,15 @@ add SubjectSectionFixer
 
 //add PsaFinder
 
-add GleasonFinder
+//add GleasonFinder
 
 //add Ki67Finder
 
 add BiomarkerFinder
+//add division.BiomarkerFinder
 
 add GradeFinder
+//add division.GradeFinder
 
 // Adjust Subjects for entities
 add SubjectAdjuster
@@ -93,5 +108,5 @@ add InDocUriRelationFinder
 add NonGraphedRelationFinder
 
 add JsonNodeCreator
-add html.HtmlTextWriter OutputDirectory=C:/Spiffy/output/dphe_output/dphe_5/04_21_2021/kcr/combined SubDirectory=HTML
-add pretty.plaintext.PrettyTextWriterFit OutputDirectory=C:/Spiffy/output/dphe_output/dphe_5/04_21_2021/kcr/combined SubDirectory=TEXT
+//add html.HtmlTextWriter OutputDirectory=C:/Spiffy/output/dphe_output/dphe_5/04_21_2021/kcr/combined SubDirectory=HTML
+//add pretty.plaintext.PrettyTextWriterFit OutputDirectory=C:/Spiffy/output/dphe_output/dphe_5/04_21_2021/kcr/combined SubDirectory=TEXT

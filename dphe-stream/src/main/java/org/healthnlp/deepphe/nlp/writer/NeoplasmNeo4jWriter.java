@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
+import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.healthnlp.deepphe.neo4j.driver.DriverConnection;
@@ -20,7 +21,7 @@ import org.healthnlp.deepphe.neo4j.node.PatientSummary;
 import org.healthnlp.deepphe.neo4j.util.JsonUtil;
 import org.healthnlp.deepphe.node.PatientNodeStore;
 import org.healthnlp.deepphe.node.PatientSummaryNodeStore;
-import org.healthnlp.deepphe.summary.engine.SummaryEngine;
+import org.healthnlp.deepphe.summary.engine.DpheXnSummaryEngine;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.Transaction;
@@ -44,6 +45,17 @@ import java.util.stream.Collectors;
 public class NeoplasmNeo4jWriter extends JCasAnnotator_ImplBase {
 
    static private final Logger LOGGER = Logger.getLogger( "NeoplasmNeo4jWriter" );
+
+   static public final String OVERWRITE_PARAM = "Overwrite";
+   static public final String OVERWRITE_DESC
+         = "Overwrite Patient Strategy.  Always / NewDoc / Never.  Default is NewDoc.";
+   @ConfigurationParameter(
+         name = OVERWRITE_PARAM,
+         description = OVERWRITE_DESC,
+         mandatory = false,
+         defaultValue = "NewDoc"
+   )
+   private String _overwrite;
 
 
    /**
@@ -96,7 +108,7 @@ public class NeoplasmNeo4jWriter extends JCasAnnotator_ImplBase {
          = a -> {  a.setConfidenceFeatures( Collections.emptyList() );
          return a; };
 
-   static private void writePatient( final Patient patient ) throws AnalysisEngineProcessException {
+   private void writePatient( final Patient patient ) throws AnalysisEngineProcessException {
       final String patientId = patient.getId();
 //      final String patientId = SourceMetadataUtil.getPatientIdentifier( jCas );
       LOGGER.info( "Writing " + patientId + " to Neo4j Database " + DriverConnection.getInstance().getUrl() );
@@ -105,11 +117,17 @@ public class NeoplasmNeo4jWriter extends JCasAnnotator_ImplBase {
          LOGGER.info( "Empty Driver.  Writing to Neo4j will be skipped." );
          return;
       }
+      final String callName = _overwrite.equalsIgnoreCase( "Always" )
+                              ? "setPatientSummary"
+                              : _overwrite.equalsIgnoreCase( "Never" )
+                                ? "appendPatientSummary"
+                                : "updatePatientSummary";
       // Somebody else may have already created the patient summary.
       PatientSummary patientSummary = PatientSummaryNodeStore.getInstance().get( patientId );
       if ( patientSummary == null ) {
          // Create PatientSummary
-         patientSummary = SummaryEngine.createPatientSummary( patient );
+//         patientSummary = SummaryEngine.createPatientSummary( patient );
+         patientSummary =  DpheXnSummaryEngine.createPatientSummary( patient );
          // Add the summary just in case some other consumer can utilize it.  e.g. eval file writer.
          PatientSummaryNodeStore.getInstance().add( patientId, patientSummary );
       }
@@ -129,6 +147,7 @@ public class NeoplasmNeo4jWriter extends JCasAnnotator_ImplBase {
       try ( Session session = driver.session() ) {
          try ( Transaction tx = session.beginTransaction() ) {
             tx.run( "CALL deepphe.addPatientSummary(\"" + neo4jOkJson + "\")" );
+//            tx.run( "CALL deepphe." + callName + "(\"" + neo4jOkJson + "\")" );
             tx.commit();
          }
       } catch ( Exception e ) {

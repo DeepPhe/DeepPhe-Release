@@ -19,6 +19,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASRuntimeException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
+import org.healthnlp.deepphe.constant.CuiConstants;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -143,6 +144,15 @@ public class ByTuiTermConsumer extends AbstractTermConsumer {
                = PrecisionTermConsumer.createPreciseTerms( copiedTerms );
          final CollectionMap<TextSpan, Long, ? extends Collection<Long>> findingSpanCuis
                = groupedTuiCuis.get( SemanticTui.T184 );
+         // Remove Finding_Of_Grade
+         final Collection<TextSpan> t184removals = new HashSet<>();
+         for ( Map.Entry<TextSpan, ? extends Collection<Long>> t184entry : findingSpanCuis.entrySet() ) {
+            t184entry.getValue().removeAll( CuiConstants.getCancerGrades() );
+            if ( t184entry.getValue().isEmpty() ) {
+               t184removals.add( t184entry.getKey() );
+            }
+         }
+         findingSpanCuis.keySet().removeAll( t184removals );
          final Collection<TextSpan> findingSpans = new ArrayList<>( findingSpanCuis.keySet() );
          // Clean up findings that are also within anatomical sites
          for ( TextSpan span : findingSpans ) {

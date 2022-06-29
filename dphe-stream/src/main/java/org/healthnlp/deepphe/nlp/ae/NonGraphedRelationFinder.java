@@ -225,6 +225,9 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
          final boolean isReview = SectionType.ReviewSystems.isThisSectionType( sectionParagraphs.getKey() );
          final boolean isFamilyHistory = SectionType.FamilyHistory.isThisSectionType( sectionParagraphs.getKey() );
          for ( Paragraph paragraph : sectionParagraphs.getValue() ) {
+            if ( paragraph.getBegin() < 0 || paragraph.getEnd() <= 0 ) {
+               continue;
+            }
             final Collection<IdentifiedAnnotation> annotations = paragraphAnnotationMap.get( paragraph );
             final List<IdentifiedAnnotation> massNeoplasmList
                   = Neo4jOntologyConceptUtil.getUriAnnotationsByUris( annotations, massNeoplasmUris ).values().stream()
@@ -603,6 +606,19 @@ final public class NonGraphedRelationFinder extends JCasAnnotator_ImplBase {
          final IdentifiedAnnotation tnm = entry.getKey();
          final String uri = Neo4jOntologyConceptUtil.getUri( tnm );
          entry.getValue().forEach( t -> RelationUtil.createRelation( jCas, t, tnm, getTnmRelation( uri ) ) );
+         unusedTnms.remove( tnm );
+      }
+      if ( unusedTnms.isEmpty() ) {
+         return;
+      }
+      // Added 4/11/2022 for tnm that appear at the end of the document, possibly alone in a section.
+      final Map<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> reverseTnmMap
+            = RelationUtil.createSourceTargetMap( allNeoplasmMasses, unusedTnms, false );
+      for ( Map.Entry<IdentifiedAnnotation, Collection<IdentifiedAnnotation>> entry : reverseTnmMap.entrySet() ) {
+         for ( IdentifiedAnnotation tnm : entry.getValue() ) {
+            final String uri = Neo4jOntologyConceptUtil.getUri( tnm );
+            RelationUtil.createRelation( jCas, entry.getKey(), tnm, getTnmRelation( uri ) );
+         }
       }
    }
 

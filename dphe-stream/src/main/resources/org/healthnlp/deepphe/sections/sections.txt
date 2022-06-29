@@ -55,7 +55,7 @@ End of Impression,END OF IMPRESSION
 Examination,EXAMINATION PERFORMED,EXAMINATION,EXAMS,Physical Examination,PHYSICAL EXAMINATION,Physical Exam
 External Beam Radiation Therapy,External Beam Radiation Therapy
 Family Medical History,Family History,FAMILY HISTORY
-Final Diagnosis,\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\* FINAL,Addendum Diagnosis,Diagnosis,DIAGNOSIS,Diagnosis/Indication,F I N A L P A T H O L O G I C D I A G N,FINAL PATHOLOGIC DIAGNOSIS,FINAL PATHOLOGICAL DIAGNOSIS,FINAL DIAGNOSIS,final diagnosis,GROSS AND MICROSCOPIC DIAGNOSIS,GROSS AND MICROSCOPIC PATHOLOGIC DIAGNOSIS,FINAL DX,FinalDiagnosis,FORMAL DX,ADDENDUM FINAL DX,FINAL DX: (Continued),AddendumDiagnosis,Addendum Diagnosis,ClinicalDignosis,ClinicalDiagnosis,ADDENDUM DIAGNOSIS
+Final Diagnosis,\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\* FINAL,Addendum Diagnosis,Diagnosis,DIAGNOSIS,Diagnosis/Indication,F I N A L P A T H O L O G I C D I A G N,FINAL PATHOLOGIC DIAGNOSIS,FINAL PATHOLOGICAL DIAGNOSIS,FINAL DIAGNOSIS,final diagnosis,GROSS AND MICROSCOPIC DIAGNOSIS,GROSS AND MICROSCOPIC PATHOLOGIC DIAGNOSIS,FINAL DX,FinalDiagnosis,FORMAL DX,ADDENDUM FINAL DX,FINAL DX: (Continued),AddendumDiagnosis,Addendum Diagnosis,ClinicalDignosis,ClinicalDiagnosis,ADDENDUM DIAGNOSIS,PATHOLOGIC DIAGNOSIS
 Final Report,Final Report
 Findings,FINDINGS,PROCEDURE AND FINDINGS,SUMMATION OF FINDINGS,ADDITIONAL PATHOLOGIC FINDINGS,OPERATIVE FINDINGS
 Follow-Up,Follow-Up
@@ -86,7 +86,7 @@ Microscopic,MICROSCOPIC
 Microscopic Desc,MICROSCOPIC DESCRIPTION,MICROSCOPIC DESCRIPTION/COMMENT,Microscopic Description,MicroscopicDescription,MICROSCOPIC DESC
 Microscopic Path,Micro Pathology,Microscopic Pathology
 Nature of Specimen,Nature of Specimen
-Note,NOTE
+# Note,NOTE
 Objective,OBJECTIVE,O:
 Operation,OPERATION,Title of Operation
 Operators,OPERATORS

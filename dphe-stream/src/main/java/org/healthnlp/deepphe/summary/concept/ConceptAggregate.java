@@ -301,6 +301,12 @@ public interface ConceptAggregate {
     */
    void addRelated( final String type, ConceptAggregate related );
 
+   /**
+    * As much as I hated to do it, I removed the standard of immutable CIs in order to better create ci relations
+    * @param related concept instances related to this concept instance and the name of the relation
+    */
+   void addRelated( final String type, Collection<ConceptAggregate> related );
+
 
    default Collection<ConceptAggregate> getRelated( final String type ) {
       final Collection<ConceptAggregate> related = getRelatedConceptMap().get( type );
@@ -549,8 +555,7 @@ public interface ConceptAggregate {
 
 
    @Immutable
-   ConceptAggregate
-         NULL_INSTANCE = new ConceptAggregate() {
+   ConceptAggregate NULL_AGGREGATE = new ConceptAggregate() {
       @Override
       public String getUri() {
          return UriConstants.UNKNOWN;
@@ -613,8 +618,12 @@ public interface ConceptAggregate {
       }
 
       @Override
+      public void addRelated( final String type, final Collection<ConceptAggregate> related ) {
+      }
+
+      @Override
       public String getId() {
-         return null;
+         return "NULL_AGGREGATE";
       }
    };
 

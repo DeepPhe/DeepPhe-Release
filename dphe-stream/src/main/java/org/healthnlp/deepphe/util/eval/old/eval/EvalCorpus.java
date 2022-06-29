@@ -47,7 +47,7 @@ final class EvalCorpus extends AbstractEvalObject {
             double fn = attributeFNs.computeIfAbsent( name, d -> 0d );
             final String gold = neoplasm.getGoldAttribute( name );
             final String system = neoplasm.getSystemAttribute( name );
-            final EvalUris evalUris = new EvalUris( gold, system );
+            final EvalUris evalUris = new EvalUris( name, gold, system );
             attributeTPs.put( name, tp + evalUris.getTP_() );
             attributeTNs.put( name, tn + evalUris.getTN_() );
             attributeFPs.put( name, fp + evalUris.getFP_() );

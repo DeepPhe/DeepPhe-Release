@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * dphe-cr
  * Run multiple docs and write output for scoring with the eval tool and output for features.
  */
 final public class EvalSummarizer {
@@ -37,6 +38,8 @@ final public class EvalSummarizer {
                          "behavior",
                          "laterality",
                          "grade",
+                          "stage",
+                          "t", "n", "m",
                           "ER_", "PR_", "HER2", "KI67", "BRCA1", "BRCA2", "ALK", "EGFR", "BRAF", "ROS1",
                           "PDL1", "MSI", "KRAS", "PSA", "PSA_EL" );
    static private final List<String> EVAL_ATTRIBUTE_NAMES
@@ -48,6 +51,8 @@ final public class EvalSummarizer {
                           "behavior",
                           "laterality",
                           "grade",
+                          "stage",
+                          "t", "n", "m",
                           "ER_", "PR_", "HER2", "KI67", "BRCA1", "BRCA2", "ALK", "EGFR", "BRAF", "ROS1",
                           "PDL1", "MSI", "KRAS", "PSA", "PSA_EL" );
 
@@ -82,7 +87,7 @@ final public class EvalSummarizer {
                .close();
 
       try ( Writer writer = new FileWriter( new File( debugDir, "EvalDebug.txt" ) ) ) {
-         writer.write( NeoplasmSummaryCreator.DEBUG_SB.toString() );
+         writer.write( NeoplasmSummaryCreator.getDebug() );
       } catch ( IOException ioE ) {
          LOGGER.error( ioE.getMessage() );
       }
@@ -137,7 +142,7 @@ final public class EvalSummarizer {
                                       .getId();
       for ( NeoplasmSummary neoplasm : summary.getNeoplasms() ) {
          writeEval( patientId, neoplasm, evalWriter );
-         writeFeatures( patientId, neoplasm, featureDir );
+//         writeFeatures( patientId, neoplasm, featureDir );
       }
       writeJson( summary, jsonDir );
    }

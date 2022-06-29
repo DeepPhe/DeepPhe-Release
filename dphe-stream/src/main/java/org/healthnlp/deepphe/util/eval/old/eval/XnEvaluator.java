@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.healthnlp.deepphe.EvalSummarizer.PATIENT_ID;
+import static org.healthnlp.deepphe.util.eval.old.eval.NaaccrSummaryReader.readPatientNames;
+
 
 /**
  * @author SPF , chip-nlp
@@ -21,10 +24,54 @@ public class XnEvaluator {
    static private final Logger LOGGER = Logger.getLogger( "XnEvaluator" );
 
 
+   static private final String GOLD_CANCER_ROOT =
+         "C:\\Spiffy\\data\\dphe_xn\\gold\\bsv\\cancer_gold_bsv\\cancer_gold_bsv\\bsv\\";
+   static private final String GOLD_TUMOR_ROOT =
+         "C:\\Spiffy\\data\\dphe_xn\\gold\\bsv\\cancer_gold_bsv\\tumor_gold_bsv\\bsv\\";
 
+   static private final String[] GOLD_CANCER_BRCA = {
+         "DeepPhe_brCa_Dev_Set_Phenotype_Annotations_GOLD_v3.bsv",
+         "DeepPhe_brCa_Train_Set_Phenotype_Annotations_GOLD_v3.bsv",
+         "DeepPhe_brCa_Test_Set_Phenotype_Annotations_GOLD_v3.bsv" };
+   static private final String[] GOLD_TUMOR_BRCA = {
+         "DeepPhe_brCa_Dev_Set_Phenotype_Annotations_GOLD_v3_tumor.bsv",
+         "DeepPhe_brCa_Train_Set_Phenotype_Annotations_GOLD_v3_tumor.bsv",
+         "DeepPhe_brCa_Test_Set_Phenotype_Annotations_GOLD_v3_tumor.bsv" };
 
+   static private final String[] GOLD_CANCER_OVCA = {
+         "DeepPhe_ovCa_Dev_Set_Phenotype_Annotations_GOLD_v4.bsv",
+         "DeepPhe_ovCa_Train_Set_Phenotype_Annotations_GOLD_v4.bsv",
+         "DeepPhe_ovCa_Test_Set_Phenotype_Annotations_GOLD_v4.bsv" };
+   static private final String[] GOLD_TUMOR_OVCA = {
+         "DeepPhe_ovCa_Dev_Set_Phenotype_Annotations_GOLD_v4_tumor.bsv",
+         "DeepPhe_ovCa_Train_Set_Phenotype_Annotations_GOLD_v4_tumor.bsv",
+         "DeepPhe_ovCa_Test_Set_Phenotype_Annotations_GOLD_v4_tumor.bsv" };
+
+   static private final String[] GOLD_CANCER_SKIN = {
+         "DeepPhe_melanoma_Dev_Set_Phenotype_Annotations_GOLD_v3.bsv",
+         "DeepPhe_melanoma_Train_Set_Phenotype_Annotations_GOLD_v3.bsv",
+         "DeepPhe_melanoma_Test_Set_Phenotype_Annotations_GOLD_v3.bsv" };
+   static private final String[] GOLD_TUMOR_SKIN = {
+         "DeepPhe_melanoma_Dev_Set_Phenotype_Annotations_GOLD_v3_tumor.bsv",
+//         "DeepPhe_melanoma_Train_Set_Phenotype_Annotations_GOLD_v3_tumor.bsv",
+         "DeepPhe_melanoma_Test_Set_Phenotype_Annotations_GOLD_v3_tumor.bsv" };
+
+   static private final String[] GOLD_CANCER_CRC = {
+         "DeepPhe_gold_Test_annotations_crc_v2.bsv" };
+   static private final String[] GOLD_TUMOR_CRC = {
+         "DeepPhe_gold_Test_annotations_crc_v2_tumor.bsv" };
 
    public static void main( final String... args ) {
+//      run( args );
+      for ( String gold : GOLD_CANCER_CRC ) {
+         run( GOLD_CANCER_ROOT+gold, args[ 1 ] );
+      }
+      for ( String gold : GOLD_TUMOR_CRC ) {
+         run( GOLD_TUMOR_ROOT+gold, args[ 2 ] );
+      }
+   }
+
+   static private void run( final String... args ) {
       if ( args == null || args.length < 2 ) {
          System.err.println( "Example: java XnEvaluator <gold_summary_file> <system_summary_file>" );
          System.exit( -1 );
@@ -66,18 +113,24 @@ public class XnEvaluator {
    }
 
    static private void scoreSystem( final String neoplasmType, final File goldFile, final File systemFile ) {
-      scoreSystem( neoplasmType, goldFile, systemFile, Collections.emptyList() );
+      scoreSystem( neoplasmType, goldFile, systemFile, new HashSet<>() );
    }
+
+
 
    static private void scoreSystem( final String neoplasmType, final File goldFile, final File systemFile,
                                     final Collection<String> patientNames ) {
       // Moved the * and - for required and scoring to NaaccrIcdoBsvWriter so that I don't have to keep changing it in gold
-      final List<String> systemProperties = NaaccrSummaryReader.readHeader( systemFile );
-      final Collection<String> requiredNames = NaaccrSummaryReader.getRequiredNames( systemProperties );
-      final Collection<String> scoringNames = NaaccrSummaryReader.getScoringNames( systemProperties );
-      final Map<String, Integer> systemIndices = NaaccrSummaryReader.mapNameIndices( systemProperties );
-      final List<String> goldProperties = NaaccrSummaryReader.readHeader( goldFile );
-      final Map<String, Integer> goldIndices = NaaccrSummaryReader.mapNameIndices( goldProperties );
+      final List<String> systemProperties = NaaccrSummaryReader.readColumnHeader( systemFile );
+      final Collection<String> requiredNames = NaaccrSummaryReader.getRequiredColumnNames( systemProperties );
+      final Collection<String> scoringNames = NaaccrSummaryReader.getScoringColumnNames( systemProperties );
+      final Map<String, Integer> systemIndices = NaaccrSummaryReader.mapColumnNameIndices( systemProperties );
+      final List<String> goldProperties = NaaccrSummaryReader.readColumnHeader( goldFile );
+      final Map<String, Integer> goldIndices = NaaccrSummaryReader.mapColumnNameIndices( goldProperties );
+      if ( patientNames.isEmpty() ) {
+         final int patientIndex = goldIndices.get( PATIENT_ID );
+         patientNames.addAll( readPatientNames( goldFile, patientIndex ) );
+      }
 
       final Map<String, Collection<NeoplasmSummary>> goldSummaries
             = NaaccrSummaryReader.readSummaries( goldFile, requiredNames, scoringNames, goldIndices, patientNames );

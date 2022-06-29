@@ -23,18 +23,28 @@ public class TumorContainer extends AbstractNeoplasmContainer {
 
    final public Collection<ConceptAggregate> _neoplasms = new HashSet<>();
    final private Map<String, Collection<String>> _relatedUris = new HashMap<>();
+   final private Map<String, Collection<String>> _allRelatedUris = new HashMap<>();
 
    public TumorContainer( final ConceptAggregate neoplasm ) {
       addNeoplasm( neoplasm );
    }
 
-   protected Collection<String> getRelatedUris( final String relationName ) {
-      final Collection<String> related = _relatedUris.get( relationName );
-      if ( related == null ) {
-         return Collections.emptyList();
-      }
-      return related;
+//   public TumorContainer( final ConceptAggregate... neoplasms ) {
+//      Arrays.stream( neoplasms ).forEach( this::addNeoplasm );
+//   }
+
+   public TumorContainer( final Collection<ConceptAggregate> neoplasms ) {
+      neoplasms.forEach( this::addNeoplasm );
    }
+
+   protected Collection<String> getRelatedUris( final String relationName ) {
+      return _relatedUris.getOrDefault( relationName, Collections.emptyList() );
+   }
+
+   protected Collection<String> getAllRelatedUris( final String relationName ) {
+      return _allRelatedUris.getOrDefault( relationName, Collections.emptyList() );
+   }
+
 
    public boolean isLocationMatch( final ConceptAggregate neoplasm ) {
       final Collection<String> neoplasmSiteUris = neoplasm.getRelatedSiteMainUris();
@@ -50,10 +60,17 @@ public class TumorContainer extends AbstractNeoplasmContainer {
 //         Finding_Has_Associated_Site,
 //         Finding_Has_Associated_Region,
 //         Finding_Has_Associated_Cavity
+
       final Collection<String> mySiteUris = getRelatedSiteUris( _relatedUris );
-      if ( neoplasmSiteUris.stream().anyMatch( mySiteUris::contains ) ) {
+//      if ( neoplasmSiteUris.stream().anyMatch( mySiteUris::contains ) ) {
+//         return true;
+//      }
+
+      final Collection<String> allMySiteUris = getRelatedSiteUris( _allRelatedUris );
+      if ( neoplasmSiteUris.stream().anyMatch( allMySiteUris::contains ) ) {
          return true;
       }
+
       if ( UriUtil.isUriBranchMatch( mySiteUris, neoplasmSiteUris ) ) {
          return true;
       }
@@ -99,6 +116,13 @@ public class TumorContainer extends AbstractNeoplasmContainer {
                                                          .collect( Collectors.toSet() );
          _relatedUris.computeIfAbsent( relation.getKey(), r -> new HashSet<>() )
                      .addAll( relationUris );
+         final Collection<String> allRelationUris = relation.getValue()
+                                                            .stream()
+                                                            .map( ConceptAggregate::getAllUris )
+                                                            .flatMap( Collection::stream )
+                                                            .collect( Collectors.toSet() );
+         _allRelatedUris.computeIfAbsent( relation.getKey(), r -> new HashSet<>() )
+                     .addAll( allRelationUris );
       }
    }
 

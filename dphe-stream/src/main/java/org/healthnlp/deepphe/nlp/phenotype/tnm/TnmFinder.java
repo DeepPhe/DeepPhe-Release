@@ -267,9 +267,14 @@ public enum TnmFinder {
          }
          final Matcher mMatcher = M_PATTERN.matcher( tnm );
          if ( mMatcher.find() ) {
-            tnms.add( new SimpleTnm( prefix,
-                  fullMatchStart + mMatcher.start() + pOffset,
-                  fullMatchStart + mMatcher.end(), tnm.substring( mMatcher.start(), mMatcher.end() ) ) );
+            if ( mMatcher.start() >= 2 && tnm.substring( mMatcher.start()-2, mMatcher.start()+2 ).equals( "N1mi" ) ) {
+               // do nothing
+            } else {
+               tnms.add( new SimpleTnm( prefix,
+                                        fullMatchStart + mMatcher.start() + pOffset,
+                                        fullMatchStart + mMatcher.end(),
+                                        tnm.substring( mMatcher.start(), mMatcher.end() ) ) );
+            }
          }
       }
       return tnms;

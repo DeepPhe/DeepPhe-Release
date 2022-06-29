@@ -71,9 +71,9 @@ public class AttributeInfoStore<V extends UriInfoVisitor, T extends CodeInfoStor
                               final Supplier<V> uriVisitorCreator,
                               final Supplier<T> codeInfoStoreCreator,
                               final Map<String,String> dependencies ) {
-      NeoplasmSummaryCreator.DEBUG_SB.append( "  AllUriStore\n" );
+      NeoplasmSummaryCreator.addDebug( "  AllUriStore\n" );
       _allUriStore = new AllUriInfoStore( neoplasms, uriVisitorCreator.get() );
-      NeoplasmSummaryCreator.DEBUG_SB.append( "  MainUriStore\n" );
+      NeoplasmSummaryCreator.addDebug( "  MainUriStore\n" );
       _mainUriStore = new MainUriInfoStore( neoplasms, _allUriStore, uriVisitorCreator.get() );
       _uriRootsMap = UriUtil.mapUriRoots( _allUriStore._uris );
       _concepts = uriVisitorCreator.get().getAttributeConcepts( neoplasms );
@@ -93,7 +93,7 @@ public class AttributeInfoStore<V extends UriInfoVisitor, T extends CodeInfoStor
 
       _concepts.stream()
                .map( AttributeInfoStore::toConceptText )
-               .forEach( NeoplasmSummaryCreator.DEBUG_SB::append );
+               .forEach( NeoplasmSummaryCreator::addDebug );
    }
 
    public void initCodeInfoStore( final Map<String,String> dependencies ) {

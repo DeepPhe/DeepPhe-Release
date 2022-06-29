@@ -255,7 +255,13 @@ final public class InDocUriRelationFinder extends JCasAnnotator_ImplBase {
             if ( uriAnnotationMap != null && uriAnnotationMap.size() > 1 ) {
                // Check to see if there are no locations OR there are only locations
                final Collection<String> locationUris = new HashSet<>( uriAnnotationMap.keySet() );
+//               NeoplasmSummaryCreator.addDebug( "original location uris "
+//                                                       + String.join( " , ", locationUris )
+//                                                       + "\n" );
                locationUris.retainAll( allLocationUris );
+//               NeoplasmSummaryCreator.addDebug( "trimmed location uris "
+//                                                       + String.join( " , ", locationUris )
+//                                                       + "\n" );
                if ( !locationUris.isEmpty() && locationUris.size() != uriAnnotationMap.size() ) {
                   locations.addAll(
                         createWindowLocations( jCas,
@@ -307,6 +313,12 @@ final public class InDocUriRelationFinder extends JCasAnnotator_ImplBase {
                         relationsDone ) );
          }
       }
+//      NeoplasmSummaryCreator.addDebug( "trimmed location uris "
+//                                              + locations.stream()
+//                                                         .map( r -> r.getArg1().getArgument().getCoveredText()
+//                                                                    + " at " +r.getArg2().getArgument().getCoveredText() )
+//                                                         .collect( Collectors.joining( "   ;   " ) )
+//                                              + "\n" );
       return locations;
    }
 

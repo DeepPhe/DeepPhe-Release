@@ -9,8 +9,6 @@ import org.neo4j.logging.Log;
 import org.neo4j.procedure.*;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -20,7 +18,7 @@ import java.util.stream.Stream;
  * @version %I%
  * @since 6/4/2020
  */
-final public class WriteFunctions {
+public class WriteFunctions {
 
 
    // This field declares that we need a GraphDatabaseService
@@ -74,57 +72,6 @@ final public class WriteFunctions {
    }
 
 
-   @Procedure( name="deepphe.addPatientSummary", mode=Mode.WRITE )
-   @Description( "Creates or appends to a Patient node and cancer summary." )
-   public Stream<ProcedureString> addPatientSummary( @Name( "patientSummaryJson" ) String patientSummaryJson ) {
-      log.info("Entered addPatientSummary");
-      final String realJson = JsonUtil.unpackFromNeo4j( patientSummaryJson );
-      log.info("Unpacking JSON fron neo4j");
-      final Gson gson = new Gson();
-      final PatientSummary patientSummary = gson.fromJson( realJson, PatientSummary.class );
-      log.info("Unmarshalling patientSummary from JSON");
-      final Patient patient = patientSummary.getPatient();
-
-      log.info("Patient information for patient: " + patient.getId() + " extracted.");
-      log.info("Calling addPatientInfo for patient : " + patient.getId());
-      NodeWriter.getInstance().addPatientInfo( graphDb, log, patient );
-      log.info("addPatientInfo succeeded for patient: " + patient.getId());
-      log.info("Getting neoplasms for " + patient.getId());
-      final List<NeoplasmSummary> neoplasms = patientSummary.getNeoplasms();
-      log.info("There are " + neoplasms.size() + " neoplasms for patientId: " + patient.getId());
-
-      for ( NeoplasmSummary neoplasm : neoplasms ) {
-         log.info("Writing neoplasm  " + neoplasm.getId() + " to datqbase");
-         NodeWriter.getInstance().addCancerInfo(graphDb, log, patient.getId(), neoplasm);
-      }
-      final ProcedureString joke
-            = new ProcedureString( "Patient Summary " + patientSummary.getId() + " added to DeepPhe graph." );
-      return Stream.of( joke );
-   }
-
-
-   /////////////////////////////////////////////////////////////////////////////////////////
-   //
-   //                            CANCER DATA
-   //
-   /////////////////////////////////////////////////////////////////////////////////////////
-
-
-   @Procedure( name="deepphe.addCancerInfo", mode=Mode.WRITE )
-   @Description( "Appends Cancer Summary information to a Patient node." )
-   public Stream<ProcedureString> addCancerInfo( @Name( "patientId" ) String patientId,
-                                                 @Name( "cancerJson" ) String cancerJson ) {
-      final String realJson = JsonUtil.unpackFromNeo4j( cancerJson );
-      final Gson gson = new Gson();
-//      final Patient patient = gson.fromJson( patientJson, Patient.class );
-      final NeoplasmSummary cancer = gson.fromJson( realJson, NeoplasmSummary.class );
-      NodeWriter.getInstance().addCancerInfo( graphDb, log, patientId, cancer );
-      final ProcedureString joke
-            = new ProcedureString( "Cancer " + cancer.getId() + " added to DeepPhe graph." );
-      return Stream.of( joke );
-   }
-
-
    /////////////////////////////////////////////////////////////////////////////////////////
    //
    //                            NOTE DATA
@@ -151,7 +98,6 @@ final public class WriteFunctions {
    //
    /////////////////////////////////////////////////////////////////////////////////////////
 
-   // Handled through NodeWriter.addNoteInfo -> NodeWriter.addSectionInfo
 
 
    /////////////////////////////////////////////////////////////////////////////////////////
@@ -180,7 +126,6 @@ final public class WriteFunctions {
    //
    /////////////////////////////////////////////////////////////////////////////////////////
 
-   // Handled through NodeWriter.addNoteInfo -> NodeWriter.addMentionRelation
 
 
    /////////////////////////////////////////////////////////////////////////////////////////
@@ -189,7 +134,6 @@ final public class WriteFunctions {
    //
    /////////////////////////////////////////////////////////////////////////////////////////
 
-   // Handled through NodeWriter.addNoteInfo -> NodeWriter.addMentionCoref
 
 
 }

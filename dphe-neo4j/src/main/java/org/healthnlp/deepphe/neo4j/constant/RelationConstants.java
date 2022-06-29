@@ -62,6 +62,7 @@ final public class RelationConstants {
    static public final String HAS_PATHOLOGIC_N = "has_Pathologic_N";
    static public final String HAS_PATHOLOGIC_M = "has_Pathologic_M";
 
+   // These are class names, not relation names.  The relation name is HAS_BIOMARKER
    static public final String HAS_ER_STATUS = "ER_";
    static public final String HAS_PR_STATUS = "PR_";
    static public final String HAS_HER2_STATUS = "HER2";

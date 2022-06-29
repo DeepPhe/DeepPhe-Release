@@ -48,15 +48,16 @@ final public class BehaviorCodeInfoStore implements CodeInfoStore {
       return uris.stream()
           .mapToInt( BehaviorCodeInfoStore::getUriBehaviorNumber )
           .max()
-          .orElse( -1 );
+          .orElse( 3 );
    }
 
    static public int getBehaviorNumber( final ConceptAggregate behavior ) {
-      return behavior.getAllUris()
-                  .stream()
-                  .mapToInt( BehaviorCodeInfoStore::getUriBehaviorNumber )
-                  .max()
-                  .orElse( -1 );
+      return getBestBehaviorNumber( behavior.getAllUris() );
+//      return behavior.getAllUris()
+//                  .stream()
+//                  .mapToInt( BehaviorCodeInfoStore::getUriBehaviorNumber )
+//                  .max()
+//                  .orElse( 3 );
    }
 
    static public int getUriBehaviorNumber( final String uri ) {
@@ -74,19 +75,23 @@ final public class BehaviorCodeInfoStore implements CodeInfoStore {
          return 3;
       }
       switch ( uri ) {
-         case "Borderline" : return 1;
-         case "Microinvasive_Tumor" : return 1;
-         case "In_Situ" : return 2;
-         case "Premalignant" : return 2;
-         case "Non_Malignant" : return 2;
-         case "Noninvasive" : return 2;
+         case "Borderline" :
+         case "Microinvasive_Tumor" :
+            return 1;
+         case "In_Situ" :
+         case "Premalignant" :
+         case "Non_Malignant" :
+         case "Noninvasive" :
+            return 2;
          case "Invasive" : return 3;
          case "Benign" : return 0;
-         case "Metaplastic" : return 6;
-         case "Metastasis" : return 6;
-         case "Metastatatic" : return 6;
-         case "Carcinoma" : return 3;
-         case "Adenocarcinoma" : return 3;
+         case "Metaplastic" :
+         case "Metastasis" :
+         case "Metastatatic" :
+            return 6;
+         case "Carcinoma" :
+         case "Adenocarcinoma" :
+            return 3;
       }
       return -1;
    }

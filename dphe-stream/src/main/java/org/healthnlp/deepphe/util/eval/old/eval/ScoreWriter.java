@@ -25,13 +25,13 @@ final class ScoreWriter {
    private ScoreWriter() {
    }
 
-   static void saveScoreFile( final String neoplasmType,
-                              final Collection<String> requiredNames,
-                              final Collection<String> scoringNames,
+   static void saveScoreFile( final String cancerType,
+                              final Collection<String> requiredColumnNames,
+                              final Collection<String> scoringColumnNames,
                               final File systemFile,
                               final EvalCorpus corpus ) {
 //      final File output = new File( systemFile.getParentFile(), systemFile.getName() + "_score.txt" );
-      final File output = new File( systemFile.getParentFile(), neoplasmType + "_score.txt" );
+      final File output = new File( systemFile.getParentFile(), cancerType + "_score.txt" );
       LOGGER.info( "Writing scores to " + output.getPath() );
       final File featureDir = new File( systemFile.getParentFile(), "feature_score" );
       featureDir.mkdirs();
@@ -39,28 +39,28 @@ final class ScoreWriter {
       try ( Writer writer = new BufferedWriter( new FileWriter( output ) ) ) {
          final String stars
                = String.format( "**************************************%"
-                                + neoplasmType.length()
+                                + cancerType.length()
                                 + "s**************************************\n\n", "" )
                        .replace( ' ', '*' );
          writer.write( stars );
          writer.write(
-               "***                                  " + neoplasmType + "                                    ***\n\n" );
+               "***                                  " + cancerType + "                                    ***\n\n" );
          writer.write( stars );
          writer.write( "Corpus Patient Score:\n" + getCorpusPatientF1s( corpus ) + "\n" );
          writer.write( "Corpus Neoplasm Score:\n" + getPureF1( corpus ) + "\n" );
 //         writer.write( "Attribute Score:\n" + getPropertyF1( corpus ) + "\n" );
          writer.write( "Corpus Attribute Score:\n" + getPropertyA_F1( corpus, false ) + "\n" );
          writer.write(
-               "Attribute Scores:\n" + getPropertyA_F1s( requiredNames, scoringNames, corpus, false ) + "\n" );
+               "Attribute Scores:\n" + getPropertyA_F1s( requiredColumnNames, scoringColumnNames, corpus, false ) + "\n" );
          writer.write(
-               "Attribute Scores, Simple:\n" + getPropertyA_F1s( requiredNames, scoringNames, corpus, true ) +
+               "Attribute Scores, Simple:\n" + getPropertyA_F1s( requiredColumnNames, scoringColumnNames, corpus, true ) +
                "\n" );
          writer.write( stars + "\n" );
          for ( EvalPatient patient : corpus.getPatients() ) {
-            savePatientScore( writer, featureDir, requiredNames, scoringNames, patient );
+            savePatientScore( writer, featureDir, requiredColumnNames, scoringColumnNames, patient );
          }
-         writer.write( createWikiTable( neoplasmType, requiredNames, scoringNames, corpus ) );
-         writer.write( createExcelColumns( neoplasmType, requiredNames, scoringNames, corpus ) );
+         writer.write( createWikiTable( cancerType, requiredColumnNames, scoringColumnNames, corpus ) );
+         writer.write( createExcelColumns( cancerType, requiredColumnNames, scoringColumnNames, corpus ) );
          writer.write( getLegend() );
       } catch ( IOException ioE ) {
          LOGGER.error( ioE.getMessage() );
@@ -114,14 +114,14 @@ final class ScoreWriter {
       for ( String required : requiredNames ) {
          final String goldValue = gold.getAttribute( required );
          final String systemValue = system.getAttribute( required );
-         final EvalUris evalUris = new EvalUris( goldValue, systemValue );
+         final EvalUris evalUris = new EvalUris( required, goldValue, systemValue );
          writer.write( getScoreRow( "*" + required, evalUris ) );
          writer.write( getValueRow( goldValue, systemValue, evalUris ) );
       }
       for ( String scoring : scoringNames ) {
          final String goldValue = gold.getAttribute( scoring );
          final String systemValue = system.getAttribute( scoring );
-         final EvalUris evalUris = new EvalUris( goldValue, systemValue );
+         final EvalUris evalUris = new EvalUris( scoring, goldValue, systemValue );
          writer.write( getScoreRow( scoring, evalUris ) );
          writer.write( getValueRow( goldValue, systemValue, evalUris ) );
          final int nameEnd = Math.min( 30, scoring.length() );

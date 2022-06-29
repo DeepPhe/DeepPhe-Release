@@ -5,7 +5,9 @@ import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.core.util.Pair;
 import org.apache.log4j.Logger;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,19 +31,27 @@ public class IcdoEvaluator {
    // C:\Spiffy\data\dphe_data\CombinedKcrGold.bsv
    public static void main( final String... args ) {
       if ( args == null || args.length < 2 ) {
-         System.err.println( "Example: java IcdoEvaluator <gold_summary_file> <system_summary_file>" );
+         LOGGER.warn( "Example: java IcdoEvaluator <gold_summary_file> <system_summary_file> <splits_dir> "
+                      + "<cancers_dir>" );
          System.exit( -1 );
       }
       try {
          final File goldFile = FileLocator.getFile( args[ 0 ] );
          final File systemFile = FileLocator.getFile( args[ 1 ] );
+         String outFileName = goldFile.getName();
+         int dotIndex = outFileName.lastIndexOf( '.' );
+         if ( dotIndex > 0 ) {
+            outFileName = outFileName.substring( 0, dotIndex );
+         }
          if ( args.length == 3 ) {
-            scoreSplits( goldFile.getName(), goldFile, systemFile, args[ 2 ] );
+            scoreSplitsOneColumn( outFileName, goldFile, systemFile, args[2]);
+         } else if ( args.length == 4 ) {
+            scoreSplitsByCancerType( outFileName, goldFile, systemFile, args[ 2 ], args[ 3 ] );
          } else {
-            scoreSystem( goldFile.getName(), goldFile, systemFile );
+            scoreSystem( outFileName, goldFile, systemFile );
          }
          // Combines the features and scores, divvying them into splits
-         FeatureCranker.main( systemFile.getParent() );
+         //FeatureCranker.main( systemFile.getParent() );
       } catch ( IOException ioE ) {
          LOGGER.error( ioE.getMessage() );
          System.exit( -1 );
@@ -49,50 +59,169 @@ public class IcdoEvaluator {
    }
 
 
-   static private void scoreSplits( final String outName, final File goldFile, final File systemFile,
-                                    final String splitDir ) {
-      final File trainSplit = new File( splitDir, "TRAIN_split.bsv" );
-      final File devSplit = new File( splitDir, "DEV_split.bsv" );
-      final File testSplit = new File( splitDir, "TEST_split.bsv" );
-      final Collection<String> trainees = FeatureCranker.getPatientNames( trainSplit );
-      final Collection<String> devees = FeatureCranker.getPatientNames( devSplit );
-      final Collection<String> testees = FeatureCranker.getPatientNames( testSplit );
+//   static private void scoreSplits( final String outName, final File goldFile, final File systemFile,
+//                                    final String splitDir ) {
+//      final File trainSplit = new File( splitDir, "/Users/dennisjohns/Desktop/CRC_training_scripts_and_data/id_by_training_file/id_train.csv" );
+//      final File devSplit = new File( splitDir, "/Users/dennisjohns/Desktop/CRC_training_scripts_and_data/id_by_training_file/id_dev.csv" );
+//      final File testSplit = new File( splitDir, "/Users/dennisjohns/Desktop/CRC_training_scripts_and_data/id_by_training_file/id_test.csv" );
+//      final Collection<String> trainees = FeatureCranker.getPatientNames( trainSplit );
+//      final Collection<String> devees = FeatureCranker.getPatientNames( devSplit );
+//      final Collection<String> testees = FeatureCranker.getPatientNames( testSplit );
+//      if ( !trainees.isEmpty() ) {
+//         scoreSystem( outName+"_train", goldFile, systemFile, trainees );
+//      }
+//      if ( !devees.isEmpty() ) {
+//         scoreSystem( outName+"_dev", goldFile, systemFile, devees );
+//      }
+//      if ( !testees.isEmpty() ) {
+//         scoreSystem( outName+"_test", goldFile, systemFile, testees );
+//      }
+//   }
+
+   static private void scoreSplitsOneColumn( final String outFileName, final File goldFile, final File systemFile,
+                                             final String splitDir ) {
+      final File trainSplit = new File( splitDir, "id_train.csv" );
+      final File devSplit = new File( splitDir, "id_dev.csv" );
+      final File testSplit = new File( splitDir, "id_test.csv" );
+      final Collection<String> trainees = getPatientNames( trainSplit );
+      final Collection<String> devees = getPatientNames( devSplit );
+      final Collection<String> testees = getPatientNames( testSplit );
       if ( !trainees.isEmpty() ) {
-         scoreSystem( outName+"_train", goldFile, systemFile, trainees );
+         scoreSystem( outFileName+"_train", goldFile, systemFile, trainees );
       }
       if ( !devees.isEmpty() ) {
-         scoreSystem( outName+"_dev", goldFile, systemFile, devees );
+         scoreSystem( outFileName+"_dev", goldFile, systemFile, devees );
       }
       if ( !testees.isEmpty() ) {
-         scoreSystem( outName+"_test", goldFile, systemFile, testees );
+         scoreSystem( outFileName+"_test", goldFile, systemFile, testees );
       }
    }
 
-   static private void scoreSystem( final String neoplasmType, final File goldFile, final File systemFile ) {
-      scoreSystem( neoplasmType, goldFile, systemFile, Collections.emptyList() );
+   static private void scoreSplitsByCancerType( final String outFileName, final File goldFile, final File systemFile,
+                                             final String splitDir,
+                                             final String cancerDir ) {
+      final File[] cancerFiles = new File(cancerDir).listFiles();
+      for ( File cancerFile : cancerFiles ) {
+         if ( cancerFile.getName().equals( ".DS_Store") ) {
+            continue;
+         }
+         final Collection<String> cancerPatients = getPatientNames(cancerFile);
+         if (!cancerPatients.isEmpty()) {
+            String cancerType = cancerFile.getName();
+            int dotIndex = cancerType.lastIndexOf( '.' );
+            if ( dotIndex > 0 ) {
+               cancerType = cancerType.substring( 0, dotIndex );
+               if ( cancerType.endsWith( "_id" ) ) {
+                  cancerType = cancerType.substring( 0, cancerType.length()-3 );
+               }
+            }
+            scoreSplitsOneColumn( outFileName, goldFile, systemFile, splitDir, cancerPatients, cancerType );
+            cancerPatients.clear();
+         }
+      }
    }
 
-   static private void scoreSystem( final String neoplasmType, final File goldFile, final File systemFile,
+
+//   static private void scoreSplitsByCancerType( final String outName, final File goldFile, final File systemFile,
+//                                                final String splitDir,
+//                                                final String cancerDir ) {
+//      LOGGER.info( "reading ovarian");
+//      final Collection<String> ovPatients = getPatientNames( new File( cancerDir, "ovarian_id.csv"));
+//      if (!ovPatients.isEmpty()) {
+//         scoreSplitsOneColumn( outName, goldFile, systemFile, splitDir, ovPatients, "ovarian" );
+//      }
+//      LOGGER.info( "reading lung");
+//      final Collection<String> lungPatients = getPatientNames( new File( cancerDir, "lung_id.csv"));
+//      if (!lungPatients.isEmpty()) {
+//         scoreSplitsOneColumn( outName, goldFile, systemFile, splitDir, lungPatients, "lung" );
+//      }
+//      LOGGER.info( "reading breast");
+//      final Collection<String> breastPatients = getPatientNames( new File( cancerDir, "breast_id.csv"));
+//      if (!breastPatients.isEmpty()) {
+//         scoreSplitsOneColumn( outName, goldFile, systemFile, splitDir, breastPatients, "breast" );
+//      }
+//      LOGGER.info( "reading crc");
+//      final Collection<String> crcPatients = getPatientNames( new File( cancerDir, "CRC_id.csv"));
+//      if (!crcPatients.isEmpty()) {
+//         scoreSplitsOneColumn( outName, goldFile, systemFile, splitDir, crcPatients, "crc" );
+//      }
+//      LOGGER.info( "reading prostate");
+//      final Collection<String> prostatePatients = getPatientNames( new File( cancerDir, "prostate_id.csv"));
+//      if (!prostatePatients.isEmpty()) {
+//         scoreSplitsOneColumn( outName, goldFile, systemFile, splitDir, prostatePatients, "prostate" );
+//      }
+//   }
+
+
+   static private void scoreSplitsOneColumn( final String outFileName, final File goldFile, final File systemFile,
+                                             final String splitDir, final Collection<String> cancerPatients,
+                                             final String cancerType ) {
+      final File trainSplit = new File( splitDir, "id_train.csv" );
+      final File devSplit = new File( splitDir, "id_dev.csv" );
+      final File testSplit = new File( splitDir, "id_test.csv" );
+      final Collection<String> trainees = getPatientNames( trainSplit );
+      final Collection<String> devees = getPatientNames( devSplit );
+      final Collection<String> testees = getPatientNames( testSplit );
+      if ( !trainees.isEmpty() ) {
+         final Collection<String> cancerTrainees = new HashSet<>( trainees );
+         cancerTrainees.retainAll( cancerPatients );
+         scoreSystem( outFileName+"_train_" + cancerType, goldFile, systemFile, cancerTrainees );
+      }
+      if ( !devees.isEmpty() ) {
+         final Collection<String> cancerDevees = new HashSet<>( devees );
+         cancerDevees.retainAll( cancerPatients );
+         scoreSystem( outFileName+"_dev_" + cancerType, goldFile, systemFile, cancerDevees );
+      }
+      if ( !testees.isEmpty() ) {
+         final Collection<String> cancerTestees = new HashSet<>( testees );
+         cancerTestees.retainAll( cancerPatients );
+         scoreSystem( outFileName+"_test_" + cancerType, goldFile, systemFile, cancerTestees );
+      }
+   }
+
+   static public Collection<String> getPatientNames( final File splitFile ) {
+      final Collection<String> patients = new HashSet<>();
+      try ( BufferedReader reader = new BufferedReader( new FileReader( splitFile ) ) ) {
+         String line = reader.readLine().trim();
+         while ( line != null ) {
+            if ( !line.isEmpty() && !line.equals("patient ID") ) {
+               patients.add(line );
+            }
+            line = reader.readLine();
+         }
+      } catch ( IOException ioE ) {
+         LOGGER.warn( ioE.getMessage() );
+         System.exit( 1 );
+      }
+      return patients;
+   }
+
+
+   static private void scoreSystem( final String cancerType, final File goldFile, final File systemFile ) {
+      scoreSystem( cancerType, goldFile, systemFile, Collections.emptyList() );
+   }
+
+   static private void scoreSystem( final String cancerType, final File goldFile, final File systemFile,
                                     final Collection<String> patientNames ) {
       // Moved the * and - for required and scoring to NaaccrIcdoBsvWriter so that I don't have to keep changing it in gold
-      final List<String> systemProperties = NaaccrSummaryReader.readHeader( systemFile );
-      final Collection<String> requiredNames = NaaccrSummaryReader.getRequiredNames( systemProperties );
-      final Collection<String> scoringNames = NaaccrSummaryReader.getScoringNames( systemProperties );
-      final Map<String, Integer> systemIndices = NaaccrSummaryReader.mapNameIndices( systemProperties );
-      final List<String> goldProperties = NaaccrSummaryReader.readHeader( goldFile );
-      final Map<String, Integer> goldIndices = NaaccrSummaryReader.mapNameIndices( goldProperties );
+      final List<String> systemProperties = NaaccrSummaryReader.readColumnHeader( systemFile );
+      final Collection<String> requiredColumnNames = NaaccrSummaryReader.getRequiredColumnNames( systemProperties );
+      final Collection<String> scoringColumnNames = NaaccrSummaryReader.getScoringColumnNames( systemProperties );
+      final Map<String, Integer> systemColumnIndices = NaaccrSummaryReader.mapColumnNameIndices( systemProperties );
+      final List<String> goldProperties = NaaccrSummaryReader.readColumnHeader( goldFile );
+      final Map<String, Integer> goldColumnIndices = NaaccrSummaryReader.mapColumnNameIndices( goldProperties );
 
       final Map<String, Collection<NeoplasmSummary>> goldSummaries
-            = NaaccrSummaryReader.readSummaries( goldFile, requiredNames, scoringNames, goldIndices, patientNames );
+            = NaaccrSummaryReader.readSummaries( goldFile, requiredColumnNames, scoringColumnNames, goldColumnIndices, patientNames );
 
       final Map<String, Collection<NeoplasmSummary>> systemSummaries
-            = NaaccrSummaryReader.readSummaries( systemFile, requiredNames, scoringNames, systemIndices, patientNames );
+            = NaaccrSummaryReader.readSummaries( systemFile, requiredColumnNames, scoringColumnNames, systemColumnIndices, patientNames );
 
       final Collection<EvalPatient> bestPatients = getBestPatients( goldSummaries, systemSummaries );
       final EvalCorpus corpus = new EvalCorpus( bestPatients );
 
 //      mergeAttributeNames( scoringNames );
-      ScoreWriter.saveScoreFile( neoplasmType, requiredNames, scoringNames, systemFile, corpus );
+      ScoreWriter.saveScoreFile( cancerType, requiredColumnNames, scoringColumnNames, systemFile, corpus );
    }
 
 
@@ -118,11 +247,11 @@ public class IcdoEvaluator {
       final Collection<NeoplasmSummary> gold = goldMap.get( patientId );
       final Collection<NeoplasmSummary> system = systemMap.get( patientId );
       if ( gold == null || gold.size() == 0 ) {
-         LOGGER.warn( "Gold is missing annotations for patient " + patientId );
+//         LOGGER.warn( "Gold is missing annotations for patient " + patientId );
          return null;
       }
       if ( system == null || system.size() == 0 ) {
-         LOGGER.warn( "System is missing output for patient " + patientId );
+//         LOGGER.warn( "System is missing output for patient " + patientId );
          final Collection<EvalNeoplasm> pairs = gold.stream()
                                                     .map( g -> new EvalNeoplasm( g, null ) )
                                                     .collect( Collectors.toList() );
@@ -171,9 +300,9 @@ public class IcdoEvaluator {
             matchableGolds.sort( Comparator.comparing( NeoplasmSummary::getId ) );
             matchableSystems.sort( Comparator.comparing( NeoplasmSummary::getId ) );
             if ( matchableGolds.size() == 1 && matchableSystems.size() == 1 ) {
-               LOGGER.info(
-                     "Evaluating " + patientId + " with array sized " + goldList.size() + "," + systemList.size() +
-                     " using singular" );
+//               LOGGER.info(
+//                     "Evaluating " + patientId + " with array sized " + goldList.size() + "," + systemList.size() +
+//                     " using singular" );
                neoplasms.add( new EvalNeoplasm( matchableGolds.get( 0 ), matchableSystems.get( 0 ) ) );
             } else {
                final Collection<NeoplasmSummary> whittledGold = new ArrayList<>();
@@ -182,10 +311,10 @@ public class IcdoEvaluator {
                         (matchableSystems.size() - whittledSystem.size() > 3))
                        && (matchableGolds.size() - whittledGold.size() > 0)
                        && (matchableSystems.size() - whittledSystem.size() > 0) ) {
-                  LOGGER.info(
-                        "Evaluating " + patientId + " with array sized " + goldList.size() + "," + systemList.size() +
-                        " whittling array sized " + (matchableGolds.size() - whittledGold.size()) + "," +
-                        (matchableSystems.size() - whittledSystem.size()) );
+//                  LOGGER.info(
+//                        "Evaluating " + patientId + " with array sized " + goldList.size() + "," + systemList.size() +
+//                        " whittling array sized " + (matchableGolds.size() - whittledGold.size()) + "," +
+//                        (matchableSystems.size() - whittledSystem.size()) );
                   EvalNeoplasm bestMatch = new EvalNeoplasm( matchableGolds.get( 0 ), matchableSystems.get( 0 ) );
                   for ( int m = 1; m < matchableGolds.size(); m++ ) {
                      if ( whittledGold.contains( matchableGolds.get( m ) ) ) {
@@ -288,7 +417,7 @@ public class IcdoEvaluator {
             final Collection<Integer> newExistingJs = new ArrayList<>( existingJs );
             newExistingJs.add( j );
             evalPatient = getBestEvalPatient( patientId, goldList, systemList,
-                  i + 1, count, newExistingJs, newEvalNeoplasms, newCombinations );
+                                              i + 1, count, newExistingJs, newEvalNeoplasms, newCombinations );
          }
          if ( evalPatient == null ) {
             continue;

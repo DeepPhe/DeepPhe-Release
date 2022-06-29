@@ -127,7 +127,7 @@ final public class ConceptAggregateHandler {
             }
          }
       }
-      patientMentionNoteIds.keySet().removeAll( usedMentions );
+      usedMentions.forEach( patientMentionNoteIds.keySet()::remove );
       for ( Map.Entry<Mention, String> mentionNoteId : patientMentionNoteIds.entrySet() ) {
          final String bestUri = mentionNoteId.getKey().getClassUri();
          if ( bestUri.isEmpty() ) {
@@ -382,6 +382,14 @@ final public class ConceptAggregateHandler {
       return docMentions;
    }
 
+   static public void appendDocMentions( final Collection<ConceptAggregate> concepts,
+                                         final Map<String, Collection<Mention>> docMentions ) {
+      for ( ConceptAggregate concept : concepts ) {
+         concept.getNoteMentions()
+                .forEach( (k,v) -> docMentions.computeIfAbsent( k, s -> new HashSet<>() )
+                                              .addAll( v ) );
+      }
+   }
 
 
 }
