@@ -182,6 +182,19 @@
 <!--      </typeDescription>-->
 
       <typeDescription>
+         <name>org.apache.ctakes.cancer.type.textspan.Episode</name>
+         <description>An annotation within a text span for an Episode.</description>
+         <supertypeName>uima.tcas.Annotation</supertypeName>
+         <features>
+            <featureDescription>
+               <name>EpisodeType</name>
+               <description/>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+         </features>
+      </typeDescription>
+
+      <typeDescription>
          <name>org.apache.ctakes.typesystem.type.textspan.FormattedListEntry</name>
          <description>A List found in text of a document.</description>
          <supertypeName>uima.tcas.Annotation</supertypeName>
