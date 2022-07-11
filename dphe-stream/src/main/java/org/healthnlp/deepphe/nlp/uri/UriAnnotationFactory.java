@@ -51,8 +51,8 @@ public class UriAnnotationFactory {
                                                           .build( jCas );
       return new IdentifiedAnnotationBuilder().span( begin, end )
                                               .type( type )
-                                              .concept( concept ).
-                                              confidence( discoveryScore.floatValue() )
+                                              .concept( concept )
+                                              .confidence( discoveryScore.floatValue() )
                                               .build( jCas );
    }
 
