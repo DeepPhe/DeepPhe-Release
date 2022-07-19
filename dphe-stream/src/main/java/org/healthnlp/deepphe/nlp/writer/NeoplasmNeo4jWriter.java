@@ -110,23 +110,16 @@ public class NeoplasmNeo4jWriter extends JCasAnnotator_ImplBase {
 
    private void writePatient( final Patient patient ) throws AnalysisEngineProcessException {
       final String patientId = patient.getId();
-//      final String patientId = SourceMetadataUtil.getPatientIdentifier( jCas );
       LOGGER.info( "Writing " + patientId + " to Neo4j Database " + DriverConnection.getInstance().getUrl() );
       final Driver driver = DriverConnection.getInstance().getDriver();
       if ( driver == null ) {
          LOGGER.info( "Empty Driver.  Writing to Neo4j will be skipped." );
          return;
       }
-      final String callName = _overwrite.equalsIgnoreCase( "Always" )
-                              ? "setPatientSummary"
-                              : _overwrite.equalsIgnoreCase( "Never" )
-                                ? "appendPatientSummary"
-                                : "updatePatientSummary";
       // Somebody else may have already created the patient summary.
       PatientSummary patientSummary = PatientSummaryNodeStore.getInstance().get( patientId );
       if ( patientSummary == null ) {
          // Create PatientSummary
-//         patientSummary = SummaryEngine.createPatientSummary( patient );
          patientSummary =  DpheXnSummaryEngine.createPatientSummary( patient );
          // Add the summary just in case some other consumer can utilize it.  e.g. eval file writer.
          PatientSummaryNodeStore.getInstance().add( patientId, patientSummary );
@@ -146,8 +139,11 @@ public class NeoplasmNeo4jWriter extends JCasAnnotator_ImplBase {
       final String neo4jOkJson = JsonUtil.packForNeo4j( summaryJson );
       try ( Session session = driver.session() ) {
          try ( Transaction tx = session.beginTransaction() ) {
+            tx.run( "CALL deepphe.clearPatientSummary(\"" + patientId + "\")" );
+            tx.commit();
+         }
+         try ( Transaction tx = session.beginTransaction() ) {
             tx.run( "CALL deepphe.addPatientSummary(\"" + neo4jOkJson + "\")" );
-//            tx.run( "CALL deepphe." + callName + "(\"" + neo4jOkJson + "\")" );
             tx.commit();
          }
       } catch ( Exception e ) {

@@ -44,7 +44,11 @@ final public class DpheXnSummaryEngine {
 //         LOGGER.info( "Within doc corefs are no longer being dicovered by NLP pipeline." );
 //         note.getCorefs().forEach( c -> LOGGER.info( "Chain: (" + String.join( ",", Arrays.asList( c.getIdChain() ) ) + ")" ) );
       }
-
+      final int noteHash = Objects.hash( (Object[]) patient.getNotes()
+                                                          .stream()
+                                                          .map( Note::getText )
+                                                          .toArray( String[]::new ) );
+      patient.setNoteHash( "" + noteHash );
       final PatientSummary patientSummary = createPatientSummary( patientId,
                                                                   patientNotes,
                                                                   patientMentionNoteIds,

@@ -223,7 +223,7 @@ final public class DefaultConceptAggregate implements ConceptAggregate {
    static private final class IdCounter {
       private final AtomicReference<BigInteger> _reference = new AtomicReference<>();
       private IdCounter() {
-         _reference.set( BigInteger.valueOf( 0 ) );
+         _reference.set( BigInteger.valueOf( System.currentTimeMillis() ) );
       }
 
       private BigInteger incrementAndGet() {

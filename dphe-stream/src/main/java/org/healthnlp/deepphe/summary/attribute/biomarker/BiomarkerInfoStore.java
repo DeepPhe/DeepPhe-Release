@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -37,16 +38,31 @@ final public class BiomarkerInfoStore extends AttributeInfoStore<BiomarkerUriInf
     */
    @Override
    public String getBestCode() {
-      return _concepts.stream()
-                      .map( ConceptAggregate::getCoveredText )
-                     .map( s -> s.replace( '[', ' ' ) )
-                     .map( s -> s.replace( ']', ' ' ) )
-                     .map( String::trim )
-                     .map( String::toLowerCase )
-                     .map( s -> StringUtil.fastSplit( s, ',' ) )
-                     .flatMap( Arrays::stream )
-                     .distinct()
-                      .collect( Collectors.joining( ";" ) );
+      final Map<String,Long> textCounts = _concepts.stream()
+                                                   .map( ConceptAggregate::getCoveredText )
+                                                   .map( s -> s.replace( '[', ' ' ) )
+                                                   .map( s -> s.replace( ']', ' ' ) )
+                                                   .map( String::trim )
+                                                   .map( String::toLowerCase )
+                                                   .map( s -> StringUtil.fastSplit( s, ',' ) )
+                                                   .flatMap( Arrays::stream )
+                                                   .collect( Collectors.groupingBy( Function.identity(),
+                                                                                    Collectors.counting() ) );
+      final long max = textCounts.values().stream().max( Long::compareTo ).orElse( 1L );
+      return textCounts.entrySet().stream()
+                       .filter( e -> e.getValue() == max )
+                       .map( Map.Entry::getKey )
+                       .collect( Collectors.joining( ";" ) );
+//      return _concepts.stream()
+//                      .map( ConceptAggregate::getCoveredText )
+//                     .map( s -> s.replace( '[', ' ' ) )
+//                     .map( s -> s.replace( ']', ' ' ) )
+//                     .map( String::trim )
+//                     .map( String::toLowerCase )
+//                     .map( s -> StringUtil.fastSplit( s, ',' ) )
+//                     .flatMap( Arrays::stream )
+//                     .distinct()
+//                      .collect( Collectors.joining( ";" ) );
    }
 
 

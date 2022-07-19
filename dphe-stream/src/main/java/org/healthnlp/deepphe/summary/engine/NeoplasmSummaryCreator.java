@@ -123,28 +123,33 @@ final public class NeoplasmSummaryCreator {
       summary.setClassUri( neoplasm.getUri() );
       final List<NeoplasmAttribute> attributes = new ArrayList<>();
 
-      final String topoCode = addTopography( neoplasm, summary, attributes, allConcepts );
+//      final String topoCode = addTopography( neoplasm, summary, attributes, allConcepts );
+      final NeoplasmAttribute topography = addTopography( neoplasm, attributes, allConcepts );
 //      copyWithUriAsValue( attributes, "topography_major", "location" );
 //      String locationUri = TOPO_MAJOR_MAP.getOrDefault( topoCode, "Undetermined" );
-      final String[] topoCodes = StringUtil.fastSplit( topoCode, ';' );
-      String locationUri = Arrays.stream( topoCodes )
-                                 .map( TOPO_MAJOR_MAP::get )
-                                 .filter( Objects::nonNull )
-                                 .collect( Collectors.joining( ";" ) );
-      if ( locationUri.isEmpty() || locationUri.equals( "Undetermined" ) ) {
-         locationUri = getTopographyUri( attributes );
-      }
-      createWithValue( "location", locationUri, locationUri, attributes );
-      final String lateralityCode = addLateralityCode( neoplasm, summary, attributes, allConcepts, patientNeoplasms, topoCode );
-      copyWithUriAsValue( attributes, "laterality_code", "laterality" );
+//      final String[] topoCodes = StringUtil.fastSplit( topoCode, ';' );
+//      String locationUri = Arrays.stream( topoCodes )
+//                                 .map( TOPO_MAJOR_MAP::get )
+//                                 .filter( Objects::nonNull )
+//                                 .collect( Collectors.joining( ";" ) );
+//      if ( locationUri.isEmpty() || locationUri.equals( "Undetermined" ) ) {
+//         locationUri = getTopographyUri( attributes );
+//      }
+      addLocation( topography, attributes );
+//      createWithValue( "location", locationUri, locationUri, attributes );
+      final NeoplasmAttribute lateralityCode = addLateralityCode( neoplasm, summary, attributes, allConcepts,
+                                                            patientNeoplasms,
+                                                       topography.getValue() );
+//      copyWithUriAsValue( attributes, "laterality_code", "laterality" );
+      copyWithUriAsValue( attributes, lateralityCode, "laterality" );
       // tumor has topo minor attributes.
-      addTopoMinor( neoplasm, summary, attributes, allConcepts, patientNeoplasms,
-                                                  topoCode,
-                                lateralityCode );
-      addBrCaClockface( neoplasm, attributes );
-      addQuadrant( neoplasm, attributes );
+      final NeoplasmAttribute topoMinor = addTopoMinor( neoplasm, summary, attributes, allConcepts, patientNeoplasms,
+                                                  topography.getValue(),
+                                lateralityCode.getValue() );
+      addBrCaClockface( neoplasm, topoMinor, attributes );
+      addQuadrant( neoplasm, topoMinor, attributes );
       // tumor has histology, diagnosis, behavior
-      addHistology( neoplasm, summary, attributes, allConcepts, patientNeoplasms, topoCode );
+      addHistology( neoplasm, summary, attributes, allConcepts, patientNeoplasms, topography.getValue() );
       //  Gold uses "cancer_type" and "histologic_type" to denote something -like- histology.
       copyWithUriAsValue( attributes, "histology", "cancer_type" );
       copyWithUriAsValue( attributes, "histology", "histologic_type" );
@@ -155,9 +160,9 @@ final public class NeoplasmSummaryCreator {
       addTumorType( attributes, isPrimary );
       // TODO topo_morphed ?
 //      createWithValue( "topo_morphed", "generated", "false", attributes );
-      createWithValue( "historic", "historic",
+      createWithValueOnly( "historic", "historic",
                        neoplasm.inPatientHistory() ? "historic" : "current", attributes );
-      createWithValue( "calcifications", "calcifications",
+      createWithValueOnly( "calcifications", "calcifications",
                        neoplasm.getRelated( HAS_CALCIFICATION ).isEmpty()
                        ? "false" : "true", attributes );
       // Calcification was removed from the last n versions.
@@ -183,18 +188,27 @@ final public class NeoplasmSummaryCreator {
       return summary;
    }
 
-   static private String addTopography( final ConceptAggregate neoplasm,
-                                      final NeoplasmSummary summary,
-                                      final List<NeoplasmAttribute> attributes,
-                                        final Collection<ConceptAggregate> allConcepts ) {
+//   static private String addTopography( final ConceptAggregate neoplasm,
+//                                      final NeoplasmSummary summary,
+//                                      final List<NeoplasmAttribute> attributes,
+//                                        final Collection<ConceptAggregate> allConcepts ) {
+//      final Topography topography = new Topography( neoplasm, allConcepts );
+//      final NeoplasmAttribute majorTopoAttr = topography.toNeoplasmAttribute();
+//      attributes.add( majorTopoAttr );
+//
+//      // TODO as NeoplasmAttribute from DefaultAttribute
+//
+////      return majorTopoAttr.getValue() + "3";
+//      return majorTopoAttr.getValue();
+//   }
+
+   static private NeoplasmAttribute addTopography(final ConceptAggregate neoplasm,
+                                                  final List<NeoplasmAttribute> attributes,
+                                                  final Collection<ConceptAggregate> allConcepts ) {
       final Topography topography = new Topography( neoplasm, allConcepts );
       final NeoplasmAttribute majorTopoAttr = topography.toNeoplasmAttribute();
       attributes.add( majorTopoAttr );
-
-      // TODO as NeoplasmAttribute from DefaultAttribute
-
-//      return majorTopoAttr.getValue() + "3";
-      return majorTopoAttr.getValue();
+      return majorTopoAttr;
    }
 
    static private String getTopographyUri( final List<NeoplasmAttribute> attributes ) {
@@ -206,7 +220,7 @@ final public class NeoplasmSummaryCreator {
       return sourceAttribute.getClassUri();
    }
 
-   static private void addTopoMinor( final ConceptAggregate neoplasm,
+   static private NeoplasmAttribute addTopoMinor( final ConceptAggregate neoplasm,
                                     final NeoplasmSummary summary,
                                     final List<NeoplasmAttribute> attributes,
                                     final Collection<ConceptAggregate> allConcepts,
@@ -224,7 +238,9 @@ final public class NeoplasmSummaryCreator {
                                       TopoMinorUriInfoVisitor::new,
                                       TopoMinorCodeInfoStore::new,
                                       dependencies );
-      attributes.add( topoMinor.toNeoplasmAttribute() );
+      final NeoplasmAttribute attribute = topoMinor.toNeoplasmAttribute();
+      attributes.add( attribute );
+      return attribute;
    }
 
    static Collection<ConceptAggregate> getRelatedAboveCutoff(
@@ -297,8 +313,31 @@ final public class NeoplasmSummaryCreator {
       return codes;
    }
 
+   static private void addLocation( final NeoplasmAttribute topography, final List<NeoplasmAttribute> attributes ) {
+      final String topoCode = topography.getValue();
+      final String[] topoCodes = StringUtil.fastSplit( topoCode, ';' );
+      String locationUri = Arrays.stream( topoCodes )
+                                 .map( NeoplasmSummaryCreator::getLocation )
+                                 .filter( Objects::nonNull )
+                                 .collect( Collectors.joining( ";" ) );
+      createWithValueAndSource( "location", locationUri, locationUri, topography, attributes );
+   }
 
-   static private void addBrCaClockface( final ConceptAggregate neoplasm, final List<NeoplasmAttribute> attributes ) {
+   static private String getLocation( final String topoCode ) {
+      String location = TOPO_MAJOR_MAP.getOrDefault( topoCode.substring( 0, 2 ) + "*", "" );
+      if ( !location.isEmpty() ) {
+         return location;
+      }
+      location = TOPO_MAJOR_MAP.getOrDefault( topoCode.substring( 0, 2 ) + "0", "" );
+      if ( !location.isEmpty() ) {
+         return location;
+      }
+      return TOPO_MAJOR_MAP.getOrDefault( topoCode, "Undetermined" );
+   }
+
+   static private void addBrCaClockface( final ConceptAggregate neoplasm,
+                                         final NeoplasmAttribute topoMinor,
+                                         final List<NeoplasmAttribute> attributes ) {
       final Collection<ConceptAggregate> bestClockfaces = getRelatedAboveCutoff( neoplasm, HAS_CLOCKFACE, 0.4 );
 //      final String clockface = neoplasm.getRelated( HAS_CLOCKFACE ).stream()
       final String clockface = bestClockfaces.stream()
@@ -306,7 +345,7 @@ final public class NeoplasmSummaryCreator {
               .distinct()
             .collect( Collectors.joining( ";" ) );
       if ( !clockface.isEmpty() ) {
-         createWithValue( "clockface", CLOCKFACE, clockface, attributes );
+         createWithValueAndSource( "clockface", CLOCKFACE, clockface, topoMinor, attributes );
       }
    }
 
@@ -318,7 +357,8 @@ final public class NeoplasmSummaryCreator {
       QUADRANT_URIS = Neo4jOntologyConceptUtil.getBranchUris( UriConstants.QUADRANT );
    }
 
-   static private void addQuadrant( final ConceptAggregate neoplasm, final List<NeoplasmAttribute> attributes ) {
+   static private void addQuadrant( final ConceptAggregate neoplasm,
+                                    final NeoplasmAttribute topoMinor, final List<NeoplasmAttribute> attributes ) {
       initQuadrantUris();
       final Collection<ConceptAggregate> bestQuadrants = getLocationsAboveCutoff( neoplasm, HAS_QUADRANT,
                                                                                   QUADRANT_URIS, 0.4 );
@@ -335,13 +375,15 @@ final public class NeoplasmSummaryCreator {
                                              .distinct()
                                              .collect( Collectors.joining( ";" ) );
       if ( !quadrants.isEmpty() ) {
-         createWithValue( "quadrant", UriConstants.QUADRANT, String.join( ";", quadrants ), attributes );
+         createWithValueAndSource( "quadrant", UriConstants.QUADRANT, String.join( ";", quadrants ),
+                                   topoMinor, attributes );
       } else {
-         addQuadrantByTopoMinor( attributes );
+         addQuadrantByTopoMinor( topoMinor, attributes );
       }
    }
 
-   static private void addQuadrantByTopoMinor( final Collection<NeoplasmAttribute> attributes ) {
+   static private void addQuadrantByTopoMinor( final NeoplasmAttribute topoMinor,
+                                               final Collection<NeoplasmAttribute> attributes ) {
       final NeoplasmAttribute clockface = attributes.stream()
                                                     .filter( a -> a.getName().equals( "clockface" ) )
                                                     .findAny()
@@ -350,11 +392,12 @@ final public class NeoplasmSummaryCreator {
       if ( clockface == null || clockface.getValue().isEmpty() ) {
          return;
       }
-      final String topography_minor = attributes.stream()
-                                                .filter( a -> a.getName().equals( "topography_minor" ) )
-                                                .map( NeoplasmAttribute::getValue )
-                                                .findFirst()
-                                                .orElse( "" );
+      final String topography_minor = topoMinor.getValue();
+//            attributes.stream()
+//                                                .filter( a -> a.getName().equals( "topography_minor" ) )
+//                                                .map( NeoplasmAttribute::getValue )
+//                                                .findFirst()
+//                                                .orElse( "" );
       addDebug( "NeoplasmSummaryCreator.addQuadrantByTopoMinor " + topography_minor
                        + " " + BreastMinorCodifier.getQuadrant( topography_minor ) + "\n" );
       if ( topography_minor.isEmpty() ) {
@@ -473,7 +516,7 @@ final public class NeoplasmSummaryCreator {
       attributes.add( attribute );
    }
 
-   static private String addLateralityCode( final ConceptAggregate neoplasm,
+   static private NeoplasmAttribute addLateralityCode( final ConceptAggregate neoplasm,
                                             final NeoplasmSummary summary,
                                             final List<NeoplasmAttribute> attributes,
                                             final Collection<ConceptAggregate> allConcepts,
@@ -489,8 +532,9 @@ final public class NeoplasmSummaryCreator {
                                       LateralUriInfoVisitor::new,
                                       LateralityCodeInfoStore::new,
                                       dependencies );
-      attributes.add( lateralityCode.toNeoplasmAttribute() );
-      return lateralityCode.getBestCode();
+      final NeoplasmAttribute attribute = lateralityCode.toNeoplasmAttribute();
+      attributes.add( attribute );
+      return attribute;
    }
 
 
@@ -668,6 +712,15 @@ final public class NeoplasmSummaryCreator {
       if ( sourceAttribute == null ) {
          return "";
       }
+      return copyWithUriAsValue( attributes, sourceAttribute, targetName );
+   }
+
+   static private String copyWithUriAsValue( final List<NeoplasmAttribute> attributes,
+                                             final NeoplasmAttribute sourceAttribute,
+                                             final String targetName ) {
+      if ( sourceAttribute == null ) {
+         return "";
+      }
       final NeoplasmAttribute attribute = new NeoplasmAttribute();
       final String uri = sourceAttribute.getClassUri();
       attribute.setName( targetName );
@@ -706,7 +759,7 @@ final public class NeoplasmSummaryCreator {
       return uri;
    }
 
-   static private String createWithValue( final String name, final String uri, final String value,
+   static private String createWithValueOnly( final String name, final String uri, final String value,
                                           final List<NeoplasmAttribute> attributes ) {
       final NeoplasmAttribute attribute = new NeoplasmAttribute();
       attribute.setName( name );
@@ -718,6 +771,24 @@ final public class NeoplasmSummaryCreator {
       attribute.setDirectEvidence( Collections.emptyList() );
       attribute.setIndirectEvidence( Collections.emptyList() );
       attribute.setNotEvidence( Collections.emptyList() );
+      attributes.add( attribute );
+      return uri;
+   }
+
+   static private String createWithValueAndSource( final String name, final String uri, final String value,
+                                          final NeoplasmAttribute sourceAttribute,
+                                          final List<NeoplasmAttribute> attributes ) {
+      final NeoplasmAttribute attribute = new NeoplasmAttribute();
+      attribute.setName( name );
+      attribute.setId( uri + "_" + System.currentTimeMillis() );
+      attribute.setClassUri( uri );
+      attribute.setValue( value );
+      attribute.setConfidence( sourceAttribute.getConfidence() );
+      attribute.setConfidence( sourceAttribute.getConfidence() );
+      attribute.setConfidenceFeatures( sourceAttribute.getConfidenceFeatures() );
+      attribute.setDirectEvidence( sourceAttribute.getDirectEvidence() );
+      attribute.setIndirectEvidence( sourceAttribute.getIndirectEvidence() );
+      attribute.setNotEvidence( sourceAttribute.getNotEvidence() );
       attributes.add( attribute );
       return uri;
    }

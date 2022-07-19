@@ -17,10 +17,7 @@ import org.healthnlp.deepphe.neo4j.node.Section;
 import org.healthnlp.deepphe.summary.engine.MentionCreator;
 import org.healthnlp.deepphe.summary.engine.MentionRelationCreator;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -54,7 +51,9 @@ public class NoteNodeCreator {
       final Note note = new Note();
       final NoteSpecs noteSpecs = new NoteSpecs( jCas );
       final String docId = noteSpecs.getDocumentId();
-      note.setId( docId );
+      final String fullDocId = docId + "_" + noteSpecs.getDocumentText().hashCode();
+      note.setId( fullDocId );
+      note.setName( docId );
       note.setDate( noteSpecs.getNoteTime() );
       note.setType( getDocType( noteSpecs.getDocumentType() ) );
       note.setText( noteSpecs.getDocumentText() );
@@ -79,11 +78,12 @@ public class NoteNodeCreator {
                                      .filter( a -> !Neo4jOntologyConceptUtil.getUri( a ).isEmpty() )
                                      .collect( Collectors.toList() );
 
-      final Map<IdentifiedAnnotation, Mention> mentionMap = MentionCreator.createMentionMap( requiredAnnotations );
+      final Map<IdentifiedAnnotation, Mention> mentionMap = MentionCreator.createMentionMap( fullDocId,
+                                                                                             requiredAnnotations );
 
-      final List<Mention> mentionList = createMentionList( docId, mentionMap.values() );
-      note.setMentions( mentionList );
-
+//      final List<Mention> mentionList = createMentionList( docId, mentionMap.values() );
+//      note.setMentions( mentionList );
+      note.setMentions( new ArrayList<>( mentionMap.values() ) );
       final List<MentionRelation> relationList
             = MentionRelationCreator.createRelationList( docId,
                                                          mentionMap,
@@ -154,19 +154,19 @@ public class NoteNodeCreator {
    /////////////////////////////////////////////////////////////////////////////////////////
 
 
-   static private List<Mention> createMentionList( final String docId, final Collection<Mention> mentions ) {
-      final List<Mention> mentionList
-            = mentions.stream()
-                      .sorted( Comparator.comparingInt( Mention::getBegin ) )
-                      .collect( Collectors.toList() );
-      int id = 1;
-      for ( Mention mention : mentionList ) {
-         mention.setNoteId( docId );
-         mention.setId( docId + MENTION_ID + id );
-         id++;
-      }
-      return mentionList;
-   }
+//   static private List<Mention> createMentionList( final String docId, final Collection<Mention> mentions ) {
+//      final List<Mention> mentionList
+//            = mentions.stream()
+//                      .sorted( Comparator.comparingInt( Mention::getBegin ) )
+//                      .collect( Collectors.toList() );
+//      int id = 1;
+//      for ( Mention mention : mentionList ) {
+//         mention.setNoteId( docId );
+//         mention.setId( docId + MENTION_ID + id );
+//         id++;
+//      }
+//      return mentionList;
+//   }
 
 
 

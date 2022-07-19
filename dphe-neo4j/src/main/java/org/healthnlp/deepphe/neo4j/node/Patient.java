@@ -15,6 +15,7 @@ public class Patient {
    private String birth;
    private String death;
    private List<Note> notes;
+   private String noteHash;
    private List<NewPatientDiagnosis> diagnoses;
    private List<NewBiomarkerSummary> biomarkers;
 
@@ -80,6 +81,14 @@ public class Patient {
 
    public void setNotes( final List<Note> notes ) {
       this.notes = notes;
+   }
+
+   public String getNoteHash() {
+      return noteHash;
+   }
+
+   public void setNoteHash( final String noteHash ) {
+      this.noteHash = noteHash;
    }
 
 

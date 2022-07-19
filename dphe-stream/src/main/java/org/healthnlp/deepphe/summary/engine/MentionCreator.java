@@ -11,6 +11,7 @@ import org.healthnlp.deepphe.neo4j.node.Mention;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -22,14 +23,19 @@ final public class MentionCreator {
 
    private MentionCreator() {}
 
-   static public Map<IdentifiedAnnotation, Mention> createMentionMap( final Collection<IdentifiedAnnotation> annotations ) {
+   static public Map<IdentifiedAnnotation, Mention> createMentionMap( final String fullDocId,
+                                                                      final Collection<IdentifiedAnnotation> annotations ) {
+      final AtomicInteger counter = new AtomicInteger( 0 );
       return annotations.stream()
                         .filter( a -> !CONST.ATTR_SUBJECT_FAMILY_MEMBER.equals( a.getSubject() ) )
                         .collect( Collectors.toMap( Function.identity(),
-                                                    MentionCreator::createMention ) );
+                                                    a -> MentionCreator.createMention( fullDocId, a,
+                                                                                       counter.incrementAndGet() ) ) );
    }
 
-   static private Mention createMention( final IdentifiedAnnotation annotation ) {
+   static private Mention createMention( final String fullDocId,
+                                         final IdentifiedAnnotation annotation,
+                                         final int count ) {
       final Mention mention = new Mention();
       mention.setClassUri( Neo4jOntologyConceptUtil.getUri( annotation ) );
       mention.setBegin( annotation.getBegin() );
@@ -53,6 +59,8 @@ final public class MentionCreator {
          }
       }
       mention.setTemporality( temporality );
+      mention.setNoteId( fullDocId );
+      mention.setId( fullDocId + "_M_" + count );
       return mention;
    }
 

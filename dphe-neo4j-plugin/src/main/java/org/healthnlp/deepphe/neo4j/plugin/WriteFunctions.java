@@ -73,6 +73,18 @@ final public class WriteFunctions {
       return Stream.of( joke );
    }
 
+   @Procedure( name="deepphe.clearPatientSummary", mode=Mode.WRITE )
+   @Description( "Clears a Patient node and cancer summary." )
+   public Stream<ProcedureString> clearPatientSummary( @Name( "patientId" ) String patientId ) {
+      log.info("Entered clearPatientSummary" );
+      log.info("Calling clearPatientInfo for patient : " + patientId );
+      NodeWriter.getInstance().clearPatientInfo( graphDb, log, patientId );
+      log.info("clearPatientInfo succeeded for patient: " + patientId );
+      final ProcedureString joke
+            = new ProcedureString( "Patient " + patientId + " cleared from DeepPhe graph." );
+      return Stream.of( joke );
+   }
+
 
    @Procedure( name="deepphe.addPatientSummary", mode=Mode.WRITE )
    @Description( "Creates or appends to a Patient node and cancer summary." )

@@ -72,9 +72,9 @@ Imaging Studies,Imaging Studies
 Immunohistochem,IMMUNOHISTOCHEMICAL STUDIES FOR HER\-2\-NEU,IMMUNOHISTOCHEMISTRY STUDY
 Immunosuppression,IMMUNOSUPPRESSION
 Impression,IMPRESSION,Impression and Plan,IMPRESSION AND PLAN
-Indication,Indication
+Indication,INDICATION
 Injection Site,INJECTION SITE
-Interim History,Interim History
+Interim History,INTERIM HISTORY
 Interpretation,INTERPRETATION
 Intradept Consultation,INTRADEPARTMENTAL CONSULTATION
 Intraop Consult,INTRAOPERATIVE CONSULT,INTRAOPERATIVE CONSULTATION
@@ -116,7 +116,7 @@ Radiology,Radiology
 Radiopharm,RADIOPHARMACEUTICAL,RADIOPHARMACEUTICAL ADMINISTERED
 Read,READ
 Reason for Exam,Reason for Exam
-Recommendation,RECOMMENDATIONS
+Recommendation,Recommendations,RECOMMENDATIONS
 References,References
 Results,RESULTS
 Review of Systems,REVIEW OF SYSTEMS,Review of Systems as above

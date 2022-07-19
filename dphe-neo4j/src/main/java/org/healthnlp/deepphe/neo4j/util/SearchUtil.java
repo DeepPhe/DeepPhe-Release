@@ -627,11 +627,12 @@ final public class SearchUtil {
       try ( Transaction tx = graphDb.beginTx() ) {
 //         log.info( "Getting Out Relations for " + node.getProperty( NAME_KEY ) );
          final Collection<Relationship> relationships = new HashSet<>();
-         for ( Relationship relation : node.getRelationships( Direction.OUTGOING, relationshipType ) ) {
+         node.getRelationships( Direction.OUTGOING, relationshipType ).forEach( relationships::add );
+//         for ( Relationship relation : node.getRelationships( Direction.OUTGOING, relationshipType ) ) {
 //               log.info( "   Relation " + relation.getType().name()
 //                         + " to " + relation.getEndNode().getProperty( NAME_KEY ) );
-            relationships.add( relation );
-         }
+//            relationships.add( relation );
+//         }
          tx.success();
          return relationships;
       } catch ( TransactionFailureException txE ) {
@@ -696,10 +697,38 @@ final public class SearchUtil {
       return branchRelationships;
    }
 
+//   static public Collection<Relationship> getAllRelationships( final GraphDatabaseService graphDb,
+//                                                                  final Log log,
+//                                                                  final Node node,
+//                                                                  final Collection<Relationship> knownRelationships ) {
+//      if ( node == null ) {
+//         return Collections.emptyList();
+//      }
+//      try ( Transaction tx = graphDb.beginTx() ) {
+////         log.info( "Getting Out Relations for " + node.getProperty( NAME_KEY ) );
+//         final Collection<Relationship> relationships = new HashSet<>();
+//         for ( Relationship relation : node.getRelationships( Direction.BOTH ) ) {
+//            if ( !knownRelationships.contains( relation ) ) {
+////               log.info( "   Relation " + relation.getType().name()
+////                         + " to " + relation.getEndNode().getProperty( NAME_KEY ) );
+//               relationships.add( relation );
+//            }
+//         }
+//         tx.success();
+//         return relationships;
+//      } catch ( TransactionFailureException txE ) {
+//         log.error( txE.getMessage() );
+//      } catch ( MultipleFoundException mfE ) {
+//         log.error( mfE.getMessage() );
+//         LOGGER.error( mfE.getMessage(), mfE );
+//      }
+//      return Collections.emptyList();
+//   }
+
+
    static public Collection<Relationship> getAllRelationships( final GraphDatabaseService graphDb,
-                                                                  final Log log,
-                                                                  final Node node,
-                                                                  final Collection<Relationship> knownRelationships ) {
+                                                               final Log log,
+                                                               final Node node ) {
       if ( node == null ) {
          return Collections.emptyList();
       }
@@ -707,11 +736,11 @@ final public class SearchUtil {
 //         log.info( "Getting Out Relations for " + node.getProperty( NAME_KEY ) );
          final Collection<Relationship> relationships = new HashSet<>();
          for ( Relationship relation : node.getRelationships( Direction.BOTH ) ) {
-            if ( !knownRelationships.contains( relation ) ) {
+//            if ( !knownRelationships.contains( relation ) ) {
 //               log.info( "   Relation " + relation.getType().name()
 //                         + " to " + relation.getEndNode().getProperty( NAME_KEY ) );
                relationships.add( relation );
-            }
+//            }
          }
          tx.success();
          return relationships;
@@ -724,29 +753,29 @@ final public class SearchUtil {
       return Collections.emptyList();
    }
 
-   static public Collection<Relationship> getBranchAllRelationships( final GraphDatabaseService graphDb,
-                                                                        final Log log,
-                                                                        final Node node,
-                                                                        final Collection<Relationship> branchRelationships,
-                                                                        final Collection<Node> handledNodes ) {
-      if ( handledNodes.contains( node ) ) {
-         return Collections.emptyList();
-      }
-      handledNodes.add( node );
-      final Collection<Relationship> relationships = getAllRelationships( graphDb, log, node, branchRelationships );
-      for ( Relationship relationship : relationships ) {
-         if ( relationship.isType( INSTANCE_OF_RELATION ) ) {
-            branchRelationships.add( relationship );
-            continue;
-         }
-         final Node endNode = relationship.getEndNode();
-         if ( endNode != null ) {
-            branchRelationships.addAll( getBranchAllRelationships( graphDb, log, endNode, branchRelationships,
-                                                                      handledNodes ) );
-         }
-      }
-      return branchRelationships;
-   }
+//   static public Collection<Relationship> getBranchAllRelationships( final GraphDatabaseService graphDb,
+//                                                                        final Log log,
+//                                                                        final Node node,
+//                                                                        final Collection<Relationship> branchRelationships,
+//                                                                        final Collection<Node> handledNodes ) {
+//      if ( handledNodes.contains( node ) ) {
+//         return Collections.emptyList();
+//      }
+//      handledNodes.add( node );
+//      final Collection<Relationship> relationships = getAllRelationships( graphDb, log, node, branchRelationships );
+//      for ( Relationship relationship : relationships ) {
+//         if ( relationship.isType( INSTANCE_OF_RELATION ) ) {
+//            branchRelationships.add( relationship );
+//            continue;
+//         }
+//         final Node endNode = relationship.getEndNode();
+//         if ( endNode != null ) {
+//            branchRelationships.addAll( getBranchAllRelationships( graphDb, log, endNode, branchRelationships,
+//                                                                      handledNodes ) );
+//         }
+//      }
+//      return branchRelationships;
+//   }
 
    static public boolean hasOutRelation( final GraphDatabaseService graphDb,
                                          final Node node,

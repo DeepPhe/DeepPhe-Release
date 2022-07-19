@@ -1,13 +1,12 @@
 package org.healthnlp.deepphe.neo4j.writer;
 
-import org.healthnlp.deepphe.neo4j.constant.Neo4jConstants;
 import org.healthnlp.deepphe.neo4j.constant.UriConstants;
 import org.healthnlp.deepphe.neo4j.node.*;
+import org.healthnlp.deepphe.neo4j.util.DataUtil;
 import org.healthnlp.deepphe.neo4j.util.SearchUtil;
 import org.neo4j.graphdb.*;
 import org.neo4j.logging.Log;
 
-import javax.management.relation.Relation;
 import java.util.*;
 
 import static org.healthnlp.deepphe.neo4j.constant.Neo4jConstants.*;
@@ -27,7 +26,6 @@ public enum NodeWriter {
 
     private final Map<String, RelationshipType> _relationshipTypes = new HashMap<>();
 
-    private final ClearableNote _clearableNote = new ClearableNote();
 
     /////////////////////////////////////////////////////////////////////////////////////////
     //
@@ -159,23 +157,38 @@ public enum NodeWriter {
     //
     /////////////////////////////////////////////////////////////////////////////////////////
 
+    public void clearPatientInfo( final GraphDatabaseService graphDb,
+                                  final Log log,
+                                  final String patientId ) {
+        log.info( "clearPatientInfo " + patientId );
+        try ( Transaction tx = graphDb.beginTx() ) {
+            final Node patientNode = SearchUtil.getLabeledNode( graphDb, PATIENT_LABEL, patientId );
+            if ( patientNode != null ) {
+                NodeRemover.clearPatient( graphDb, log, patientNode );
+            }
+            tx.success();
+        } catch ( TransactionFailureException txE ) {
+            log.error( txE.getMessage() );
+        } catch ( Exception e ) {
+            // While it is bad practice to catch pure Exception, neo4j throws undeclared exceptions of all types.
+            log.error( "Ignoring Exception while clearing Patient information for "
+                       + patientId + "\n" + e.getClass().getSimpleName() + "\n" + e.getMessage() );
+            // Attempt to continue.
+        }
+    }
 
     public void addPatientInfo( final GraphDatabaseService graphDb,
                                 final Log log,
                                 final Patient patient ) {
+        log.info( "addPatientInfo " + patient.getName() + " " + patient.getId() );
         try ( Transaction tx = graphDb.beginTx() ) {
-            final Node patientNode = createPatientNode( graphDb, log, patient.getId() );
-            if ( patientNode == null ) {
-                return;
-            }
-//         node.setProperty( adjustPropertyName( PATIENT_NAME ), patient.getName() );
-//         node.setProperty( adjustPropertyName( PATIENT_GENDER ), patient.getGender() );
-//         node.setProperty( adjustPropertyName( PATIENT_BIRTH_DATE ), patient.getBirth() );
-//         node.setProperty( adjustPropertyName( PATIENT_DEATH_DATE ), patient.getDeath() );
-            // TODO : Dynamic
-//         node.setProperty( adjustPropertyName( PATIENT_FIRST_ENCOUNTER ), patient.getFirstDateSlashText() );
-//         node.setProperty( adjustPropertyName( PATIENT_LAST_ENCOUNTER ), patient.getLastDateSlashText() );
+            final Node patientNode = getOrCreatePatientNode( graphDb, log, patient.getId() );
+            final String noteHash = patient.getNoteHash();
+            log.info("Setting property " + HASH_KEY + " for patientId: " + patient.getId());
+            patientNode.setProperty( HASH_KEY, noteHash );
+            log.info( "Adding Notes" );
             patient.getNotes().forEach( n -> addNoteInfo( graphDb, log, patientNode, n ) );
+            log.info( "addPatientInfo Finished." );
             tx.success();
         } catch ( TransactionFailureException txE ) {
             log.error( txE.getMessage() );
@@ -187,41 +200,35 @@ public enum NodeWriter {
         }
     }
 
-
     private Node createPatientNode(  final GraphDatabaseService graphDb,
                                      final Log log,
                                      final String patientId ) {
         log.info("Entered createPatientNode");
         try ( Transaction tx = graphDb.beginTx() ) {
-            log.info("Searching for ClassNode: " + PATIENT_URI);
+//            log.info("Searching for ClassNode: " + PATIENT_URI);
             Node allPatientsNode = SearchUtil.getClassNode( graphDb, PATIENT_URI );
 
             if ( allPatientsNode == null ) {
-                log.info(PATIENT_URI + " not found!  Calling initializeDphe()");
+//                log.info(PATIENT_URI + " not found!  Calling initializeDphe()");
                 initializeDphe( graphDb, log );
-                log.info("Searching for ClassNode: " + PATIENT_URI + " after calling initialieDphe()");
+//                log.info("Searching for ClassNode: " + PATIENT_URI + " after calling initialieDphe()");
                 allPatientsNode = SearchUtil.getClassNode( graphDb, PATIENT_URI );
-
             }
             if ( allPatientsNode == null ) {
                 log.error("FATAL: Still unable to find ClassNode: " + PATIENT_URI + " after calling initialieDphe()");
-                log.error(
-                        "No class node for uri " + PATIENT_URI
+                log.error( "No class node for uri " + PATIENT_URI
                                 + ".  Cannot create put patient " + patientId + " in graph." );
                 tx.success();
                 return null;
             }
-            log.info("ClassNode " + PATIENT_URI + " found successfully.");
+//            log.info("ClassNode " + PATIENT_URI + " found successfully.");
 
-            log.info("Searching for node with Label(patientId): " + PATIENT_LABEL + "(" + patientId + ")");
-            Node patientNode = SearchUtil.getLabeledNode( graphDb, PATIENT_LABEL, patientId );
-            if ( patientNode == null ) {
-                log.info("Node not found, creating node " + PATIENT_LABEL);
-                patientNode = graphDb.createNode( PATIENT_LABEL );
-                log.info("Setting property " + NAME_KEY + " for patientId: " + patientId);
-                patientNode.setProperty( NAME_KEY, patientId );
-            }
-            log.info("Creating relation.");
+//            log.info("Creating patient node " + patientId );
+            Node patientNode = graphDb.createNode( PATIENT_LABEL );
+//            log.info("Setting property " + NAME_KEY + " for patientId: " + patientId);
+            patientNode.setProperty( NAME_KEY, patientId );
+//            log.info("Setting property " + HASH_KEY + " for patientId: " + patientId);
+            patientNode.setProperty( HASH_KEY, EMPTY_HASH );
             setInstanceOf( graphDb, log, patientNode, allPatientsNode );
             tx.success();
             return patientNode;
@@ -234,6 +241,7 @@ public enum NodeWriter {
                     + patientId + "\n" + e.getClass().getSimpleName() + "\n" + e.getMessage() );
             // Attempt to continue.
         }
+        log.info( "Done Creating Patient." );
         return null;
     }
 
@@ -241,34 +249,14 @@ public enum NodeWriter {
     private Node getOrCreatePatientNode(  final GraphDatabaseService graphDb,
                                           final Log log,
                                           final String patientId ) {
-        log.info("Searching for pre-existing patientNode w/ patientId: " + patientId);
-        final Node patientNode = SearchUtil.getObjectNode( graphDb, patientId );
+//        log.info("getOrCreatePatientNode Searching for pre-existing patientNode w/ patientId: " + patientId);
+        final Node patientNode = SearchUtil.getLabeledNode( graphDb, PATIENT_LABEL, patientId );
         if ( patientNode != null ) {
-            log.info("Found pre-existing patientNode!");
+//            log.info("Found pre-existing patientNode!");
             return patientNode;
         }
-        log.info ("Did not find pre-existing patientNode, calling createPatientNode()");
+//        log.info ("Did not find pre-existing patientNode, calling createPatientNode()");
         return createPatientNode( graphDb, log, patientId );
-    }
-
-    public void clearPatient( final GraphDatabaseService graphDb,
-                              final Log log,
-                              final Patient patient ) {
-        final String patientId = patient.getId();
-        log.info("Searching for node with Label(patientId): " + PATIENT_LABEL + "(" + patientId + ")");
-        Node patientNode = SearchUtil.getLabeledNode( graphDb, PATIENT_LABEL, patientId );
-        if ( patientNode == null ) {
-            log.info("Node not found, don't need to clear summaries." );
-            return;
-        }
-        log.info( "Finding " + Neo4jConstants.SUBJECT_HAS_CANCER_RELATION + " relations for patient " + patientId );
-        final Collection<Relationship> cancerRelationships
-              = SearchUtil.getOutRelationships( graphDb, log, patientNode, SUBJECT_HAS_CANCER_RELATION );
-        if ( cancerRelationships.isEmpty() ) {
-            return;
-        }
-
-
     }
 
 
@@ -283,13 +271,13 @@ public enum NodeWriter {
                                final Log log,
                                final String patientId,
                                final NeoplasmSummary cancer ) {
-        log.info("Entered addCancerInfo");
+//        log.info("Entered addCancerInfo");
         final Node patientNode = getOrCreatePatientNode( graphDb, log, patientId );
         if ( patientNode == null ) {
             log.error( "No Patient Node for " + patientId );
             return;
         }
-        log.info("patientNode found! calling a different addCancerInfo().");
+//        log.info("patientNode found! calling a different addCancerInfo().");
         addCancerInfo( graphDb, log, patientNode, cancer );
     }
 
@@ -297,37 +285,37 @@ public enum NodeWriter {
                                  final Log log,
                                  final Node patientNode,
                                  final NeoplasmSummary cancer ) {
-        log.info("Entered addCancerInfo()");
-      log.info( "Calling createNeoplasmNode for label(id) " + CANCER_LABEL + "(" + cancer.getId() + ")");
+//        log.info("Entered addCancerInfo()");
+//      log.info( "Calling createNeoplasmNode for label(id) " + CANCER_LABEL + "(" + cancer.getId() + ")");
 
         final Node cancerNode = createNeoplasmNode( graphDb, log, CANCER_LABEL, cancer );
         if ( cancerNode == null ) {
-            log.info("createNeoplasmNode call failed (returned cancerNode is null!");
+//            log.info("createNeoplasmNode call failed (returned cancerNode is null!");
             return;
         }
-      log.info( "Created Cancer node " + cancer.getId() );
+//      log.info( "Created Cancer node " + cancer.getId() );
         try ( Transaction tx = graphDb.beginTx() ) {
-         log.info( "Creating " + SUBJECT_HAS_CANCER_RELATION + " relation for cancer " + cancer.getId() );
+//         log.info( "Creating " + SUBJECT_HAS_CANCER_RELATION + " relation for cancer " + cancer.getId() );
             createRelation( graphDb, log, patientNode, cancerNode, SUBJECT_HAS_CANCER_RELATION );
-         log.info( "Relation created." );
+//         log.info( "Relation created." );
 
             final Collection<NeoplasmSummary> tumors = cancer.getSubSummaries();
 
 
             if ( tumors != null && !tumors.isEmpty() ) {
-                log.info("This cancer has " + tumors.size() + " tumors.");
+//                log.info("This cancer has " + tumors.size() + " tumors.");
                 for ( NeoplasmSummary tumor : tumors ) {
-               log.info( "Creating Tumor node for " + tumor.getId() );
+//               log.info( "Creating Tumor node for " + tumor.getId() );
                     final Node tumorNode = createNeoplasmNode( graphDb, log, TUMOR_LABEL, tumor );
-               log.info( "TurmorNode created!" );
+//               log.info( "TumorNode created!" );
                     if ( tumorNode != null ) {
-                  log.info( "Creating " + CANCER_HAS_TUMOR_RELATION + " for cancerNode " + cancerNode.getId() + " tumorNode " + tumorNode.getId() );
+//                  log.info( "Creating " + CANCER_HAS_TUMOR + " for cancerNode " + cancerNode.getId() + " tumorNode " + tumorNode.getId() );
                         createRelation( graphDb, log, cancerNode, tumorNode, CANCER_HAS_TUMOR_RELATION );
-                  log.info( "Relation Created!" );
+//                  log.info( CANCER_HAS_TUMOR + " Relation Created!" );
                     }
                 }
-            } else {
-                log.info("This cancer has 0 tumors.");
+//            } else {
+//                log.info("This cancer has 0 tumors.");
             }
             tx.success();
         } catch ( TransactionFailureException txE ) {
@@ -338,6 +326,7 @@ public enum NodeWriter {
                     + cancer.getId() + "\n" + e.getClass().getSimpleName() + "\n" + e.getMessage() );
             e.printStackTrace();
         }
+//        log.info( "Done adding Cancer." );
     }
 
     public void addNeoplasmInfo( final GraphDatabaseService graphDb,
@@ -450,12 +439,12 @@ public enum NodeWriter {
         addAttributeMentions( graphDb, log, attributeNode,
                 ATTRIBUTE_DIRECT_MENTION_RELATION,
                 attribute.getDirectEvidence() );
-        addAttributeMentions( graphDb, log, attributeNode,
-                ATTRIBUTE_INDIRECT_MENTION_RELATION,
-                attribute.getIndirectEvidence() );
-        addAttributeMentions( graphDb, log, attributeNode,
-                ATTRIBUTE_NOT_MENTION_RELATION,
-                attribute.getNotEvidence() );
+//        addAttributeMentions( graphDb, log, attributeNode,
+//                ATTRIBUTE_INDIRECT_MENTION_RELATION,
+//                attribute.getIndirectEvidence() );
+//        addAttributeMentions( graphDb, log, attributeNode,
+//                ATTRIBUTE_NOT_MENTION_RELATION,
+//                attribute.getNotEvidence() );
     }
 
     private void addAttributeMentions( final GraphDatabaseService graphDb,
@@ -496,114 +485,10 @@ public enum NodeWriter {
     }
 
 
-//    private void addNoteInfo(  final GraphDatabaseService graphDb,
-//                               final Log log,
-//                               final Node patientNode, final Note note ) {
-//        Node node = null;
-//        try ( Transaction tx = graphDb.beginTx() ) {
-//            final Node allDocumentsNode = SearchUtil.getClassNode( graphDb, EMR_NOTE_URI );
-//            if ( allDocumentsNode == null ) {
-//                log.error( "No class for uri " + EMR_NOTE_URI + ".  Cannot create put note in graph." );
-//                tx.success();
-//                return;
-//            }
-////         log.info( "Checking note node " + note.getId() );
-//            node = SearchUtil.getLabeledNode( graphDb, TEXT_DOCUMENT_LABEL, note.getId() );
-//            if ( node != null ) {
-//                // clear everything below the note so that we can rewrite it.
-////            log.info( "Have some not-null Note node:\n"
-////                       + node.getAllProperties().entrySet().stream()
-////                             .map( e -> e.getKey() + " = " + e.getValue() )
-////                             .collect( Collectors.joining("\n") ) );
-//                clearNode( graphDb, log, node );
-////            log.info( "Done clearing note.  Removing Properties." );
-//                node.removeProperty( NOTE_TYPE );
-////         log.info( "Setting note date " + note.getDate() );
-//                node.removeProperty( NOTE_DATE );
-////         log.info( "Setting note episode " + note.getEpisode() );
-//                node.removeProperty( NOTE_EPISODE );
-////         log.info( "Setting note text" );
-//                node.removeProperty( NOTE_TEXT );
-////            log.info( "Done removing properties." );
-//            } else {
-////            log.info( "Creating note node " + note.getId() );
-//                node = graphDb.createNode( TEXT_DOCUMENT_LABEL );
-////            log.info( "Setting note name " + note.getId() );
-//                node.setProperty( NAME_KEY, note.getId() );
-////            log.info( "Setting instance of " + note.getId() );
-//                setInstanceOf( graphDb, log, node, allDocumentsNode );
-////            log.info( "Creating relation subject has note" );
-//                createRelation( graphDb, log, patientNode, node, SUBJECT_HAS_NOTE_RELATION );
-//            }
-//            // Writes note date / time in format yyyyMMddhhmm
-////         log.info( "Setting note type " + note.getType() );
-//            node.setProperty( NOTE_TYPE, note.getType() );
-////         log.info( "Setting note date " + note.getDate() );
-//            node.setProperty( NOTE_DATE, note.getDate() );
-////         log.info( "Setting note episode " + note.getEpisode() );
-//            node.setProperty( NOTE_EPISODE, note.getEpisode() );
-////         log.info( "Setting note text" );
-//            node.setProperty( NOTE_TEXT, note.getText() );
-////         node.setProperty( NOTE_NAME, note.getId() );
-//            tx.success();
-//        } catch ( TransactionFailureException txE ) {
-//            log.error( txE.getMessage() );
-//        } catch ( Exception e ) {
-//            // While it is bad practice to catch pure Exception, neo4j throws undeclared exceptions of all types.
-//            log.error( "Ignoring Exception while adding Note information "
-//                    + note.getId() + "\n" + e.getClass().getSimpleName() + "\n" + e.getMessage() );
-//            // Attempt to continue.
-//        }
-//
-//        final Node noteNode = node;
-//        try ( Transaction tx = graphDb.beginTx() ) {
-////         log.info( "Setting note sections" );
-//            note.getSections().forEach( s -> addSectionInfo( graphDb, log, noteNode, s ) );
-//            tx.success();
-//        } catch ( TransactionFailureException txE ) {
-//            log.error( txE.getMessage() );
-//        } catch ( Exception e ) {
-//            // While it is bad practice to catch pure Exception, neo4j throws undeclared exceptions of all types.
-//            log.error( "Ignoring Exception while adding Note sections "
-//                    + note.getId() + "\n" + e.getClass().getSimpleName() + "\n" + e.getMessage() );
-//            // Attempt to continue.
-//        }
-//
-//        try ( Transaction tx = graphDb.beginTx() ) {
-////         log.info( "Setting note mentions" );
-//            note.getMentions().forEach( m -> addMentionInfo( graphDb, log, noteNode, m ) );
-//            tx.success();
-//        } catch ( TransactionFailureException txE ) {
-//            log.error( txE.getMessage() );
-//        } catch ( Exception e ) {
-//            // While it is bad practice to catch pure Exception, neo4j throws undeclared exceptions of all types.
-//            log.error( "Ignoring Exception while adding Note mentions "
-//                    + note.getId() + "\n" + e.getClass().getSimpleName() + "\n" + e.getMessage() );
-//            // Attempt to continue.
-//        }
-//
-//        try ( Transaction tx = graphDb.beginTx() ) {
-//            //         log.info( "Setting note relations" );
-//            note.getRelations().forEach( r -> addMentionRelation( graphDb, log, r ) );
-////         log.error( "Setting note corefs" );
-////         note.getCorefs().forEach( c -> addMentionCoref( graphDb, log, c ) );
-////         log.info( "Done" );
-//            tx.success();
-//        } catch ( TransactionFailureException txE ) {
-//            log.error( txE.getMessage() );
-//        } catch ( Exception e ) {
-//            // While it is bad practice to catch pure Exception, neo4j throws undeclared exceptions of all types.
-//            log.error( "Ignoring Exception while adding Note relations "
-//                    + note.getId() + "\n" + e.getClass().getSimpleName() + "\n" + e.getMessage() );
-//            // Attempt to continue.
-//        }
-//    }
-
 
     private void addNoteInfo(  final GraphDatabaseService graphDb,
                                final Log log,
                                final Node patientNode, final Note note ) {
-        _clearableNote.clear();
         Node noteNode = null;
         try ( Transaction tx = graphDb.beginTx() ) {
             final Node allDocumentsNode = SearchUtil.getClassNode( graphDb, EMR_NOTE_URI );
@@ -612,30 +497,32 @@ public enum NodeWriter {
                 tx.success();
                 return;
             }
-         log.info( "Checking note node " + note.getId() );
-            noteNode = SearchUtil.getLabeledNode( graphDb, TEXT_DOCUMENT_LABEL, note.getId() );
-            if ( noteNode != null ) {
-                _clearableNote.collectClearables( graphDb, log, noteNode );
-             } else {
-            log.info( "Creating note node " + note.getId() );
-                noteNode = graphDb.createNode( TEXT_DOCUMENT_LABEL );
-            log.info( "Setting note name " + note.getId() );
-                noteNode.setProperty( NAME_KEY, note.getId() );
-            log.info( "Setting instance of " + note.getId() );
+//         log.info( "Checking note node " + note.getId() );
+//            noteNode = SearchUtil.getLabeledNode( graphDb, TEXT_DOCUMENT_LABEL, note.getId() );
+            noteNode = SearchUtil.getOrCreateLabeledNode( graphDb, TEXT_DOCUMENT_LABEL, note.getId() );
+//            if ( noteNode != null ) {
+//                _clearableNote.collectClearables( graphDb, log, noteNode );
+//             } else {
+//            log.info( "Creating note node " + note.getId() );
+//                noteNode = graphDb.createNode( TEXT_DOCUMENT_LABEL );
+//            log.info( "Setting note name " + note.getId() );
+//                noteNode.setProperty( NAME_KEY, note.getId() );
+//            log.info( "Setting instance of " + note.getId() );
                 setInstanceOf( graphDb, log, noteNode, allDocumentsNode );
-            log.info( "Creating relation subject has note" );
+//            log.info( "Creating relation subject has note" );
                 createRelation( graphDb, log, patientNode, noteNode, SUBJECT_HAS_NOTE_RELATION );
-            }
-            // Writes note date / time in format yyyyMMddhhmm
-         log.info( "Setting note type " + note.getType() );
+//            }
+//            log.info( "Setting note name " + note.getName() );
+            noteNode.setProperty( NOTE_NAME, note.getName() );
+//         log.info( "Setting note type " + note.getType() );
             noteNode.setProperty( NOTE_TYPE, note.getType() );
-         log.info( "Setting note date " + note.getDate() );
+            // Writes note date / time in format yyyyMMddhhmm
+//            log.info( "Setting note date " + note.getDate() );
             noteNode.setProperty( NOTE_DATE, note.getDate() );
-         log.info( "Setting note episode " + note.getEpisode() );
+//         log.info( "Setting note episode " + note.getEpisode() );
             noteNode.setProperty( NOTE_EPISODE, note.getEpisode() );
-         log.info( "Setting note text" );
+//         log.info( "Setting note text" );
             noteNode.setProperty( NOTE_TEXT, note.getText() );
-//         noteNode.setProperty( NOTE_NAME, note.getId() );
             tx.success();
         } catch ( TransactionFailureException txE ) {
             log.error( txE.getMessage() );
@@ -648,7 +535,7 @@ public enum NodeWriter {
 
         final Node noteNode1 = noteNode;
         try ( Transaction tx = graphDb.beginTx() ) {
-         log.info( "Setting note sections" );
+//         log.info( "Setting note sections" );
             note.getSections().forEach( s -> addSectionInfo( graphDb, log, noteNode1, s ) );
             tx.success();
         } catch ( TransactionFailureException txE ) {
@@ -661,7 +548,7 @@ public enum NodeWriter {
         }
 
         try ( Transaction tx = graphDb.beginTx() ) {
-         log.info( "Setting note mentions" );
+//         log.info( "Adding note mentions" );
             note.getMentions().forEach( m -> addMentionInfo( graphDb, log, noteNode1, m ) );
             tx.success();
         } catch ( TransactionFailureException txE ) {
@@ -674,7 +561,7 @@ public enum NodeWriter {
         }
 
         try ( Transaction tx = graphDb.beginTx() ) {
-                     log.info( "Setting note relations" );
+//                     log.info( "Setting note relations" );
             note.getRelations().forEach( r -> addMentionRelation( graphDb, log, r ) );
 //         log.error( "Setting note corefs" );
 //         note.getCorefs().forEach( c -> addMentionCoref( graphDb, log, c ) );
@@ -688,231 +575,8 @@ public enum NodeWriter {
                        + note.getId() + "\n" + e.getClass().getSimpleName() + "\n" + e.getMessage() );
             // Attempt to continue.
         }
-        _clearableNote.removeUnwanted( graphDb, log );
     }
 
-
-
-
-
-
-    private void clearNode( final GraphDatabaseService graphDb,
-                            final Log log, final Node node ) {
-        if ( node == null ) {
-            return;
-        }
-        final Collection<Relationship> noteRelationships
-                = SearchUtil.getBranchAllOutRelationships( graphDb, log, node, new HashSet<>(), new HashSet<>() );
-        final Collection<Node> endNodes = new HashSet<>( noteRelationships.size() );
-        try ( Transaction tx = graphDb.beginTx() ) {
-            for ( Relationship relationship : noteRelationships ) {
-                final Node startNode = relationship.getStartNode();
-                final Node endNode = relationship.getEndNode();
-                if ( !relationship.isType( INSTANCE_OF_RELATION ) ) {
-                    if ( endNode != null ) {
-                        endNodes.add( endNode );
-                    }
-                    if ( startNode != null && !startNode.equals( node ) ) {
-//                  log.info( "Deleting Relationship " + relationship.getType().name()
-//                            + " " + relationship.getStartNode().getProperty( NAME_KEY )
-//                            + " " + relationship.getEndNode().getProperty( NAME_KEY ));
-                        final Collection<String> propertyKeys = new HashSet<>();
-                        relationship.getPropertyKeys().forEach( propertyKeys::add );
-                        for ( String key : propertyKeys ) {
-                            relationship.removeProperty( key );
-                        }
-                        relationship.delete();
-//                  log.info( "deletion done" );
-                    }
-                }
-            }
-            tx.success();
-        } catch ( MultipleFoundException mfE ) {
-            log.error( mfE.getMessage(), mfE );
-        }
-        try ( Transaction tx = graphDb.beginTx() ) {
-            for ( Node endNode : endNodes ) {
-//            log.info( "Deleting Node " + endNode.getProperty( NAME_KEY ) + " " + endNode.getId() );
-                final Collection<String> propertyKeys = new HashSet<>();
-                endNode.getPropertyKeys().forEach( propertyKeys::add );
-                for ( String key : propertyKeys ) {
-                    endNode.removeProperty( key );
-                }
-                endNode.delete();
-//            log.info( "deletion done" );
-            }
-            tx.success();
-        } catch ( MultipleFoundException mfE ) {
-            log.error( mfE.getMessage(), mfE );
-        }
-    }
-
-
-    static private class ClearableNode {
-        private final Collection<Node> _endNodes = new HashSet<>();
-        private final Collection<Relationship> _relationships = new HashSet<>();
-        private RelationshipType _stopRelation;
-        private final Collection<Label> _clearLabels = new HashSet<>();
-
-//        CANCER_LABEL  TUMOR_LABEL  ATTRIBUTE_LABEL
-
-        private ClearableNode( final RelationshipType stopRelation, final Label ... clearLabels ) {
-            _stopRelation = stopRelation;
-            _clearLabels.addAll( Arrays.asList( clearLabels ) );
-        }
-
-        private void clear() {
-            _endNodes.clear();
-            _relationships.clear();
-        }
-
-        private void collectClearables( final GraphDatabaseService graphDb,
-                                        final Log log,
-                                        final Node rootNode ) {
-            if ( rootNode == null ) {
-                return;
-            }
-            final Collection<Relationship> nodeRelationships
-                  = SearchUtil.getBranchAllOutRelationships( graphDb, log, rootNode, new HashSet<>(), new HashSet<>() );
-            try ( Transaction tx = graphDb.beginTx() ) {
-                for ( Relationship relationship : nodeRelationships ) {
-                    final Node startNode = relationship.getStartNode();
-                    final Node endNode = relationship.getEndNode();
-                    if ( !_stopRelation.equals( relationship.getType() ) ) {
-                        if ( endNode != null && clearNodeByLabel( endNode ) ) {
-                            _endNodes.add( endNode );
-                        }
-                    }
-                    if ( startNode != null && !startNode.equals( rootNode ) ) {
-                        log.info( "Have existing Relationship " + relationship.getType().name()
-                            + " " + relationship.getStartNode().getProperty( NAME_KEY )
-                            + " " + relationship.getEndNode().getProperty( NAME_KEY ));
-                        _relationships.add( relationship );
-                    }
-                }
-                tx.success();
-            } catch ( MultipleFoundException mfE ) {
-                log.error( mfE.getMessage(), mfE );
-            }
-        }
-
-        private boolean clearNodeByLabel( final Node node ) {
-            for ( Label label : node.getLabels() ) {
-                if ( _clearLabels.contains( label ) ) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private void keepNode( final Node node ) {
-            _endNodes.remove( node );
-        }
-
-        private void keepRelationship( final Relationship relationship ) {
-            _relationships.remove( relationship );
-        }
-
-        private void removeUnwanted( final GraphDatabaseService graphDb, final Log log ) {
-            try ( Transaction tx = graphDb.beginTx() ) {
-                for ( Relationship relationship : _relationships ) {
-                  log.info( "Deleting Relationship " + relationship.getType().name()
-                            + " " + relationship.getStartNode().getProperty( NAME_KEY )
-                            + " " + relationship.getEndNode().getProperty( NAME_KEY ));
-                    relationship.delete();
-                  log.info( "Relation deletion done" );
-                }
-                tx.success();
-            } catch( MultipleFoundException mfE ) {
-                log.error( mfE.getMessage(), mfE );
-            }
-            try ( Transaction tx = graphDb.beginTx() ) {
-                for ( Node endNode : _endNodes ) {
-            log.info( "Deleting Node " + endNode.getProperty( NAME_KEY ) + " " + endNode.getId() );
-                    endNode.delete();
-            log.info( "Node deletion done" );
-                }
-                tx.success();
-            } catch ( MultipleFoundException mfE ) {
-                log.error( mfE.getMessage(), mfE );
-            }
-        }
-    }
-
-
-    static private class ClearableNote {
-        private final Collection<Node> _endNodes = new HashSet<>();
-        private final Collection<Relationship> _relationships = new HashSet<>();
-
-        private void clear() {
-            _endNodes.clear();
-            _relationships.clear();
-        }
-
-        private void collectClearables( final GraphDatabaseService graphDb,
-                                        final Log log,
-                                        final Node noteNode ) {
-            if ( noteNode == null ) {
-                return;
-            }
-            final Collection<Relationship> noteRelationships
-                  = SearchUtil.getBranchAllOutRelationships( graphDb, log, noteNode, new HashSet<>(), new HashSet<>() );
-            try ( Transaction tx = graphDb.beginTx() ) {
-                for ( Relationship relationship : noteRelationships ) {
-                    final Node startNode = relationship.getStartNode();
-                    final Node endNode = relationship.getEndNode();
-                    if ( !relationship.isType( INSTANCE_OF_RELATION ) ) {
-                        if ( endNode != null ) {
-                            _endNodes.add( endNode );
-                        }
-                        if ( startNode != null && !startNode.equals( noteNode ) ) {
-                            log.info( "Have existing Relationship " + relationship.getType().name()
-                                      + " " + relationship.getStartNode().getProperty( NAME_KEY )
-                                      + " " + relationship.getEndNode().getProperty( NAME_KEY ));
-                            _relationships.add( relationship );
-                        }
-                    }
-                }
-                tx.success();
-            } catch ( MultipleFoundException mfE ) {
-                log.error( mfE.getMessage(), mfE );
-            }
-        }
-
-        private void keepNode( final Node node ) {
-            _endNodes.remove( node );
-        }
-
-        private void keepRelationship( final Relationship relationship ) {
-            _relationships.remove( relationship );
-        }
-
-        private void removeUnwanted( final GraphDatabaseService graphDb, final Log log ) {
-            try ( Transaction tx = graphDb.beginTx() ) {
-                for ( Relationship relationship : _relationships ) {
-                    log.info( "Deleting Relationship " + relationship.getType().name()
-                              + " " + relationship.getStartNode().getProperty( NAME_KEY )
-                              + " " + relationship.getEndNode().getProperty( NAME_KEY ));
-                    relationship.delete();
-                    log.info( "Relation deletion done" );
-                }
-                tx.success();
-            } catch( MultipleFoundException mfE ) {
-                log.error( mfE.getMessage(), mfE );
-            }
-            try ( Transaction tx = graphDb.beginTx() ) {
-                for ( Node endNode : _endNodes ) {
-                    log.info( "Deleting Node " + endNode.getProperty( NAME_KEY ) + " " + endNode.getId() );
-                    endNode.delete();
-                    log.info( "Node deletion done" );
-                }
-                tx.success();
-            } catch ( MultipleFoundException mfE ) {
-                log.error( mfE.getMessage(), mfE );
-            }
-        }
-
-    }
 
 
 
@@ -924,21 +588,20 @@ public enum NodeWriter {
     /////////////////////////////////////////////////////////////////////////////////////////
 
 
-    //            node.setProperty( SECTION_TYPE, mention.getSectionType() );
     public void addSectionInfo(  final GraphDatabaseService graphDb,
                                  final Log log,
                                  final Node noteNode,
                                  final Section section ) {
         try ( Transaction tx = graphDb.beginTx() ) {
-            Node node = SearchUtil.getLabeledNode( graphDb, DOCUMENT_SECTION_LABEL,  section.getId() );
-            if ( node == null ) {
-                log.info( "Creating Section node " + section.getId() );
-                node = graphDb.createNode( DOCUMENT_SECTION_LABEL );
-                node.setProperty( NAME_KEY, section.getId() );
-            } else {
-                log.info( "Keeping Section node " + section.getId() );
-                _clearableNote.keepNode( node );
-            }
+            Node node = SearchUtil.getOrCreateLabeledNode( graphDb, DOCUMENT_SECTION_LABEL,  section.getId() );
+//            if ( node == null ) {
+//                log.info( "Creating Section node " + section.getId() );
+//                node = graphDb.createNode( DOCUMENT_SECTION_LABEL );
+//                node.setProperty( NAME_KEY, section.getId() );
+//            } else {
+//                log.info( "Keeping Section node " + section.getId() );
+//                _clearableNote.keepNode( node );
+//            }
 //            final Node node = graphDb.createNode( DOCUMENT_SECTION_LABEL );
 //            node.setProperty( NAME_KEY, section.getId() );
             node.setProperty( SECTION_TYPE, section.getType() );
@@ -946,9 +609,7 @@ public enum NodeWriter {
             node.setProperty( TEXT_SPAN_END, section.getEnd() );
 
             if ( noteNode != null ) {
-                final Relationship relationship
-                      = createRelation( graphDb, log, noteNode, node, NOTE_HAS_SECTION_RELATION );
-                _clearableNote.keepRelationship( relationship );
+                createRelation( graphDb, log, noteNode, node, NOTE_HAS_SECTION_RELATION );
             }
 
             tx.success();
@@ -994,14 +655,15 @@ public enum NodeWriter {
 //            tx.success();
 //            return sameNode;
 //         }
-//         log.info( "Creating Mention node " + mention.getId() );
-            Node node = SearchUtil.getLabeledNode( graphDb, TEXT_MENTION_LABEL,  mention.getId() );
-            if ( node == null ) {
-                node = graphDb.createNode( TEXT_MENTION_LABEL );
-                node.setProperty( NAME_KEY, mention.getId() );
-            } else {
-                _clearableNote.keepNode( node );
-            }
+//            log.info( "get or Creating Mention node " + mention.getId() );
+//            Node node = SearchUtil.getLabeledNode( graphDb, TEXT_MENTION_LABEL,  mention.getId() );
+            Node node = SearchUtil.getOrCreateLabeledNode( graphDb, TEXT_MENTION_LABEL, mention.getId() );
+//            if ( node == null ) {
+//                node = graphDb.createNode( TEXT_MENTION_LABEL );
+//                node.setProperty( NAME_KEY, mention.getId() );
+//            } else {
+//                _clearableNote.keepNode( node );
+//            }
 //            final Node node = graphDb.createNode( TEXT_MENTION_LABEL );
 //            node.setProperty( NAME_KEY, mention.getId() );
 //         annotationNodes.put( annotation, node );
@@ -1009,8 +671,7 @@ public enum NodeWriter {
             if ( !mention.getClassUri().isEmpty() ) {
                 final Node classNode = SearchUtil.getClassNode( graphDb, mention.getClassUri() );
                 if ( classNode != null ) {
-                    final Relationship instanceOf = setInstanceOf( graphDb, log, node, classNode );
-                    _clearableNote.keepRelationship( instanceOf );
+                    setInstanceOf( graphDb, log, node, classNode );
                 }
             }
             node.setProperty( TEXT_SPAN_BEGIN, mention.getBegin() );
@@ -1023,18 +684,16 @@ public enum NodeWriter {
             node.setProperty( INSTANCE_TEMPORALITY, mention.getTemporality() );
 
             if ( noteNode != null ) {
-                final Relationship relationship
-                      = createRelation( graphDb, log, noteNode, node, NOTE_HAS_TEXT_MENTION_RELATION );
-                _clearableNote.keepRelationship( relationship );
+                createRelation( graphDb, log, noteNode, node, NOTE_HAS_TEXT_MENTION_RELATION );
             }
 //         log.info( "Created mention node " + mention.getId() + " " + node.getId() );
 
-            final Node sourceNode = SearchUtil.getLabeledNode( graphDb, TEXT_MENTION_LABEL, mention.getId() );
-            if ( sourceNode != null ) {
+//            final Node sourceNode = SearchUtil.getLabeledNode( graphDb, TEXT_MENTION_LABEL, mention.getId() );
+//            if ( sourceNode != null ) {
 //            log.info( "Have Mention node " + mention.getId() + " " + sourceNode.getId() );
-            } else {
-                log.error( "Do not have mention node " + mention.getId() );
-            }
+//            } else {
+//                log.error( "Do not have mention node " + mention.getId() );
+//            }
 
             tx.success();
         } catch ( MultipleFoundException mfE ) {
@@ -1077,9 +736,7 @@ public enum NodeWriter {
                                          final Node sourceNode,
                                          final Node targetNode,
                                          final String relationType ) {
-        final Relationship relationship = createRelation( graphDb, log, sourceNode, targetNode, relationType );
-        _clearableNote.keepRelationship( relationship );
-        return relationship;
+        return createRelation( graphDb, log, sourceNode, targetNode, relationType );
     }
 
 
@@ -1175,29 +832,32 @@ public enum NodeWriter {
                                         final Node node,
                                         final Node relatedNode,
                                         final RelationshipType relationshipType ) {
-        log.info("Entered createReleation()");
+//        log.info("Entered createRelation()");
         try ( Transaction tx = graphDb.beginTx() ) {
-            log.info("Searching for outgoing relationships of type " + relationshipType);
+//            log.info("Searching for outgoing relationships "
+//                     + DataUtil.objectToString( node.getProperty( NAME_KEY ) )
+//                     + " " + relationshipType.name() + " "
+//                     + DataUtil.objectToString( relatedNode.getProperty( NAME_KEY ) ) );
             for ( Relationship existing : node.getRelationships( relationshipType, Direction.OUTGOING ) ) {
-                log.info("Found relationships!");
+//                log.info("Found relationships!");
                 if ( existing.getOtherNode( node ).equals( relatedNode ) ) {
                     // Relation already exists
-                    log.info( "Relationship " + relationshipType.name() + " already exists!" );
+//                    log.info( "Found Relationship!" );
                     tx.success();
                     return existing;
                 }
             }
-            log.info("Relationship did not exist! " + relationshipType);
-            log.info("Creating " +relationshipType+ " releationship to " + relatedNode.getId());
+//            log.info("Relationship did not exist!" );
+//            log.info("Creating Relationship ..." );
             final Relationship relationship = node.createRelationshipTo( relatedNode, relationshipType );
-            log.info("Relationship " +relationshipType+ " to " + relatedNode.getId() + " created!");
+//            log.info("Relationship created!");
             tx.success();
             return relationship;
         } catch ( MultipleFoundException mfE ) {
             log.error( mfE.getMessage() );
         } catch ( Exception e ) {
-            log.error( "Ignoring Exception while creating relation "
-                    + relationshipType.name() + "\n" + e.getClass().getSimpleName() + "\n" + e.getMessage() );
+            log.error( "Ignoring Exception while creating relation\n"
+                       + e.getClass().getSimpleName() + "\n" + e.getMessage() );
         }
         return null;
     }

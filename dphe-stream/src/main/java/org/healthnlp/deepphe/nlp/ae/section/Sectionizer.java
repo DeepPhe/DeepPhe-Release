@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -100,6 +101,11 @@ final public class Sectionizer extends JCasAnnotator_ImplBase {
         }
     }
 
+    static private final Function<String,String> toRegex
+          = t -> t.equals( t.toUpperCase() )
+                 ? "^[ \\t]*" + t + "[ \\t\\r\\n:-]+"
+                 : "^[ \\t]*" + t + "[ \\t]*(?:(?:[:-]*[ \\t]*\\r?\\n)|(?:[:-]+[ \\t\\r\\n]+))";
+
     /**
      * Build a regex pattern from a list of section names. used only during init
      */
@@ -118,7 +124,8 @@ final public class Sectionizer extends JCasAnnotator_ImplBase {
 //        }
         final String regex = Arrays.stream( line )
                                    .map( String::trim )
-                                   .map( e -> "^[ \\t]*" + e + "[ \\t:-]*\\r?\\n" )
+//                                   .map( e -> "^[ \\t]*" + e + "[ \\t:-]*\\r?\\n?" )
+                                    .map( toRegex )
                                    .collect( Collectors.joining( "|" ) );
 //        int patternFlags = 0;
 //        patternFlags |= Pattern.DOTALL;
@@ -146,7 +153,8 @@ final public class Sectionizer extends JCasAnnotator_ImplBase {
                         }
                     }
                 }
-                if ( preTitleLines < 2 ) {
+//                if ( preTitleLines < 2 ) {
+                if ( preTitleLines < 1 ) {
                     continue;
                 }
                 int end = m.end();
@@ -297,6 +305,7 @@ final public class Sectionizer extends JCasAnnotator_ImplBase {
             addMultipleSectionsToCas(jCas, sectionHeaders);
         }
         sectionHeaders.forEach( Segment::removeFromIndexes );
+//        JCasUtil.select( jCas, Segment.class ).forEach( LOGGER::error );
     }
 
 }

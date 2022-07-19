@@ -13,6 +13,8 @@ final public class Neo4jConstants {
    private Neo4jConstants() {
    }
 
+   static public final int EMPTY_HASH = Integer.MIN_VALUE;
+
    static public final String NAME_KEY = "name";
    static public final String PREF_TEXT_KEY = "preferred_text";
 
@@ -20,6 +22,7 @@ final public class Neo4jConstants {
    static public final String TUI_KEY = "tui";
    static public final String ICDO_KEY = "icdo";
    static public final String LEVEL_KEY = "class_level";
+   static public final String HASH_KEY = "note_hash";
 
    static public final String MISSING_NODE_NAME = "MissingNodeName";
 
