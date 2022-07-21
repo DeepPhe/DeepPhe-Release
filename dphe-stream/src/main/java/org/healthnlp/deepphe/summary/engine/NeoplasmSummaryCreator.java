@@ -98,7 +98,7 @@ final public class NeoplasmSummaryCreator {
       }
    }
 
-   static public NeoplasmSummary createNeoplasmSummary( final ConceptAggregate neoplasm,
+   static public NeoplasmSummary createNeoplasmSummaryLong( final ConceptAggregate neoplasm,
                                                         final boolean isPrimary,
                                                         final Collection<ConceptAggregate> allConcepts,
                                                         final boolean registryOnly ) {
@@ -149,11 +149,12 @@ final public class NeoplasmSummaryCreator {
       addBrCaClockface( neoplasm, topoMinor, attributes );
       addQuadrant( neoplasm, topoMinor, attributes );
       // tumor has histology, diagnosis, behavior
-      addHistology( neoplasm, summary, attributes, allConcepts, patientNeoplasms, topography.getValue() );
+      final NeoplasmAttribute histology = addHistology( neoplasm, summary, attributes, allConcepts, patientNeoplasms,
+            topography.getValue() );
       //  Gold uses "cancer_type" and "histologic_type" to denote something -like- histology.
-      copyWithUriAsValue( attributes, "histology", "cancer_type" );
-      copyWithUriAsValue( attributes, "histology", "histologic_type" );
-      copyWithUriAsValue( attributes, "histology", "diagnosis" );
+      copyWithUriAsValue( attributes, histology, "cancer_type" );
+      copyWithUriAsValue( attributes, histology, "histologic_type" );
+      copyWithUriAsValue( attributes, histology, "diagnosis" );
       addBehavior( neoplasm, summary, attributes, allConcepts, patientNeoplasms, registryOnly );
       //  "extent" is behavior, nice name.
       addExtent( attributes );
@@ -188,6 +189,87 @@ final public class NeoplasmSummaryCreator {
       return summary;
    }
 
+   static public NeoplasmSummary createNeoplasmSummary( final ConceptAggregate neoplasm,
+                                                        final boolean isPrimary,
+                                                        final Collection<ConceptAggregate> allConcepts,
+                                                        final boolean registryOnly ) {
+      if ( TOPO_MAJOR_MAP.isEmpty() ) {
+         fillTopoMajorMap();
+      }
+      addDebug( "=======================================================================\n" +
+                neoplasm.getPatientId() +  "\n" );
+      final GraphDatabaseService graphDb = EmbeddedConnection.getInstance()
+                                                             .getGraph();
+      final Collection<String> massNeoplasmUris = UriConstants.getMassNeoplasmUris( graphDb );
+      final Predicate<ConceptAggregate> isNeoplasm = c -> c.getAllUris()
+                                                           .stream()
+                                                           .anyMatch( massNeoplasmUris::contains );
+      final Collection<ConceptAggregate> patientNeoplasms
+            = allConcepts.stream()
+                         .filter( isNeoplasm )
+                         .collect( Collectors.toList() );
+
+      final NeoplasmSummary summary = new NeoplasmSummary();
+      summary.setId( neoplasm.getUri() + "_" + System.currentTimeMillis() );
+      summary.setClassUri( neoplasm.getUri() );
+      final List<NeoplasmAttribute> attributes = new ArrayList<>();
+
+      final NeoplasmAttribute topography = getTopography( neoplasm, allConcepts );
+      addLocation( topography, attributes );
+//      createWithValue( "location", locationUri, locationUri, attributes );
+      final NeoplasmAttribute lateralityCode = getLateralityCode( neoplasm, allConcepts,
+                                                                  patientNeoplasms,
+                                                                  topography.getValue() );
+//      copyWithUriAsValue( attributes, "laterality_code", "laterality" );
+      copyWithUriAsValue( attributes, lateralityCode, "laterality" );
+      // tumor has topo minor attributes.
+      final NeoplasmAttribute topoMinor = getTopoMinor( neoplasm, allConcepts, patientNeoplasms,
+                                                        topography.getValue(),
+                                                        lateralityCode.getValue() );
+      addBrCaClockface( neoplasm, topoMinor, attributes );
+      addQuadrant( neoplasm, topoMinor, attributes );
+      // tumor has histology, diagnosis, behavior
+      final NeoplasmAttribute histology = addHistology( neoplasm, summary, attributes, allConcepts, patientNeoplasms,
+            topography.getValue() );
+      //  Gold uses "cancer_type" and "histologic_type" to denote something -like- histology.
+//      copyWithUriAsValue( attributes, "histology", "cancer_type" );
+      copyWithUriAsValue( attributes, histology, "histologic_type" );
+//      copyWithUriAsValue( attributes, "histology", "diagnosis" );
+      attributes.remove( histology );
+      addBehavior( neoplasm, summary, attributes, allConcepts, patientNeoplasms, registryOnly );
+      //  "extent" is behavior, nice name.
+      addExtent( attributes );
+      addTumorType( attributes, isPrimary );
+      // TODO topo_morphed ?
+//      createWithValue( "topo_morphed", "generated", "false", attributes );
+//      createWithValueOnly( "historic", "historic",
+//                           neoplasm.inPatientHistory() ? "historic" : "current", attributes );
+//      createWithValueOnly( "calcifications", "calcifications",
+//                           neoplasm.getRelated( HAS_CALCIFICATION ).isEmpty()
+//                           ? "false" : "true", attributes );
+      // Calcification was removed from the last n versions.
+      addDebug( "Calcifications: " + (neoplasm.getRelated( HAS_CALCIFICATION ).isEmpty()
+                                      ? "false" : "true" ) + " ; " + allConcepts.stream()
+                                                                                .map( ConceptAggregate::getMentions )
+                                                                                .flatMap( Collection::stream )
+                                                                                .map( Mention::getClassUri )
+                                                                                .filter( u -> u.toLowerCase().contains( "calcif" ) )
+                                                                                .collect( Collectors.joining(",") ) + "\n" );
+      // Cancer has grade, stage, tnm
+      addGrade( neoplasm, summary, attributes, allConcepts, patientNeoplasms );
+      addStage( neoplasm, summary, attributes, allConcepts, patientNeoplasms );
+      addTnmT( neoplasm, summary, attributes, allConcepts, patientNeoplasms );
+      addTnmN( neoplasm, summary, attributes, allConcepts, patientNeoplasms );
+      addTnmM( neoplasm, summary, attributes, allConcepts, patientNeoplasms );
+      // tumor has biomarkers
+      // TODO tumor_size, tumor_size_procedure
+      addBiomarkers( neoplasm, summary, attributes, allConcepts, patientNeoplasms );
+      // TODO treatment (hasTreatment)
+
+      summary.setAttributes( attributes );
+      return summary;
+   }
+
 //   static private String addTopography( final ConceptAggregate neoplasm,
 //                                      final NeoplasmSummary summary,
 //                                      final List<NeoplasmAttribute> attributes,
@@ -201,6 +283,12 @@ final public class NeoplasmSummaryCreator {
 ////      return majorTopoAttr.getValue() + "3";
 //      return majorTopoAttr.getValue();
 //   }
+
+   static private NeoplasmAttribute getTopography(final ConceptAggregate neoplasm,
+                                                  final Collection<ConceptAggregate> allConcepts ) {
+      final Topography topography = new Topography( neoplasm, allConcepts );
+      return topography.toNeoplasmAttribute();
+   }
 
    static private NeoplasmAttribute addTopography(final ConceptAggregate neoplasm,
                                                   final List<NeoplasmAttribute> attributes,
@@ -218,6 +306,25 @@ final public class NeoplasmSummaryCreator {
          return "Undetermined";
       }
       return sourceAttribute.getClassUri();
+   }
+
+   static private NeoplasmAttribute getTopoMinor( final ConceptAggregate neoplasm,
+                                                  final Collection<ConceptAggregate> allConcepts,
+                                                  final Collection<ConceptAggregate> patientNeoplasms,
+                                                  final String topographyMajor,
+                                                  final String lateralityCode ) {
+      final Map<String,String> dependencies = new HashMap<>( 1 );
+      dependencies.put( "topography_major", topographyMajor );
+      dependencies.put( "laterality_code", lateralityCode );
+      final DefaultAttribute<TopoMinorUriInfoVisitor, TopoMinorCodeInfoStore> topoMinor
+            = new DefaultAttribute<>( "topography_minor",
+                                      neoplasm,
+                                      allConcepts,
+                                      patientNeoplasms,
+                                      TopoMinorUriInfoVisitor::new,
+                                      TopoMinorCodeInfoStore::new,
+                                      dependencies );
+      return topoMinor.toNeoplasmAttribute();
    }
 
    static private NeoplasmAttribute addTopoMinor( final ConceptAggregate neoplasm,
@@ -429,7 +536,7 @@ final public class NeoplasmSummaryCreator {
 //   }
 
 
-   static private void addHistology( final ConceptAggregate neoplasm,
+   static private NeoplasmAttribute addHistology( final ConceptAggregate neoplasm,
                                      final NeoplasmSummary summary,
                                      final List<NeoplasmAttribute> attributes,
                                      final Collection<ConceptAggregate> allConcepts,
@@ -439,7 +546,9 @@ final public class NeoplasmSummaryCreator {
             = new Histology( neoplasm,
                              allConcepts,
                              patientNeoplasms );
-      attributes.add( histology.toNeoplasmAttribute() );
+      final NeoplasmAttribute attribute = histology.toNeoplasmAttribute();
+      attributes.add( attribute );
+      return attribute;
    }
 
 
@@ -515,6 +624,24 @@ final public class NeoplasmSummaryCreator {
       attribute.setNotEvidence( sourceAttribute.getNotEvidence() );
       attributes.add( attribute );
    }
+
+   static private NeoplasmAttribute getLateralityCode( final ConceptAggregate neoplasm,
+                                                       final Collection<ConceptAggregate> allConcepts,
+                                                       final Collection<ConceptAggregate> patientNeoplasms,
+                                                       final String topographyMajor ) {
+      final Map<String,String> dependencies = new HashMap<>( 1 );
+      dependencies.put( "topography_major", topographyMajor );
+      final DefaultAttribute<LateralUriInfoVisitor, LateralityCodeInfoStore> lateralityCode
+            = new DefaultAttribute<>( "laterality_code",
+                                      neoplasm,
+                                      allConcepts,
+                                      patientNeoplasms,
+                                      LateralUriInfoVisitor::new,
+                                      LateralityCodeInfoStore::new,
+                                      dependencies );
+      return lateralityCode.toNeoplasmAttribute();
+   }
+
 
    static private NeoplasmAttribute addLateralityCode( final ConceptAggregate neoplasm,
                                             final NeoplasmSummary summary,
@@ -703,17 +830,6 @@ final public class NeoplasmSummaryCreator {
       attributes.add( biomarker.toNeoplasmAttribute() );
    }
 
-
-   static private String copyWithUriAsValue( final List<NeoplasmAttribute> attributes,
-                                             final String sourceName,
-                                             final String targetName ) {
-      final NeoplasmAttribute sourceAttribute =
-            attributes.stream().filter( a -> a.getName().equals( sourceName ) ).findFirst().orElse( null );
-      if ( sourceAttribute == null ) {
-         return "";
-      }
-      return copyWithUriAsValue( attributes, sourceAttribute, targetName );
-   }
 
    static private String copyWithUriAsValue( final List<NeoplasmAttribute> attributes,
                                              final NeoplasmAttribute sourceAttribute,

@@ -62,10 +62,10 @@ public class Histology extends DefaultAttribute<HistologyUriInfoVisitor,Histolog
 //                                                     allConceptsStore );
             = new ArrayList<>();
       final Map<EvidenceLevel, Collection<Mention>> evidence
-//            = SpecificAttribute.mapEvidence( neoplasmStore._concepts,
-//                                             patientStore._concepts,
-//                                             allConceptsStore._concepts );
-            = new HashMap<>();
+            = SpecificAttribute.mapEvidence( neoplasmStore._concepts,
+                                             patientStore._concepts,
+                                             allConceptsStore._concepts );
+//            = new HashMap<>();
       return SpecificAttribute.createAttribute( name,
                                                 _bestCode,
                                                 _bestUri,
