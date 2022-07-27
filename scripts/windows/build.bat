@@ -79,16 +79,16 @@ echo.
 echo  Please enter a location where you would like to place your DeepPhe binary installation.
 set /P DEEPPHE_BIN=DeepPhe binary installation destination: 
 if not defined DEEPPHE_BIN (
-   echo No value entered.  You can find the binary installation in ..\..\dphe-cli\target\deepphe-0.4.0-bin
+   echo No value entered.  You can find the binary installation in ..\..\dphe-cli\target\deepphe-0.5.0-bin
    goto create_plugin
    )
 echo Copying the DeepPhe binary installation to %DEEPPHE_BIN%, please wait ...
-xcopy ..\..\dphe-cli\target\deepphe-0.4.0-bin\* "%DEEPPHE_BIN%" /Q /S /E /I /Y
-if not %errorlevel%==0 echo The DeepPhe binary at ..\..\dphe-cli\target\deepphe-0.4.0-bin could not be copied to %DEEPPHE_BIN%
+xcopy ..\..\dphe-cli\target\deepphe-0.5.0-bin\* "%DEEPPHE_BIN%" /Q /S /E /I /Y
+if not %errorlevel%==0 echo The DeepPhe binary at ..\..\dphe-cli\target\deepphe-0.5.0-bin could not be copied to %DEEPPHE_BIN%
 echo Copying the log4j configuration to %DEEPPHE_BIN%\config, please wait ...
-if not exist "%DEEPPHE_BIN%\deepphe-0.4.0\config" mkdir "%DEEPPHE_BIN%\deepphe-0.4.0\config"
-copy /Y ..\..\dphe-core\src\main\resources\log4j.properties "%DEEPPHE_BIN%\deepphe-0.4.0\config"
-copy /Y ..\..\dphe-core\src\main\resources\log4j.xml "%DEEPPHE_BIN%\deepphe-0.4.0\config"
+if not exist "%DEEPPHE_BIN%\deepphe-0.5.0\config" mkdir "%DEEPPHE_BIN%\deepphe-0.5.0\config"
+copy /Y ..\..\dphe-core\src\main\resources\log4j.properties "%DEEPPHE_BIN%\deepphe-0.5.0\config"
+copy /Y ..\..\dphe-core\src\main\resources\log4j.xml "%DEEPPHE_BIN%\deepphe-0.5.0\config"
 
 
 :create_plugin
@@ -123,8 +123,8 @@ if not %errorlevel%==0 echo The DeepPhe Neo4j configuration at dphe-neo4j-plugin
 echo Copying the DeepPhe Neo4j plugin to %NEO4J_HOME%\plugins, please wait ...
 if not exist "%NEO4J_HOME%\pre_deepphe_plugins" xcopy "%NEO4J_HOME%\plugins" "%NEO4J_HOME%\pre_deepphe_plugins" /Q /S /E /I /Y
 erase /S /F /Q "%NEO4J_HOME%\plugins\*.*"
-copy /Y ..\..\dphe-neo4j-plugin\target\deepphe-neo4j-plugin-0.4.0.jar "%NEO4J_HOME%\plugins"
-if not %errorlevel%==0 echo The DeepPhe Neo4j plugin ..\..\dphe-neo4j-plugin\target\deepphe-neo4j-plugin-0.4.0.jar could not be copied to %NEO4J_HOME%\plugins
+copy /Y ..\..\dphe-neo4j-plugin\target\deepphe-neo4j-plugin-0.5.0.jar "%NEO4J_HOME%\plugins"
+if not %errorlevel%==0 echo The DeepPhe Neo4j plugin ..\..\dphe-neo4j-plugin\target\deepphe-neo4j-plugin-0.5.0.jar could not be copied to %NEO4J_HOME%\plugins
 
 rem Start the Neo4j Server.
 set /P START_NEO4J=Would you like to start the Neo4j Server (y/n) 
@@ -135,7 +135,7 @@ start "Running the Neo4j server" cmd /c "%NEO4J_HOME%\bin\neo4j.bat console"
 rem Start the Pipeline GUI.
 set /P START_GUI=Would you like to start the DeepPhe Job Submitter GUI (y/n) 
 if not %START_GUI%==y goto end
-set "DEEPPHE_HOME=%DEEPPHE_BIN%\deepphe-0.4.0"
+set "DEEPPHE_HOME=%DEEPPHE_BIN%\deepphe-0.5.0"
 cd "%DEEPPHE_HOME%"
 call bin\runDeepPheGui.bat
 

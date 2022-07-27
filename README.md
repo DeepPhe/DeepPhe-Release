@@ -21,14 +21,14 @@ The system has been tested using documents from several cancer domains, includin
 * Ovarian Cancer
 * Malignant Melanoma
 
-Here is a pictorial example of DeepPhe processing five documents for a single patient, and summarizing the cancer information from the five documents. Some of the attributes, such as the tumor size and treatment, show future direction of DeepPhe beyond version 0.4.0.
+Here is a pictorial example of DeepPhe processing five documents for a single patient, and summarizing the cancer information from the five documents. Some of the attributes, such as the tumor size and treatment, show future direction of DeepPhe beyond version 0.5.0.
 ![Summarizing Five Documents](images/wiki/DeepPhe.Summarization.png "Summarizing Five Documents")
 
 ## Quick Start
 1. Obtain the code of the base DeepPhe Translational system using one of three methods:
-   - Download a [zip file](https://github.com/DeepPhe/DeepPhe-Release/archive/refs/heads/Translational-v0.4.0.zip).
+   - Download a [zip file](https://github.com/DeepPhe/DeepPhe-Release/archive/refs/heads/Translational-v0.5.0.zip).
    - Clone this [branch](https://github.com/DeepPhe/DeepPhe-Release.git).
-   - Visit the [Release page](https://github.com/DeepPhe/DeepPhe-Release/releases/tag/xn0.4.1).
+   - Visit the [Release page](https://github.com/DeepPhe/DeepPhe-Release/releases/tag/xn0.5.9).
 2. Install version 3.5 of [Neo4j](https://neo4j.com/download-center/).
    - This release of DeepPhe requires [neo4j 3.5.x](https://neo4j.com/docs/operations-manual/3.5/). WARNING - do not simply download the latest version of neo4j.
 3. Install a binary installation of the DeepPhe Translational base system:

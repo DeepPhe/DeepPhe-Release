@@ -44,7 +44,7 @@ ${neo4j_path}/bin/neo4j start > run-logs/neo4j.log 2>&1
 sleep $neo4j_delay_in_sec
 
 echo -e "\n"
-(cd ${source_location}/dphe-cli/target/deepphe-0.4.0-bin/deepphe-0.4.0 && java -Xmx16g -Xms8g -classpath ./resources/:./lib/* org.apache.ctakes.core.pipeline.PiperFileRunner -p pipeline/DeepPhe.piper -i $1 -o $_dir/output -r bolt://localhost:7687 --user neo4j --pass neo4jpass)
+(cd ${source_location}/dphe-cli/target/deepphe-0.5.0-bin/deepphe-0.5.0 && java -Xmx16g -Xms8g -classpath ./resources/:./lib/* org.apache.ctakes.core.pipeline.PiperFileRunner -p pipeline/DeepPhe.piper -i $1 -o $_dir/output -r bolt://localhost:7687 --user neo4j --pass neo4jpass)
 
 rc=$?
 if [ $rc -ne 0 ] ; then

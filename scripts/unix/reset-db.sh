@@ -43,8 +43,8 @@ printf "Copying a clean database from\n\t${source_location}dphe-onto-db/src/main
 
 handleError
 
-printf "Copying dphe-neo4j-plugin from\n\t${source_location}dphe-neo4j-plugin/target/deepphe-neo4j-plugin-0.4.0.jar\n   to\n\t${neo4j_path}/plugins"
-cp ${source_location}dphe-neo4j-plugin/target/deepphe-neo4j-plugin-0.4.0.jar  ${neo4j_path}/plugins
+printf "Copying dphe-neo4j-plugin from\n\t${source_location}dphe-neo4j-plugin/target/deepphe-neo4j-plugin-0.5.0.jar\n   to\n\t${neo4j_path}/plugins"
+cp ${source_location}dphe-neo4j-plugin/target/deepphe-neo4j-plugin-0.5.0.jar  ${neo4j_path}/plugins
 
 handleError
 num_deepphe_plugins=$(ls -l ${neo4j_path}/plugins/deepphe*.jar | wc -l)
