@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PatientSummaryAndStagesList {
-    public List getPatientSummaryAndStages() {
+    public List<PatientInfoAndStages> getPatientSummaryAndStages() {
         if (patientSummaryAndStages == null) {
-            patientSummaryAndStages = new ArrayList();
+            patientSummaryAndStages = new ArrayList<PatientInfoAndStages>();
         }
         return patientSummaryAndStages;
     }
 
-    public void setPatientSummaryAndStages(List patientSummaryAndStages) {
+    public void setPatientSummaryAndStages(List<PatientInfoAndStages> patientSummaryAndStages) {
         this.patientSummaryAndStages = patientSummaryAndStages;
     }
 

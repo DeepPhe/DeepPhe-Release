@@ -1,9 +1,4 @@
 package org.healthnlp.deepphe.neo4j.reader;
-
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import org.healthnlp.deepphe.neo4j.constant.UriConstants;
 import org.healthnlp.deepphe.neo4j.node.*;
 import org.healthnlp.deepphe.neo4j.util.DataUtil;
@@ -12,13 +7,10 @@ import org.healthnlp.deepphe.neo4j.util.StructuredPatientDataGenerator;
 import org.neo4j.graphdb.*;
 import org.neo4j.logging.Log;
 import org.neo4j.procedure.Name;
-
-import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import static org.healthnlp.deepphe.neo4j.constant.Neo4jConstants.*;
 import static org.healthnlp.deepphe.neo4j.constant.RelationConstants.*;
 import static org.healthnlp.deepphe.neo4j.util.DataUtil.safeGetProperty;
@@ -28,9 +20,12 @@ import static org.healthnlp.deepphe.neo4j.util.DataUtil.safeGetProperty;
  * @version %I%
  * @since 7/27/2020
  */
+
+
 public enum NodeReader {
     INSTANCE;
 
+    @SuppressWarnings("SameReturnValue")
     static public NodeReader getInstance() {
         return INSTANCE;
     }
@@ -46,6 +41,8 @@ public enum NodeReader {
     //
     /////////////////////////////////////////////////////////////////////////////////////////
 
+    //JDL 2022-07-25: compiler says this is unused?
+    @SuppressWarnings("unused")
     public List<PatientDiagnosis> getPatientDiagnoses(final GraphDatabaseService graphDb,
                                                       final Log log) {
         return DataUtil.getAllPatientNodes(graphDb)
@@ -131,15 +128,16 @@ public enum NodeReader {
         patient.setDiagnoses(newPatientDiagnoses);
 
         final List<NewBiomarkerSummary> biomarkers = getBiomarkers(graphDb, log, patientId);
-        //
         patient.setBiomarkers(biomarkers);
-
         return patient;
     }
 
+    //JDL 2022-07-25: compiler says this is unused?
+    @SuppressWarnings("unused")
     public PatientSummary getPatientSummary(final GraphDatabaseService graphDb,
                                             final Log log,
                                             final Node patientNode) {
+        log.debug("In getPatientSummary...");
         if (patientNode == null) {
             log.error("Null Patient Node to getPatientSummary");
             return null;
@@ -151,7 +149,6 @@ public enum NodeReader {
         }
         return getPatientSummary(graphDb, log, patientNode, patientId);
     }
-
 
     public PatientSummary getPatientSummary(final GraphDatabaseService graphDb,
                                             final Log log,
@@ -208,33 +205,36 @@ public enum NodeReader {
         return cancers;
     }
 
-    private List<NeoplasmSummary> getTumors(final GraphDatabaseService graphDb,
-                                            final Log log,
-                                            final String patientId) {
-        final List<NeoplasmSummary> cancers = new ArrayList<>();
-        try (Transaction tx = graphDb.beginTx()) {
-            final Node patientNode = SearchUtil.getLabeledNode(graphDb, PATIENT_LABEL, patientId);
-            if (patientNode == null) {
-                log.error("Error in getCancers().  Looking for node named " + patientId + " but it does not exist.");
-                tx.success();
-                return null;
-            }
-            SearchUtil.getOutRelatedNodes(graphDb, patientNode, SUBJECT_HAS_FACT_RELATION)
-                    .stream()
-                    .map(n -> createCancer(graphDb, log, n))
-                    .filter(Objects::nonNull)
-                    .forEach(cancers::add);
-            tx.success();
-        } catch (TransactionFailureException txE) {
-            log.error("Cannot get cancers for " + patientId + " from graph.");
-            log.error(txE.getMessage());
-        } catch (Exception e) {
-            // While it is bad practice to catch pure Exception, neo4j throws undeclared exceptions of all types.
-            log.error("Ignoring Exception " + e.getMessage());
-            // Attempt to continue.
-        }
-        return cancers;
-    }
+//    JDL 2022-07-25: Not used...remove?
+//
+//    private List<NeoplasmSummary> getTumors(final GraphDatabaseService graphDb,
+//                                            final Log log,
+//                                            final String patientId) {
+//        log.debug("In getTumors...");
+//        final List<NeoplasmSummary> cancers = new ArrayList<>();
+//        try (Transaction tx = graphDb.beginTx()) {
+//            final Node patientNode = SearchUtil.getLabeledNode(graphDb, PATIENT_LABEL, patientId);
+//            if (patientNode == null) {
+//                log.error("Error in getCancers().  Looking for node named " + patientId + " but it does not exist.");
+//                tx.success();
+//                return null;
+//            }
+//            SearchUtil.getOutRelatedNodes(graphDb, patientNode, SUBJECT_HAS_FACT_RELATION)
+//                    .stream()
+//                    .map(n -> createCancer(graphDb, log, n))
+//                    .filter(Objects::nonNull)
+//                    .forEach(cancers::add);
+//            tx.success();
+//        } catch (TransactionFailureException txE) {
+//            log.error("Cannot get cancers for " + patientId + " from graph.");
+//            log.error(txE.getMessage());
+//        } catch (Exception e) {
+//            // While it is bad practice to catch pure Exception, neo4j throws undeclared exceptions of all types.
+//            log.error("Ignoring Exception " + e.getMessage());
+//            // Attempt to continue.
+//        }
+//        return cancers;
+//    }
 
 
     private NeoplasmSummary createCancer(final GraphDatabaseService graphDb,
@@ -404,8 +404,6 @@ public enum NodeReader {
             final Collection<Node> cancerNodes = SearchUtil.getOutRelatedNodes(graphDb, patientNode,
                     SUBJECT_HAS_CANCER_RELATION);
             for (Node cancerNode : cancerNodes) {
-//                    final Collection<Node> tumorNodes = SearchUtil.getOutRelatedNodes(graphDb, cancerNode,
-//                            CANCER_HAS_TUMOR_RELATION);
                 for (String biomarker : BIOMARKERS) {
                     String markerValues = SearchUtil.getAttributeByNameAsString(graphDb, log, cancerNode, biomarker);
                     if (markerValues != null) {
@@ -435,7 +433,7 @@ public enum NodeReader {
     private NewPatientDiagnosis getDiagnosis(final GraphDatabaseService graphDb,
                                              final Log log,
                                              final String patientId) {
-
+        log.debug("In getDiagnosis()...");
         final NewPatientDiagnosis patientDiagnosis = new NewPatientDiagnosis();
         final Map<String, String> diagnosisGroupNames = UriConstants.getDiagnosisGroupNames(graphDb);
 
@@ -449,18 +447,12 @@ public enum NodeReader {
             }
             Collections.sort(diagnoses);
 
-//            final Map<String, Object> map = new HashMap<>();
-//            map.put("patientId", patientId);
-//            map.put("diagnosis", diagnoses);
             final Collection<String> diagnosisGroups
                     = diagnoses.stream()
                     .map(d -> diagnosisGroupNames.getOrDefault(d, "Unknown"))
                     .distinct()
                     .sorted()
                     .collect(Collectors.toList());
-
-            //map.put("diagnosisGroups", diagnosisGroups);
-            // Add to the list
 
             patientDiagnosis.setDiagnosis(diagnoses);
             patientDiagnosis.setDiagnosisGroups(new ArrayList<>(diagnosisGroups));
@@ -751,12 +743,9 @@ public enum NodeReader {
     }
 
     public static NewStructuredPatientData getStructuredPatientDataForPatientId(String actualPatientId) {
-       ;
         //the idea is to try to get the same random person values, given the same actualPatientId
         StructuredPatientDataGenerator structuredPatientDataGenerator = new StructuredPatientDataGenerator(actualPatientId);
         return structuredPatientDataGenerator.iterator().next();
-
-
     }
 
     //TODO: throwing generic exception, make it more specific
@@ -769,6 +758,7 @@ public enum NodeReader {
 
     public PatientSummaryAndStagesList patientSummaryAndStagesList(GraphDatabaseService graphDb, Log log,
                                                                    boolean includeStages) {
+        log.debug("In patientSummaryAndStagesList...");
         PatientSummaryAndStagesList patientSummaryAndStagesList = new PatientSummaryAndStagesList();
         try (Transaction tx = graphDb.beginTx()) {
             // DataUtil.getAllPatientNodes() is supposed to return all unique patients
@@ -818,32 +808,34 @@ public enum NodeReader {
         return patientSummaryAndStagesList;
     }
 
+//JDL 2022-07-25: compiler says this is unused?
+//    private static String convertToLogSyntax(NeoplasmAttribute neoplasmAttribute) {
+//        StringBuilder stringBuilder = new StringBuilder();
+//        stringBuilder.append("id: ").append(neoplasmAttribute.getId()).append("\n");
+//        stringBuilder.append(" |--classUri : ").append(neoplasmAttribute.getClassUri()).append("\n");
+//        stringBuilder.append(" |--name: ").append(neoplasmAttribute.getName()).append("\n");
+//        stringBuilder.append(" |--value: ").append(neoplasmAttribute.getValue()).append("\n");
+//        stringBuilder.append(" |--confidence: ").append(neoplasmAttribute.getConfidence()).append("\n");
+//        if (neoplasmAttribute.getConfidenceFeatures() != null)
+//            stringBuilder.append(" +--confidenceFeatures size: ").append(neoplasmAttribute.getConfidenceFeatures().size()).append("\n");
+//        if (neoplasmAttribute.getIndirectEvidence() != null)
+//            stringBuilder.append(" +--indirectEvidence size: ").append(neoplasmAttribute.getIndirectEvidence().size()).append("\n");
+//        if (neoplasmAttribute.getDirectEvidence() != null)
+//            stringBuilder.append(" +--directEvidence size: ").append(neoplasmAttribute.getDirectEvidence().size()).append("\n");
+//        if (neoplasmAttribute.getNotEvidence() != null)
+//            stringBuilder.append(" +--notEvidence size: ").append(neoplasmAttribute.getNotEvidence().size()).append("\n");
+//
+//        return stringBuilder.toString();
+//    }
 
-    private static String convertToLogSyntax(NeoplasmAttribute neoplasmAttribute) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("id: ").append(neoplasmAttribute.getId()).append("\n");
-        stringBuilder.append(" |--classUri : ").append(neoplasmAttribute.getClassUri()).append("\n");
-        stringBuilder.append(" |--name: ").append(neoplasmAttribute.getName()).append("\n");
-        stringBuilder.append(" |--value: ").append(neoplasmAttribute.getValue()).append("\n");
-        stringBuilder.append(" |--confidence: ").append(neoplasmAttribute.getConfidence()).append("\n");
-        if (neoplasmAttribute.getConfidenceFeatures() != null)
-            stringBuilder.append(" +--confidenceFeatures size: ").append(neoplasmAttribute.getConfidenceFeatures().size()).append("\n");
-        if (neoplasmAttribute.getIndirectEvidence() != null)
-            stringBuilder.append(" +--indirectEvidence size: ").append(neoplasmAttribute.getIndirectEvidence().size()).append("\n");
-        if (neoplasmAttribute.getDirectEvidence() != null)
-            stringBuilder.append(" +--directEvidence size: ").append(neoplasmAttribute.getDirectEvidence().size()).append("\n");
-        if (neoplasmAttribute.getNotEvidence() != null)
-            stringBuilder.append(" +--notEvidence size: ").append(neoplasmAttribute.getNotEvidence().size()).append("\n");
 
-        return stringBuilder.toString();
-    }
-
-    private static void logAttribute(String message, NeoplasmAttribute neoplasmAttribute, Log log) {
-        if (neoplasmAttribute != null) {
-            String logMessage = convertToLogSyntax(neoplasmAttribute);
-            log.info(message + logMessage);
-        }
-    }
+//    JDL 2022-07-25: Not used...remove?
+//    private static void logAttribute(String message, NeoplasmAttribute neoplasmAttribute, Log log) {
+//        if (neoplasmAttribute != null) {
+//            String logMessage = convertToLogSyntax(neoplasmAttribute);
+//            log.info(message + logMessage);
+//        }
+//    }
 
     //should be using getAttributes()
     public NewCancerAndTumorSummary getCancerAndTumorSummary(GraphDatabaseService graphDb, Log log, String
@@ -878,7 +870,9 @@ public enum NodeReader {
 
                 NewFactInfo newCancerFactInfo = new NewFactInfo();
                 newCancerFactInfo.setId(neoplasmAttribute.getId());
-                newCancerFactInfo.setName(neoplasmAttribute.getClassUri());
+                //7-15-2022
+                //newCancerFactInfo.setName(neoplasmAttribute.getClassUri());
+                newCancerFactInfo.setName(neoplasmAttribute.getName());
                 newCancerFactInfo.setValue(neoplasmAttribute.getValue());
 
                 //some of these ^^^ are null?
@@ -923,155 +917,10 @@ public enum NodeReader {
         return cancerAndTumorSummary;
     }
 
-//    public CancerAndTumorSummary getCancerAndTumorSummary(GraphDatabaseService graphDb, Log log, String patientId) {
-//        CancerAndTumorSummary newCancerAndTumorSummary = new CancerAndTumorSummary();
-//        List<CancerSummary> cancers = new ArrayList<>();
-//        newCancerAndTumorSummary.setCancers(cancers);
-//        //final List<Map<String, Object>> cancers = new ArrayList<>();
-//        try ( Transaction tx = graphDb.beginTx() ) {
-//            final Node patientNode = SearchUtil.getLabeledNode( graphDb, PATIENT_LABEL, patientId );
-//            if ( patientNode == null ) {
-//                tx.success();
-//                return newCancerAndTumorSummary;
-//            }
-//            final Collection<Node> cancerNodes = SearchUtil.getOutRelatedNodes( graphDb, patientNode,
-//                    SUBJECT_HAS_CANCER_RELATION );
-//            for ( Node cancerNode : cancerNodes ) {
-//                // Cancer summary
-//                //final Map<String, Object> cancer = new HashMap<>();
-//                CancerSummary CancerSummary = new CancerSummary();
-//                final String cancerId = DataUtil.objectToString( cancerNode.getProperty( NAME_KEY ) );
-//                CancerSummary.setCancerId(cancerId);
-//                // Add to cancer map
-//                //cancer.put( "cancerId", cancerId );
-//                //final List<Map> cancerFacts = new ArrayList<>();
-//                final List<CancerFact> cancerFacts = new ArrayList<>();
-//                for ( Relationship relation : cancerNode.getRelationships( Direction.OUTGOING ) ) {
-//                    CancerFact newCancerFact = new CancerFact();
-//                    NewCancerFactInfo newCancerFactInfo = new NewCancerFactInfo();
-//                    // final Map<String, Object> cancerFact = new HashMap<>();
-//                    // final Map<String, Object> cancerFactInfo = new HashMap<>();
-//                    final String cancerFactRelationName = relation.getType()
-//                            .name();
-//                    if ( cancerFactRelationName.equals( INSTANCE_OF )
-//                            || cancerFactRelationName.equals( CANCER_HAS_TUMOR )
-//                            || cancerFactRelationName.equals( FACT_HAS_TEXT_MENTION ) ) {
-//                        continue;
-//                    }
-//                    newCancerFact.setRelation(cancerFactRelationName);
-//                    //cancerFact.put( "relation", cancerFactRelationName );
-//                    newCancerFact.setRelationPrettyName(DataUtil.getRelationPrettyName( cancerFactRelationName ) );
-//
-//                    //cancerFact.put( "relationPrettyName", DataUtil.getRelationPrettyName( cancerFactRelationName ) );
-//                    final Node targetNode = relation.getOtherNode( cancerNode );
-//                    final Node classNode = DataUtil.getInstanceClass( graphDb, targetNode );
-//                    if (classNode != null) {
-//                        final String classId = DataUtil.objectToString(classNode.getProperty(NAME_KEY));
-//                        //cancerFactInfo.put( "id", DataUtil.objectToString( targetNode.getProperty( NAME_KEY ) ) );
-//                        //cancerFactInfo.put( "name", classId );
-//                        newCancerFactInfo.setId(DataUtil.objectToString(targetNode.getProperty(NAME_KEY)));
-//                        newCancerFactInfo.setName(classId);
-//
-//                        if (HAS_STAGE.equals(cancerFactRelationName)) {
-//                            newCancerFactInfo.setPrettyName(TextFormatter.toPrettyStage(classId));
-//                            //cancerFactInfo.put( "prettyName", TextFormatter.toPrettyStage( classId ) );
-//                        } else {
-//                            newCancerFactInfo.setPrettyName(DataUtil.objectToString(classNode.getProperty(PREF_TEXT_KEY)));
-//                            //cancerFactInfo.put( "prettyName", DataUtil.objectToString( classNode.getProperty( PREF_TEXT_KEY ) ) );
-//                        }
-//                    } else {
-//                        newCancerFactInfo.setId("jdl-junk-id");
-//                        newCancerFactInfo.setName("jdl-junk-cancer-fact-info-name");
-//                        newCancerFactInfo.setPrettyName("jdl-junk-cancer-fact-info-prettyname");
-//                        System.out.println("Unable to find targetNode: " + targetNode);
-//                        System.out.println("Cancer fact relation name: " +cancerFactRelationName);
-//                        System.out.println("TargetNode name"+ targetNode.getProperty(NAME_KEY));
-//                    }
-//
-//                    // Add fact to cancerFact map
-//                    //cancerFact.put( "cancerFactInfo", cancerFactInfo );
-//                    newCancerFact.setCancerFactInfo(newCancerFactInfo);
-//                    // Add to list
-//                    //cancerFacts.add( cancerFact );
-//                    cancerFacts.add(newCancerFact);
-//                }
-//                // Add to cancer map
-//                CancerSummary.setCancerFacts( cancerFacts );
-//                // Tumor summary
-//                //final List<Map<String, Object>> tumors = new ArrayList<>();
-//                final List<TumorSummary> tumors = new ArrayList<>();
-//                final Collection<Node> tumorNodes = SearchUtil.getOutRelatedNodes( graphDb, cancerNode,
-//                        CANCER_HAS_TUMOR_RELATION );
-//                if (tumorNodes.size() == 0) {
-//                    System.out.println("tumorNodes not found");
-//                }
-//                for ( Node tumorNode : tumorNodes ) {
-//                    //final Map<String, Object> tumor = new HashMap<>();
-//                    TumorSummary newTumorSummary = new TumorSummary();
-//                    final String tumorId = DataUtil.objectToString( tumorNode.getProperty( NAME_KEY ) );
-//                    // Add tumorId
-//                    // tumor.put( "tumorId", tumorId );
-//                    newTumorSummary.setTumorId(tumorId);
-//
-//                    //tumor.put( HAS_TUMOR_TYPE, DataUtil.objectToString( tumorNode.getProperty( HAS_TUMOR_TYPE ) ) );
-//                    newTumorSummary.setHasTumorType(DataUtil.objectToString( tumorNode.getProperty( HAS_TUMOR_TYPE )));
-//                    //final List<Map<String, Object>> tumorFacts = new ArrayList<>();
-//                    List<TumorFact> tumorFacts =  new ArrayList<>();
-//                    for ( Relationship relation : tumorNode.getRelationships( Direction.OUTGOING ) ) {
-//                        //final Map<String, Object> tumorFact = new HashMap<>();
-//                        //final Map<String, Object> tumorFactInfo = new HashMap<>();
-//                        final String tumorFactRelationName = relation.getType()
-//                                .name();
-//                        if ( tumorFactRelationName.equals( INSTANCE_OF )
-//                                || tumorFactRelationName.equals( FACT_HAS_TEXT_MENTION ) ) {
-//                            continue;
-//                        }
-//                        TumorFact tumorFact = new TumorFact();
-//                        //tumorFact.put( "relation", tumorFactRelationName );
-//                        tumorFact.setRelation(tumorFactRelationName);
-//
-//                        //tumorFact.put( "relationPrettyName", DataUtil.getRelationPrettyName( tumorFactRelationName ) );
-//                        tumorFact.setRelationPrettyName(DataUtil.getRelationPrettyName( tumorFactRelationName ));
-//                        final Node targetNode = relation.getOtherNode( tumorNode );
-//                        final Node classNode = DataUtil.getInstanceClass( graphDb, targetNode );
-//                        final String classId = DataUtil.objectToString( classNode.getProperty( NAME_KEY ) );
-//                        NewCancerFactInfo tumorFactInfo = new NewCancerFactInfo();
-//                        //tumorFactInfo.put( "id", DataUtil.objectToString( targetNode.getProperty( NAME_KEY ) ) );
-//                        tumorFactInfo.setId(DataUtil.objectToString( targetNode.getProperty( NAME_KEY ) ));
-//                        //tumorFactInfo.put( "name", classId );
-//                        tumorFactInfo.setName(classId);
-//                        //tumorFactInfo.put( "prettyName", DataUtil.objectToString( classNode.getProperty( PREF_TEXT_KEY ) ) );
-//                        tumorFactInfo.setPrettyName(DataUtil.objectToString( classNode.getProperty( PREF_TEXT_KEY ) ));
-//                        // Add fact to tumorFact map
-//                        //tumorFact.put( "tumorFactInfo", tumorFactInfo );
-//                        tumorFact.setTumorFactInfo(tumorFactInfo);
-//                        // Add to list
-//                        tumorFacts.add( tumorFact );
-//                    }
-//                    // Add tumorId
-//                    newTumorSummary.setTumorFacts(tumorFacts);
-//                    //tumor.put( "tumorFacts", tumorFacts );
-//                    // Add to tumors list
-//
-//                    //tumors.add( tumor );
-//                    tumors.add(newTumorSummary);
-//                }
-//                // Add to cancer map
-//                //cancer.put( "tumors", tumors );
-//                CancerSummary.setTumors(tumors);
-//                // Finally add to the cancers list
-//                //cancers.add( cancer );
-//                cancers.add(CancerSummary);
-//            }
-//            tx.success();
-//        } catch ( RuntimeException e ) {
-//            throw new RuntimeException( "Failed to call getCancerAndTumorSummary() " + e.getMessage() );
-//        }
-//        //return cancers;
-//        return newCancerAndTumorSummary;
-//    }
-
+    //JDL 2022-07-25: compiler says this is unused?
+    @SuppressWarnings("unused")
     public List<GuiPatientSummary> getPatientSummary(GraphDatabaseService graphDb, Log log, String patientId) {
+        log.debug("In patientSummaryAndStagesList...");
         return DataUtil.getAllPatientNodes(graphDb)
                 .stream()
                 .map(n -> createPatientSummary(graphDb, n))
@@ -1079,26 +928,15 @@ public enum NodeReader {
                 .collect(Collectors.toList());
     }
 
+    //JDL 2022-07-25: compiler says this is unused?
+    @SuppressWarnings("unused")
     public List<GuiPatientSummary> getPatientSummaries(GraphDatabaseService graphDb, Log log) {
-
+        log.debug("In getPatientSummaries...");
         return DataUtil.getAllPatientNodes(graphDb)
                 .stream()
                 .map(n -> createPatientSummary(graphDb, n))
                 //.filter(Objects::nonNull)
                 .collect(Collectors.toList());
-
-//        List<PatientSummary> patientSummaries = new ArrayList<>();
-//        try ( Transaction tx = graphDb.beginTx() ) {
-//            // DataUtil.getAllPatientNodes() is supposed to return all unique patients
-//            final Collection<Node> patientNodes = DataUtil.getAllPatientNodes( graphDb );
-//            for ( Node patientNode : patientNodes ) {
-//                patientSummaries.add(createPatientSummary(graphDb, patientNode));
-//            }
-//            tx.success();
-//        } catch ( RuntimeException e ) {
-//            throw new RuntimeException( "Failed to call getPatientSummaries()" );
-//        }
-//     return patientSummaries;
     }
 
 
@@ -1214,6 +1052,58 @@ public enum NodeReader {
         }
     }
 
+
+    private void populateTextProvenancesAndMentionedTerms(List<NeoplasmSummary> cancers,
+                                                          String factId,
+                                                          FactInfoAndGroupedTextProvenances factInfoAndGroupedTextProvenances,
+                                                          List<NewMentionedTerm> mentionedTerms) {
+        for (NeoplasmSummary cancer : Objects.requireNonNull(cancers)) {
+            populateTextProvenancesAndMentionedTermsFromAttributes(cancer.getAttributes(), factId, factInfoAndGroupedTextProvenances, mentionedTerms);
+            populateTextProvenancesAndMentionedTermsFromSubSummaries(cancer.getSubSummaries(), factId, factInfoAndGroupedTextProvenances, mentionedTerms);
+        }
+    }
+
+
+    private void populateTextProvenancesAndMentionedTermsFromAttributes(List<NeoplasmAttribute> facts,
+                                                                        String factId,
+                                                                        FactInfoAndGroupedTextProvenances factInfoAndGroupedTextProvenances,
+                                                                        List<NewMentionedTerm> mentionedTerms) {
+        for (NeoplasmAttribute fact : facts) {
+            if (fact.getId().equalsIgnoreCase(factId)) {
+                //use direct evidence to build the "mention" data structure
+                NewFactInfo factInfo = new NewFactInfo();
+                factInfo.setName(fact.getName());
+                factInfo.setId(fact.getId());
+                factInfo.setValue(fact.getValue());
+                factInfo.setPrettyName(DataUtil.getRelationPrettyName(fact.getClassUri()));
+                factInfoAndGroupedTextProvenances.setSourceFact(factInfo);
+                for (Mention mention : fact.getDirectEvidence()) {
+                    NewMentionedTerm mentionedTerm = new NewMentionedTerm();
+                    mentionedTerm.setTerm(mention.getClassUri());
+                    mentionedTerm.setReportId(mention.getNoteId());
+                    mentionedTerm.setReportType(mention.getNoteType());
+                    mentionedTerm.setReportName(mention.getNoteId());
+                    mentionedTerm.setBegin(mention.getBegin());
+                    mentionedTerm.setEnd(mention.getEnd());
+                    mentionedTerms.add(mentionedTerm);
+                }
+            }
+        }
+    }
+
+    private void populateTextProvenancesAndMentionedTermsFromSubSummaries(List<NeoplasmSummary> subSummaries,
+                                                                          String factId,
+                                                                          FactInfoAndGroupedTextProvenances factInfoAndGroupedTextProvenances,
+                                                                          List<NewMentionedTerm> mentionedTerms) {
+        if (subSummaries != null) {
+            for (NeoplasmSummary summary : Objects.requireNonNull(subSummaries)) {
+                populateTextProvenancesAndMentionedTermsFromAttributes(summary.getAttributes(), factId, factInfoAndGroupedTextProvenances, mentionedTerms);
+                //recursive call because subSummaries can have subSummaries
+                populateTextProvenancesAndMentionedTermsFromSubSummaries(summary.getSubSummaries(), factId, factInfoAndGroupedTextProvenances, mentionedTerms);
+            }
+        }
+    }
+
     // TODO - Create a bean in dphe-neo4j...node package that contains "Fact" summary information.
     // TODO - There is a node there  ... "Concept" or something.
     // TODO -  A Fact is a ConceptAggregate node from the graph.  It is not the same as something custom like Stage -
@@ -1223,105 +1113,10 @@ public enum NodeReader {
 
     public FactInfoAndGroupedTextProvenances getFact(GraphDatabaseService graphDb, Log
             log, @Name("patientId") String patientId, @Name("factId") String factId) {
-        //public Map<String, Object> getFact(GraphDatabaseService graphDb, Log log, @Name("patientId") String patientId, @Name("factId") String factId) {
         FactInfoAndGroupedTextProvenances factInfoAndGroupedTextProvenances = new FactInfoAndGroupedTextProvenances();
-        List<NeoplasmSummary> cancers = getCancers(graphDb, log, patientId);
-
         List<NewMentionedTerm> mentionedTerms = new ArrayList<>();
-        for (NeoplasmSummary cancer : Objects.requireNonNull(cancers)) {
-            List<NeoplasmAttribute> facts = cancer.getAttributes();
-            for (NeoplasmAttribute fact : facts) {
-                if (fact.getId().equalsIgnoreCase(factId)) {
-                    //use direct evidence to build the "mention" datastructure
-                    NewFactInfo factInfo = new NewFactInfo();
-                    factInfo.setName(fact.getName());
-                    factInfo.setId(fact.getId());
-                    factInfo.setValue(fact.getValue());
-                    factInfo.setPrettyName(DataUtil.getRelationPrettyName(fact.getClassUri()));
-                    factInfoAndGroupedTextProvenances.setSourceFact(factInfo);
-                    for (Mention mention : fact.getDirectEvidence()) {
-                        NewMentionedTerm mentionedTerm = new NewMentionedTerm();
-                        mentionedTerm.setTerm(mention.getClassUri());
-                        mentionedTerm.setReportId(mention.getNoteId());
-                        mentionedTerm.setReportType(mention.getNoteType());
-                        mentionedTerm.setReportName(mention.getNoteId());
-                        mentionedTerm.setBegin(mention.getBegin());
-                        mentionedTerm.setEnd(mention.getEnd());
-                        mentionedTerms.add(mentionedTerm);
-                    }
-                }
-            }
-        }
-
         factInfoAndGroupedTextProvenances.setMentionedTerms(mentionedTerms);
-//
-//        final Map<String, Object> factData = new HashMap<>();
-//        try (Transaction tx = graphDb.beginTx()) {
-//            final Node factNode = SearchUtil.getObjectNode(graphDb, factId);
-//
-//            if (factNode == null) {
-//                tx.success();
-//                return factData;
-//            }
-//
-//
-//            final Map<String, String> sourceFact = new HashMap<>();
-//            final Node classNode = DataUtil.getInstanceClass(graphDb, factNode);
-//            final String factPrefText = DataUtil.objectToString(classNode.getProperty( PREF_TEXT_KEY ));
-//            final String factUri = DataUtil.objectToString(classNode.getProperty(NAME_KEY));
-//            sourceFact.put("id", factId);
-//            sourceFact.put("name", factUri);
-//            sourceFact.put("prettyName", factPrefText);
-//            // Add the source fact to the map
-//            factData.put("sourceFact", sourceFact);
-//            // A list of text mentions
-//            final List<Map<String, String>> mentionedTerms = new ArrayList<>();
-//            // All text mention nodes from this fact node
-//            final Collection<Node> mentionNodes = SearchUtil.getOutRelatedNodes(graphDb, factNode, FACT_HAS_TEXT_MENTION_RELATION);
-//            for (Node mentionNode : mentionNodes) {
-//                // Each text mention node can only have one source report (note that mentions this term in a specific position)
-//                final Collection<Node> noteNodes = SearchUtil.getInRelatedNodes(graphDb, mentionNode, NOTE_HAS_TEXT_MENTION_RELATION);
-//                if (noteNodes.size() != 1) {
-//                    continue;
-//                }
-//                final Node noteNode = new ArrayList<>(noteNodes).get(0);
-//                final String noteText = DataUtil.objectToString(noteNode.getProperty( NOTE_TEXT ));
-//                final int noteLength = noteText.length();
-//                final String noteType = DataUtil.objectToString(noteNode.getProperty( NOTE_TYPE ));
-//                final String noteId = DataUtil.objectToString(noteNode.getProperty(NAME_KEY));
-//                final String noteName = DataUtil.objectToString(noteNode.getProperty( NOTE_NAME ));
-//                String sourcePatientId = "";
-//                // Find the source patient node
-//                final Collection<Node> patientNodes = SearchUtil.getInRelatedNodes(graphDb, noteNode, SUBJECT_HAS_NOTE_RELATION);
-//                if (patientNodes.size() == 1) {
-//                    sourcePatientId = DataUtil.objectToString(new ArrayList<>(patientNodes).get(0).getProperty(NAME_KEY));
-//                }
-//                // Only care about text mentions for this patient
-//                // because a fact related text mention can belong to a different patient
-//                if (sourcePatientId.equals(patientId)) {
-//                    final int begin = DataUtil.objectToInt(mentionNode.getProperty( TEXT_SPAN_BEGIN ));
-//                    final int end = DataUtil.objectToInt(mentionNode.getProperty( TEXT_SPAN_END ));
-//                    if (begin >= 0 && end > begin && end <= noteLength) {
-//                        Map<String, String> mentionedTerm = new HashMap<>();
-//                        mentionedTerm.put("reportId", noteId);
-//                        mentionedTerm.put("reportName", noteName);
-//                        mentionedTerm.put("reportType", noteType);
-//                        mentionedTerm.put("term", noteText.substring(begin, end));
-//                        // Convert the int to String value to avoid the {"low": n, "high": 0} issue probably due to
-//                        // the javascript neo4j driver doesn't handle integers in neo4j type system correctly - Joe
-//                        mentionedTerm.put("begin", String.valueOf(begin));
-//                        mentionedTerm.put("end", String.valueOf(end));
-//                        // Add to list
-//                        mentionedTerms.add(mentionedTerm);
-//                    }
-//                }
-//            }
-//            // Add the text mentions to the map
-//            factData.put("mentionedTerms", mentionedTerms);
-//            tx.success();
-//        } catch (RuntimeException e) {
-//            throw new RuntimeException("Failed to call getFact()");
-//        }
+        populateTextProvenancesAndMentionedTerms(getCancers(graphDb, log, patientId), factId, factInfoAndGroupedTextProvenances, mentionedTerms);
         return factInfoAndGroupedTextProvenances;
     }
 
@@ -1337,34 +1132,3 @@ public enum NodeReader {
 
     }
 }
-//clinic vs pathologic, ultrasound,
-//T = tumor size (tx = not measured, t0=in situ, 1,2,3,4...)
-//N = nodes (x, 0, 1, 2, 3)
-//M = metastatic tumors (x, 0, 1)
-
-//T0
-//id of the attribute, category
-//classUri,
-//category name, T
-//value
-//classUri =
-
-//"id": "T0_Stage_1625662832645",
-//        "classUri": "T0_Stage",
-//        "name": "t",
-//        "value": "T0",
-//        "directEvidence": [
-//        {
-//        "id": "patient03_report005_SP_M_189",
-//        "classUri": "T0_Stage",
-//        "begin": 11078,
-//        "end": 11082,
-//        "negated": false,
-//        "uncertain": false,
-//        "generic": false,
-//        "conditional": false,
-//        "historic": false,
-//        "temporality": ""
-//        }
-//        ],
-
