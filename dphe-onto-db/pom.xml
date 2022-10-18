@@ -37,4 +37,11 @@
       <plugins>
         </plugins>
    </build>
+    <distributionManagement>
+      <repository>
+         <id>github</id>
+         <name>DeepPhe-Robot</name>
+         <url>https://maven.pkg.github.com/DeepPhe/dphe-onto-db</url>
+      </repository>
+   </distributionManagement>
 </project>

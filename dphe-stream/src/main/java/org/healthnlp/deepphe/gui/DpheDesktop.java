@@ -24,7 +24,8 @@ public class DpheDesktop {
       // iPad 3&4 : 2048 x 1536 (4:3, QXGA)
       // iPad Mini: 1024 x 768 (4:3, XGA)
 //      final Dimension size = new Dimension( 800, 600 );
-      final Dimension size = new Dimension( 1024, 768 );
+//      final Dimension size = new Dimension( 1024, 768 );
+      final Dimension size = new Dimension( 1024, 600 );
       frame.setSize( size );
       frame.setMinimumSize( size );
       System.setProperty( "apple.laf.useScreenMenuBar", "true" );
@@ -51,6 +52,7 @@ public class DpheDesktop {
       frame.setVisible( true );
       DisablerPane.getInstance().initialize( frame );
       mainPanel.readParameterFile( args );
+      mainPanel.popHello();
    }
 
 }

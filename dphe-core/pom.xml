@@ -153,6 +153,11 @@
             <enabled>true</enabled>
          </snapshots>
       </repository>
+<!--      <repository>-->
+<!--          <id>github</id>-->
+<!--          <name>Github Packages</name>-->
+<!--          <url>https://maven.pkg.github.com/DeepPhe/dphe-neo4j</url>-->
+<!--      </repository>-->
    </repositories>
 
    <build>
@@ -178,4 +183,11 @@
 
         </plugins>
    </build>
+   <distributionManagement>
+      <repository>
+         <id>github</id>
+         <name>DeepPhe-Robot</name>
+         <url>https://maven.pkg.github.com/DeepPhe/dphe-core</url>
+      </repository>
+   </distributionManagement>
 </project>

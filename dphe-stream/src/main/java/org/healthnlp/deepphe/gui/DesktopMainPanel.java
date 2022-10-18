@@ -8,6 +8,7 @@ import org.neo4j.kernel.impl.store.kvstore.RotationTimeoutException;
 import org.neo4j.kernel.lifecycle.LifecycleException;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
+
 /**
  * @author SPF , chip-nlp
  * @since {10/12/2022}
@@ -29,18 +32,22 @@ public class DesktopMainPanel extends JPanel {
    static private final Logger LOGGER = Logger.getLogger( "DeepPhe Desktop" );
 
    static private final String DPHE_NAME = "Patient Phenotype Summarizer";
-   static private final String VIZ_NAME = "DeepPhe Visualizer";
+   static private final String VIZ_NAME = "DeepPhe Visualization Tool";
+   static private final String HELP_NAME = "DeepPhe Web Site (Help)";
    static private final String NO_VALUE = "NO_PARAMETER_VALUE_PROVIDED";
+   private static final String HTTPS_DEEPPHE_GITHUB_IO = "https://deepphe.github.io/";
    private final Map<String,String> _parameterMap = new HashMap<>();
    private String _parameterFile;
    private JButton _dpheButton;
    private JButton _vizButton;
+   private JButton _helpButton;
    private boolean _stop;
+
 
    DesktopMainPanel() {
       super( new BorderLayout() );
       add( createToolBar(), BorderLayout.NORTH );
-      add( LoggerPanel.createLoggerPanel(), BorderLayout.CENTER );
+      add( createLogPanel(), BorderLayout.CENTER );
       SwingUtilities.invokeLater( new ButtonIconLoader() );
    }
 
@@ -98,6 +105,10 @@ public class DesktopMainPanel extends JPanel {
       _vizButton.addActionListener( new StartAction( VIZ_NAME,
                                                      getParameter( "StartViz", "StartVis" ),
                                                      getParameter( "VizDir", "VisDir" ) ) );
+      if ( _stop ) {
+         return;
+      }
+      _helpButton.addActionListener( new HelpAction() );
    }
 
    private String getParameter( final String... names ) {
@@ -129,10 +140,8 @@ public class DesktopMainPanel extends JPanel {
       LOGGER.info( "StopNeo4j" );
       LOGGER.info( "DpheDir or DeepPheDir" );
       LOGGER.info( "StartDphe or StartDeepPhe" );
-//      LOGGER.info( "StopDphe or StopDeepPhe" );
       LOGGER.info( "VizDir or VisDir" );
       LOGGER.info( "StartViz or StartVis" );
-//      LOGGER.info( "StopViz or StopVis" );
       LOGGER.info( "" );
       LOGGER.error( "Please restart the Application with a single argument pointing to a parameter file." );
    }
@@ -142,15 +151,13 @@ public class DesktopMainPanel extends JPanel {
       final JToolBar toolBar = new JToolBar();
       toolBar.setFloatable( false );
       toolBar.setRollover( true );
-      toolBar.addSeparator( new Dimension( 10, 0 ) );
-      _dpheButton = addButton( toolBar, DPHE_NAME );
-      _dpheButton.setEnabled( false );
       toolBar.addSeparator( new Dimension( 50, 0 ) );
+      _dpheButton = addButton( toolBar, DPHE_NAME );
+      toolBar.addSeparator( new Dimension( 100, 0 ) );
       _vizButton = addButton( toolBar, VIZ_NAME );
-      _vizButton.setEnabled( false );
-
-//      toolBar.addSeparator( new Dimension( 50, 0 ) );
-      toolBar.addSeparator( new Dimension( 10, 0 ) );
+      toolBar.addSeparator( new Dimension( 100, 0 ) );
+      _helpButton = addButton( toolBar, HELP_NAME );
+      toolBar.addSeparator( new Dimension( 50, 0 ) );
       return toolBar;
    }
 
@@ -160,6 +167,10 @@ public class DesktopMainPanel extends JPanel {
       // prevents first button from having a painted border
       button.setFocusable( false );
       button.setToolTipText( toolTip );
+      button.setHorizontalTextPosition( SwingConstants.CENTER );
+      button.setVerticalTextPosition( SwingConstants.BOTTOM );
+      button.setFont( new Font(Font.SERIF, Font.BOLD, 18 ) );
+      button.setText( toolTip );
       toolBar.add( button );
       toolBar.addSeparator( new Dimension( 10, 0 ) );
       return button;
@@ -169,10 +180,10 @@ public class DesktopMainPanel extends JPanel {
       if ( _stop ) {
          return;
       }
+      LOGGER.info( "DIR: " + dir);
+      LOGGER.info( "Command: " + command);
       final SystemUtil.CommandRunner runner = new SystemUtil.CommandRunner( command );
-//      final StoppableCommandRunner runner = new StoppableCommandRunner( command );
       runner.setLogger( LOGGER );
-//      runner.setStopOnExit( true );
       if ( dir != null && !dir.isEmpty() ) {
          runner.setDirectory( dir );
       }
@@ -215,28 +226,48 @@ public class DesktopMainPanel extends JPanel {
       }
    }
 
+   private final class HelpAction implements ActionListener {
+      @Override
+      public void actionPerformed( final ActionEvent event ) {
+         if ( _helpButton == null ) {
+            return;
+         }
+         // TODO - just use SystemUtil.openWebPage(..)
+         LOGGER.info( "Opening Web Page: " + HTTPS_DEEPPHE_GITHUB_IO + " ...");
+         String command = "start \"Browser\" /max " + HTTPS_DEEPPHE_GITHUB_IO;
+         final String os = System.getProperty( "os.name" );
+         if ( !os.toLowerCase()
+                 .contains( "windows" ) ) {
+            command = "xdg-open " + HTTPS_DEEPPHE_GITHUB_IO + " || sensible-browser " + HTTPS_DEEPPHE_GITHUB_IO + " || open " + HTTPS_DEEPPHE_GITHUB_IO;
+         }
+         try {
+            SystemUtil.run( command );
+         } catch ( IOException e ) {
+            LOGGER.error( e.getMessage() );
+         }
+      }
+   }
+
 
    /**
-    * Simple Startable that loads an icon
+    * Simple Runnable that loads icons
     *
-    * Some icons <a href="https://www.freepik.com/free-vector/no-entry-hand-sign-isolated-white_10601278.htm#query=stop%20hand&position=1&from_view=keyword">Image by macrovector</a> on Freepik
     */
    private final class ButtonIconLoader implements Runnable {
       @Override
       public void run() {
          final String dir = "org/healthnlp/deepphe/desktop/icon/";
-         final String dphePng = "StartDphe360.png";
-         final String vizPng = "StartVizSmall.png";
-
+         final String dphePng = "StartDphe_144.png";
+         final String vizPng = "StartViz_144.png";
+         final String helpPng = "Help_144.png";
          final Icon dpheIcon = IconLoader.loadIcon( dir + dphePng );
          final Icon vizIcon = IconLoader.loadIcon( dir + vizPng );
+         final Icon helpIcon = IconLoader.loadIcon( dir + helpPng );
          _dpheButton.setIcon( dpheIcon );
-         _dpheButton.setEnabled( true );
          _vizButton.setIcon( vizIcon );
-         _vizButton.setEnabled( true );
+         _helpButton.setIcon( helpIcon );
       }
    }
-
 
 
    /**
@@ -248,7 +279,6 @@ public class DesktopMainPanel extends JPanel {
          try {
             final SystemUtil.CommandRunner runner = new SystemUtil.CommandRunner( command );
             runner.setLogger( LOGGER );
-            //runner.wait( true );
             if ( dir != null && !dir.isEmpty() ) {
                runner.setDirectory( dir );
             }
@@ -262,234 +292,31 @@ public class DesktopMainPanel extends JPanel {
             LOGGER.error( "Could not stop " + name + " Server.", multE );
          }
       } ) );
-
    }
 
+   public void popHello() {
+      JOptionPane.showMessageDialog( this,
+                                     "Welcome to the DeepPhe Desktop.\n"
+                             + "Use the buttons at the top to process data, display "
+                             + "results, or get help.\n"
+                             + "At this time the Neo4j Server is being started for "
+                             + "use by DeepPhe.\n"
+                             + "It will be ready when the log states:\n"
+                             + "... Remote interface available ...",
+                                     "Welcome to DeepPhe Desktop",
+                                     INFORMATION_MESSAGE );
+   }
 
-
-
-
-//   public static class StoppableCommandRunner extends SystemUtil.CommandRunner {
-//      private String _command;
-//      private String _dir;
-//      private String _outLog;
-//      private String _errLog;
-//      private Logger _logger;
-//      private boolean _wait;
-//      private boolean _stopOnExit;
-//
-//      public StoppableCommandRunner(String command) {
-//         super( command );
-//         _command = command;
-//      }
-//
-//      public void setStopOnExit( final boolean stopOnExit ) {
-//         _stopOnExit = stopOnExit;
-//      }
-//
-//      public void setDirectory(String directory) {
-//         super.setDirectory( directory );
-//         this._dir = directory;
-//      }
-//
-//      public void setLogger(Logger logger) {
-//         super.setLogger( logger );
-//         this._logger = logger;
-//      }
-//
-//      public void setLogFiles(String outLog, String errLog) {
-//         super.setLogFiles( outLog, errLog );
-//         this._outLog = outLog;
-//         this._errLog = errLog;
-//      }
-//
-//      public void wait(boolean wait) {
-//         super.wait(wait);
-//         this._wait = wait;
-//      }
-//
-//      private String getDefaultLogFile() {
-//         Random randomizer = new Random();
-//         int spaceIndex = this._command.indexOf(32);
-//         return spaceIndex < 0 ? this._command + ".ctakes.log." + randomizer.nextLong() : this._command.substring(0, spaceIndex) + ".ctakes.log." + randomizer.nextLong();
-//      }
-//
-//      private static void ensureEnvironment(ProcessBuilder processBuilder) {
-//         Map<String, String> env = processBuilder.environment();
-//         System.getProperties().stringPropertyNames().stream().filter((n) -> {
-//            return n.startsWith("ctakes.env.");
-//         }).forEach((n) -> {
-//            String var10000 = (String)env.put(n.substring("ctakes.env.".length()), System.getProperty(n));
-//         });
-//         if (!env.containsKey("JAVA_HOME")) {
-//            env.put("JAVA_HOME", System.getProperty("java.home"));
-//         }
-//
-//         String classpath;
-//         if (!env.containsKey("CTAKES_HOME")) {
-//            classpath = System.getenv("CTAKES_HOME");
-//            if (classpath == null || classpath.isEmpty()) {
-//               classpath = System.getProperty("user.dir");
-//            }
-//
-//            env.put("CTAKES_HOME", classpath);
-//         }
-//
-//         if (!env.containsKey("CLASSPATH")) {
-//            classpath = System.getProperty("java.class.path");
-//            if (classpath != null && !classpath.isEmpty()) {
-//               env.put("CLASSPATH", classpath);
-//            }
-//         }
-//
-//      }
-//
-//      public Boolean call() throws IOException, InterruptedException {
-//         String command = this._command;
-//         if (this._logger == null) {
-//            if (this._outLog != null && !this._outLog.isEmpty()) {
-//               command = command + " > " + this._outLog + " 2>&1";
-//            } else {
-//               command = command + " > " + this.getDefaultLogFile() + " 2>&1";
-//            }
-//         }
-//
-//         String cmd = "cmd.exe";
-//         String cmdOpt = "/c";
-//         String os = System.getProperty("os.name");
-//         if (os.toLowerCase().contains("windows")) {
-//            command = command.replace('/', '\\');
-//         } else {
-//            cmd = "bash";
-//            cmdOpt = "-c";
-//         }
-//
-//         ProcessBuilder processBuilder = new ProcessBuilder( cmd, cmdOpt, command );
-////         ProcessBuilder processBuilder = new ProcessBuilder( command );
-//         if (this._dir != null && !this._dir.isEmpty()) {
-//            File dir = new File(this._dir);
-//            if (!dir.exists()) {
-//               dir.mkdirs();
-//            }
-//
-//            processBuilder.directory(dir);
-//         }
-//
-//         ensureEnvironment(processBuilder);
-//         Process process = processBuilder.start();
-//         if ( _stopOnExit ) {
-//            registerShutdownHook( process );
-//         }
-//         if (this._logger != null) {
-//            ExecutorService executors = Executors.newFixedThreadPool( 2 );
-//            executors.submit(new OutputLogger(process, this._logger));
-//            executors.submit(new ErrorLogger(process, this._logger));
-//         }
-//
-//         return !this._wait || process.waitFor() == 0;
-//      }
-//
-//      /**
-//       * Registers a shutdown hook for the Neo4j instance so that it shuts down nicely when the VM exits.
-//       * This includes kill signals and user actions like "Ctrl-C".
-//       */
-//      private void registerShutdownHook( final Process process ) {
-//         Runtime.getRuntime().addShutdownHook( new Thread( () -> {
-//            try {
-//               process.destroy();
-//               process.waitFor();
-//             } catch ( InterruptedException multE ) {
-//               LOGGER.error( "Could not stop process.", multE );
-//            }
-//         } ) );
-//      }
-//   }
-//
-//   private static class ErrorLogger implements Runnable {
-//      private final InputStream _error;
-//      private final Logger _logger;
-//
-//      private ErrorLogger(Process process, Logger logger) {
-//         this._error = process.getErrorStream();
-//         this._logger = logger;
-//      }
-//
-//      public void run() {
-//         try {
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(this._error));
-//            Throwable var2 = null;
-//
-//            try {
-//               Stream var10000 = reader.lines();
-//               Logger var10001 = this._logger;
-//               var10000.forEach(var10001::error);
-//            } catch (Throwable var12) {
-//               var2 = var12;
-//               throw var12;
-//            } finally {
-//               if (reader != null) {
-//                  if (var2 != null) {
-//                     try {
-//                        reader.close();
-//                     } catch (Throwable var11) {
-//                        var2.addSuppressed(var11);
-//                     }
-//                  } else {
-//                     reader.close();
-//                  }
-//               }
-//
-//            }
-//         } catch (IOException var14) {
-//            this._logger.error(var14.getMessage());
-//         }
-//
-//      }
-//   }
-//
-//   private static class OutputLogger implements Runnable {
-//      private final InputStream _output;
-//      private final Logger _logger;
-//
-//      private OutputLogger(Process process, Logger logger) {
-//         this._output = process.getInputStream();
-//         this._logger = logger;
-//      }
-//
-//      public void run() {
-//         try {
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(this._output));
-//            Throwable var2 = null;
-//
-//            try {
-//               Stream var10000 = reader.lines();
-//               Logger var10001 = this._logger;
-//               var10000.forEach(var10001::info);
-//            } catch (Throwable var12) {
-//               var2 = var12;
-//               throw var12;
-//            } finally {
-//               if (reader != null) {
-//                  if (var2 != null) {
-//                     try {
-//                        reader.close();
-//                     } catch (Throwable var11) {
-//                        var2.addSuppressed(var11);
-//                     }
-//                  } else {
-//                     reader.close();
-//                  }
-//               }
-//
-//            }
-//         } catch (IOException var14) {
-//            this._logger.error(var14.getMessage());
-//         }
-//
-//      }
-//   }
-
-
+   static private JComponent createLogPanel() {
+      final JPanel panel = new JPanel( new BorderLayout() );
+      panel.setBorder( new EmptyBorder( 20, 5, 5, 5 ) );
+      final JLabel label = new JLabel( "Desktop Activity Log:" );
+      label.setFont( new Font(Font.DIALOG, Font.PLAIN, 14 ) );
+      label.setBorder( new EmptyBorder( 5, 20, 5, 5 ) );
+      panel.add( label, BorderLayout.NORTH );
+      panel.add( LoggerPanel.createLoggerPanel(), BorderLayout.CENTER );
+      return panel;
+   }
 
 }
 
