@@ -5,7 +5,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.healthnlp</groupId>
    <artifactId>deepphe-neo4j</artifactId>
-   <version>0.5.0</version>
+   <version>0.6.0</version>
    <name>deepphe-neo4j</name>
    <description>Cancer Deep Phenotype Extraction (DeepPhe) Neo4j code module</description>
    <packaging>jar</packaging>
