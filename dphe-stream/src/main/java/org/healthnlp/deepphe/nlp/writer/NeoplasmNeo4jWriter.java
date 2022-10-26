@@ -97,7 +97,7 @@ public class NeoplasmNeo4jWriter extends JCasAnnotator_ImplBase {
       final int patientDocCount = PatientNoteStore.getInstance()
                                                   .getWantedDocCount( patientId );
       final Patient patient = PatientNodeStore.getInstance().getOrCreate( patientId );
-      LOGGER.info( "Patient " + patientId + " has " + patient.getNotes().size() + " completed out of " + patientDocCount );
+//      LOGGER.info( "Patient " + patientId + " has " + patient.getNotes().size() + " completed out of " + patientDocCount );
       if ( patient.getNotes().size() < patientDocCount ) {
          return;
       }
@@ -109,13 +109,13 @@ public class NeoplasmNeo4jWriter extends JCasAnnotator_ImplBase {
          return a; };
 
    private void writePatient( final Patient patient ) throws AnalysisEngineProcessException {
-      final String patientId = patient.getId();
-      LOGGER.info( "Writing " + patientId + " to Neo4j Database " + DriverConnection.getInstance().getUrl() );
       final Driver driver = DriverConnection.getInstance().getDriver();
       if ( driver == null ) {
-         LOGGER.info( "Empty Driver.  Writing to Neo4j will be skipped." );
+//         LOGGER.info( "Empty Driver.  Writing to Neo4j will be skipped." );
          return;
       }
+      final String patientId = patient.getId();
+      LOGGER.info( "Writing Patient " + patientId + " to Neo4j Database " + DriverConnection.getInstance().getUrl() );
       // Somebody else may have already created the patient summary.
       PatientSummary patientSummary = PatientSummaryNodeStore.getInstance().get( patientId );
       if ( patientSummary == null ) {

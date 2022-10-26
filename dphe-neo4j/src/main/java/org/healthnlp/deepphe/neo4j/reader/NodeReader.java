@@ -891,8 +891,10 @@ public enum NodeReader {
 
                 String behavior = "Generic";
                 for (NeoplasmAttribute tumorAttribute : tumor.getAttributes()) {
-                    if (tumorAttribute.getName().equalsIgnoreCase("behavior"))
+                    if (tumorAttribute.getName().equalsIgnoreCase("behavior")) {
+                        // Double-check to make sure this shouldn't be getValue()
                         behavior = tumorAttribute.getClassUri();
+                    }
 
                     //logAttribute("\ntumor:\n", tumorAttribute, log);
                     NewTumorFact tumorFact = new NewTumorFact();

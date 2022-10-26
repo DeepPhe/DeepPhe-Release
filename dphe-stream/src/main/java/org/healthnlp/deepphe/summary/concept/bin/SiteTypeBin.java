@@ -210,9 +210,9 @@ final public class SiteTypeBin {
 //      final Map<String,Collection<String>> siteChains = UriUtil.getAssociatedUriMap( allSiteUris );
       final Map<String,Collection<String>> siteChains = UriUtil.getAllAssociatedUriMap( allSiteUris );
       AssertionBin.moveFemaleGenitalia( siteChains );
-      siteChains.forEach( (k,v) -> LOGGER.info( "SiteTypeBin.createSiteNeoplasmBins " + _siteType
-                                                + "SiteChain " + k + " :"
-                                                + " " + String.join( ";", v ) ) );
+//      siteChains.forEach( (k,v) -> LOGGER.info( "SiteTypeBin.createSiteNeoplasmBins " + _siteType
+//                                                + "SiteChain " + k + " :"
+//                                                + " " + String.join( ";", v ) ) );
       for ( Map.Entry<String,Collection<String>> siteChain : siteChains.entrySet() ) {
          // Create a map with all site sites.  Otherwise siteChains get out of step.
          final Map<String,Set<Mention>> neoplasmSiteUriSites
@@ -225,10 +225,10 @@ final public class SiteTypeBin {
                                                       .filter( Objects::nonNull )
                                                       .flatMap( Collection::stream )
                                                         .collect( Collectors.toSet() );
-         LOGGER.info( "\n\nSiteTypeBin.createSiteNeoplasmBins " + _siteType +  " Cancer Mentions :\n"
-                      + siteChain.toString() + "\n"
-                      + cancers.stream().map( Mention::getClassUri )
-                               .sorted().collect( Collectors.joining(";") ) );
+//         LOGGER.info( "\n\nSiteTypeBin.createSiteNeoplasmBins " + _siteType +  " Cancer Mentions :\n"
+//                      + siteChain.toString() + "\n"
+//                      + cancers.stream().map( Mention::getClassUri )
+//                               .sorted().collect( Collectors.joining(";") ) );
          for ( Mention cancer : cancers ) {
             final Map<String,Collection<Mention>> siteUriSites = neoplasmSiteUriSitesMap.get( cancer );
             siteUriSites.keySet().retainAll( siteChain.getValue() );
@@ -241,17 +241,17 @@ final public class SiteTypeBin {
                                                      .filter( Objects::nonNull )
                                                      .flatMap( Collection::stream )
                                                       .collect( Collectors.toSet() );
-         LOGGER.info( "SiteTypeBin.createSiteNeoplasmBins " + _siteType + " Tumor Mentions : "
-                      + tumors.stream().map( Mention::getClassUri )
-                              .sorted().collect( Collectors.joining(";") ) );
+//         LOGGER.info( "SiteTypeBin.createSiteNeoplasmBins " + _siteType + " Tumor Mentions : "
+//                      + tumors.stream().map( Mention::getClassUri )
+//                              .sorted().collect( Collectors.joining(";") ) );
          for ( Mention tumor : tumors ) {
             final Map<String,Collection<Mention>> siteUriSites = neoplasmSiteUriSitesMap.get( tumor );
             siteUriSites.keySet().retainAll( siteChain.getValue() );
             siteUriSites.forEach( (k,v) -> neoplasmSiteUriSites.get( k )
                                                                .addAll( v ) );
          }
-         LOGGER.info( "SiteNeoplasmBin Sites " + siteChain.getKey() + " : " + String.join( ";",
-                                                                                           neoplasmSiteUriSites.keySet() ) );
+//         LOGGER.info( "SiteNeoplasmBin Sites " + siteChain.getKey() + " : " + String.join( ";",
+//                                                                                           neoplasmSiteUriSites.keySet() ) );
          final SiteNeoplasmBin siteNeoplasmBin = new SiteNeoplasmBin( siteChain.getKey(),
                                                                       neoplasmSiteUriSites,
                                                                       cancers,
@@ -267,9 +267,9 @@ final public class SiteTypeBin {
                                 final Map<String,Collection<String>> associatedSitesMap,
                                 final Map<Mention,Map<String,Collection<Mention>>> neoplasmSiteUriSitesMap ) {
 //      final Map<String,Collection<String>> siteChains = UriUtil.getAssociatedUriMap( allSiteUris );
-      associatedSitesMap.forEach( (k,v) -> LOGGER.info( "SiteTypeBin.createSiteNeoplasmBins " + _siteType
-                                                + "SiteChain " + k + " :"
-                                                + " " + String.join( ";", v ) ) );
+//      associatedSitesMap.forEach( (k,v) -> LOGGER.info( "SiteTypeBin.createSiteNeoplasmBins " + _siteType
+//                                                + "SiteChain " + k + " :"
+//                                                + " " + String.join( ";", v ) ) );
       for ( Map.Entry<String,Collection<String>> siteChain : associatedSitesMap.entrySet() ) {
          // Create a map with all site sites.  Otherwise siteChains get out of step.
          final Map<String,Set<Mention>> neoplasmSiteUriSites
@@ -282,10 +282,10 @@ final public class SiteTypeBin {
                                                       .filter( Objects::nonNull )
                                                       .flatMap( Collection::stream )
                                                       .collect( Collectors.toSet() );
-         LOGGER.info( "\n\nSiteTypeBin.createSiteNeoplasmBins " + _siteType +  " Cancer Mentions :\n"
-                      + siteChain.toString() + "\n"
-                      + cancers.stream().map( Mention::getClassUri )
-                               .sorted().collect( Collectors.joining(";") ) );
+//         LOGGER.info( "\n\nSiteTypeBin.createSiteNeoplasmBins " + _siteType +  " Cancer Mentions :\n"
+//                      + siteChain.toString() + "\n"
+//                      + cancers.stream().map( Mention::getClassUri )
+//                               .sorted().collect( Collectors.joining(";") ) );
          for ( Mention cancer : cancers ) {
             final Map<String,Collection<Mention>> siteUriSites = neoplasmSiteUriSitesMap.get( cancer );
             siteUriSites.keySet().retainAll( siteChain.getValue() );
@@ -298,17 +298,17 @@ final public class SiteTypeBin {
                                                      .filter( Objects::nonNull )
                                                      .flatMap( Collection::stream )
                                                      .collect( Collectors.toSet() );
-         LOGGER.info( "SiteTypeBin.createSiteNeoplasmBins " + _siteType + " Tumor Mentions : "
-                      + tumors.stream().map( Mention::getClassUri )
-                              .sorted().collect( Collectors.joining(";") ) );
+//         LOGGER.info( "SiteTypeBin.createSiteNeoplasmBins " + _siteType + " Tumor Mentions : "
+//                      + tumors.stream().map( Mention::getClassUri )
+//                              .sorted().collect( Collectors.joining(";") ) );
          for ( Mention tumor : tumors ) {
             final Map<String,Collection<Mention>> siteUriSites = neoplasmSiteUriSitesMap.get( tumor );
             siteUriSites.keySet().retainAll( siteChain.getValue() );
             siteUriSites.forEach( (k,v) -> neoplasmSiteUriSites.get( k )
                                                                .addAll( v ) );
          }
-         LOGGER.info( "SiteNeoplasmBin Sites " + siteChain.getKey() + " : " + String.join( ";",
-                                                                                           neoplasmSiteUriSites.keySet() ) );
+//         LOGGER.info( "SiteNeoplasmBin Sites " + siteChain.getKey() + " : " + String.join( ";",
+//                                                                                           neoplasmSiteUriSites.keySet() ) );
          final SiteNeoplasmBin siteNeoplasmBin = new SiteNeoplasmBin( siteChain.getKey(),
                                                                       neoplasmSiteUriSites,
                                                                       cancers,
@@ -369,16 +369,16 @@ final public class SiteTypeBin {
                                                                    .flatMap( Collection::stream )
                                                                    .filter( c -> !bestChains.contains( c ) )
                                                                    .collect( Collectors.toSet() );
-         LOGGER.info( "SiteTypeBin.resolveMentionConflicts " + _siteType + " Moving Mention: " + mention.getClassUri() + " "
-                      + "from\n"
-                      + worseChains.stream()
-                                   .map( NeoplasmChain::toString )
-                                   .sorted()
-                                    .collect( Collectors.joining("\n" ) ) + "\nto\n"
-                      + bestChains.stream()
-                                    .map( NeoplasmChain::toString )
-                                  .sorted()
-                                    .collect( Collectors.joining("\n" ) ));
+//         LOGGER.info( "SiteTypeBin.resolveMentionConflicts " + _siteType + " Moving Mention: " + mention.getClassUri() + " "
+//                      + "from\n"
+//                      + worseChains.stream()
+//                                   .map( NeoplasmChain::toString )
+//                                   .sorted()
+//                                    .collect( Collectors.joining("\n" ) ) + "\nto\n"
+//                      + bestChains.stream()
+//                                    .map( NeoplasmChain::toString )
+//                                  .sorted()
+//                                    .collect( Collectors.joining("\n" ) ));
 
          bestChains.forEach( c -> c.copyHere( mention ) );
          worseChains.forEach( c -> c.remove( mention ) );
@@ -389,8 +389,8 @@ final public class SiteTypeBin {
                                                              .flatMap( Collection::stream )
                                                              .collect( Collectors.toSet() );
          if ( !moreMentions.isEmpty() ) {
-            LOGGER.info( "SiteTypeBin.resolveMentionConflicts " + _siteType
-                         + " Moving more mentions with the same URI : " + moreMentions.size() );
+//            LOGGER.info( "SiteTypeBin.resolveMentionConflicts " + _siteType
+//                         + " Moving more mentions with the same URI : " + moreMentions.size() );
             for ( Mention moreMention : moreMentions ) {
                bestChains.forEach( c -> c.copyHere( moreMention ) );
             }
@@ -401,16 +401,16 @@ final public class SiteTypeBin {
       if ( change ) {
          clean();
       }
-      LOGGER.info( "SiteTypeBin.resolveMentionConflicts " + _siteType
-                   +  " Post-Clean Remaining " + neoplasmType + " Mentions: "
-                 + getSiteNeoplasmBins().stream()
-                                        .map( n -> n.getNeoplasmChains( neoplasmType ) )
-                                        .flatMap( Collection::stream )
-                                        .map( NeoplasmChain::getAllMentions )
-                                        .flatMap( Collection::stream )
-                                        .map( Mention::getClassUri )
-                                        .sorted()
-                                        .collect( Collectors.joining( ";" ) ) );
+//      LOGGER.info( "SiteTypeBin.resolveMentionConflicts " + _siteType
+//                   +  " Post-Clean Remaining " + neoplasmType + " Mentions: "
+//                 + getSiteNeoplasmBins().stream()
+//                                        .map( n -> n.getNeoplasmChains( neoplasmType ) )
+//                                        .flatMap( Collection::stream )
+//                                        .map( NeoplasmChain::getAllMentions )
+//                                        .flatMap( Collection::stream )
+//                                        .map( Mention::getClassUri )
+//                                        .sorted()
+//                                        .collect( Collectors.joining( ";" ) ) );
    }
 
 

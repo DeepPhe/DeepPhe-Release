@@ -33,7 +33,7 @@ public final class RegexUtil {
          throw new IOException( "No File Path to Regex BSV." );
       }
       final List<RegexItemInfo> regexItemInfos = new ArrayList<>();
-      LOGGER.info( "Parsing " + filePath );
+//      LOGGER.info( "Parsing " + filePath );
       try ( BufferedReader reader
                   = new BufferedReader( new InputStreamReader( FileLocator.getAsStream( filePath ) ) ) ) {
          String line = reader.readLine();

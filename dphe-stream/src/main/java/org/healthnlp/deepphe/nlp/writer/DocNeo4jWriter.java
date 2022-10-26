@@ -66,15 +66,14 @@ public class DocNeo4jWriter extends JCasAnnotator_ImplBase {
     */
    @Override
    public void process( final JCas jCas ) throws AnalysisEngineProcessException {
-      final String patientId = SourceMetadataUtil.getPatientIdentifier( jCas );
-
-      LOGGER.info( "Writing " + patientId + " " + DocIdUtil.getDocumentID( jCas )
-                   + " to Neo4j Database " + DriverConnection.getInstance().getUrl() );
       final Driver driver = DriverConnection.getInstance().getDriver();
       if ( driver == null ) {
-         LOGGER.info( "Empty Driver.  Writing to Neo4j will be skipped." );
+//         LOGGER.info( "Empty Driver.  Writing to Neo4j will be skipped." );
          return;
       }
+      final String patientId = SourceMetadataUtil.getPatientIdentifier( jCas );
+      LOGGER.info( "Writing Patient " + patientId + ", Note " + DocIdUtil.getDocumentID( jCas )
+                   + " to Neo4j Database " + DriverConnection.getInstance().getUrl() );
       final String noteJson = JsonNoteWriter.createNoteJson( jCas );
       final String neo4jOkJson = JsonUtil.packForNeo4j( noteJson );
       try ( Session session = driver.session() ) {

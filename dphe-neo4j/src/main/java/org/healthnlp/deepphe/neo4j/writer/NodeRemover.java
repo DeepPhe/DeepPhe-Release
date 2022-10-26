@@ -24,7 +24,7 @@ public class NodeRemover {
    static public void clearPatient(  final GraphDatabaseService graphDb,
                                      final Log log,
                                      final Node patientNode ) {
-      log.info( "Clearing old Patient information." );
+//      log.info( "Clearing old Patient information." );
       final Collection<Node> clearableNodes = new HashSet<>();
       final Collection<Relationship> clearableRelationships = new HashSet<>();
       try ( Transaction tx = graphDb.beginTx() ) {
@@ -117,12 +117,14 @@ public class NodeRemover {
       try ( Transaction tx = graphDb.beginTx() ) {
          for ( Node node : clearableNodes ) {
 //            log.info( "Deleting Node " + node.getProperty( NAME_KEY ) + " " + node.getId() );
+            // For some reason this .getAllRelationships(..) causes neo4j to -invalidate- and not do a
+            // "You did everything correctly but I'm going to rollback anyway and ruin your day".
             final Collection<Relationship> relationships = SearchUtil.getAllRelationships( graphDb, log, node );
-            for ( Relationship relationship : relationships ) {
-               log.info( relationship.getStartNode().getId()
-                         + " " + relationship.getType().name()
-                         + " " + relationship.getEndNode().getId() );
-            }
+//            for ( Relationship relationship : relationships ) {
+//               log.info( relationship.getStartNode().getId()
+//                         + " " + relationship.getType().name()
+//                         + " " + relationship.getEndNode().getId() );
+//            }
             node.delete();
 //            log.info( "Node deletion done" );
          }

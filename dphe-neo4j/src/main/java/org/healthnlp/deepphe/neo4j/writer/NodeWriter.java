@@ -2,7 +2,6 @@ package org.healthnlp.deepphe.neo4j.writer;
 
 import org.healthnlp.deepphe.neo4j.constant.UriConstants;
 import org.healthnlp.deepphe.neo4j.node.*;
-import org.healthnlp.deepphe.neo4j.util.DataUtil;
 import org.healthnlp.deepphe.neo4j.util.SearchUtil;
 import org.neo4j.graphdb.*;
 import org.neo4j.logging.Log;
@@ -160,7 +159,7 @@ public enum NodeWriter {
     public void clearPatientInfo( final GraphDatabaseService graphDb,
                                   final Log log,
                                   final String patientId ) {
-        log.info( "clearPatientInfo " + patientId );
+//        log.info( "clearPatientInfo " + patientId );
         try ( Transaction tx = graphDb.beginTx() ) {
             final Node patientNode = SearchUtil.getLabeledNode( graphDb, PATIENT_LABEL, patientId );
             if ( patientNode != null ) {
@@ -180,15 +179,16 @@ public enum NodeWriter {
     public void addPatientInfo( final GraphDatabaseService graphDb,
                                 final Log log,
                                 final Patient patient ) {
-        log.info( "addPatientInfo " + patient.getName() + " " + patient.getId() );
+        log.info( "Adding Patient " + patient.getName()
+                  + " (" + patient.getId() + ") to Neo4j graph." );
         try ( Transaction tx = graphDb.beginTx() ) {
             final Node patientNode = getOrCreatePatientNode( graphDb, log, patient.getId() );
             final String noteHash = patient.getNoteHash();
-            log.info("Setting property " + HASH_KEY + " for patientId: " + patient.getId());
+//            log.info("Setting property " + HASH_KEY + " for patientId: " + patient.getId());
             patientNode.setProperty( HASH_KEY, noteHash );
-            log.info( "Adding Notes" );
+//            log.info( "Adding Notes" );
             patient.getNotes().forEach( n -> addNoteInfo( graphDb, log, patientNode, n ) );
-            log.info( "addPatientInfo Finished." );
+//            log.info( "addPatientInfo Finished." );
             tx.success();
         } catch ( TransactionFailureException txE ) {
             log.error( txE.getMessage() );
@@ -203,7 +203,7 @@ public enum NodeWriter {
     private Node createPatientNode(  final GraphDatabaseService graphDb,
                                      final Log log,
                                      final String patientId ) {
-        log.info("Entered createPatientNode");
+//        log.info("Entered createPatientNode");
         try ( Transaction tx = graphDb.beginTx() ) {
 //            log.info("Searching for ClassNode: " + PATIENT_URI);
             Node allPatientsNode = SearchUtil.getClassNode( graphDb, PATIENT_URI );
@@ -241,7 +241,7 @@ public enum NodeWriter {
                     + patientId + "\n" + e.getClass().getSimpleName() + "\n" + e.getMessage() );
             // Attempt to continue.
         }
-        log.info( "Done Creating Patient." );
+//        log.info( "Done Creating Patient." );
         return null;
     }
 

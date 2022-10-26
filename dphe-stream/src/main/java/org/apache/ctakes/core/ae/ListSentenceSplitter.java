@@ -38,7 +38,7 @@ final public class ListSentenceSplitter extends JCasAnnotator_ImplBase {
     */
    @Override
    public void process( final JCas jcas ) throws AnalysisEngineProcessException {
-      LOGGER.info( "Adjusting Sentences overlapping Lists ..." );
+      //LOGGER.info( "Adjusting Sentences overlapping Lists ..." );
       final Collection<FormattedList> lists = JCasUtil.select( jcas, FormattedList.class );
       if ( lists != null && !lists.isEmpty() ) {
          adjustListEntrySentences( jcas );

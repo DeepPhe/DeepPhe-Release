@@ -76,7 +76,7 @@ public class UriAnnotationFactory {
       try ( Transaction tx = graphDb.beginTx() ) {
          final Node graphNode = SearchUtil.getClassNode( graphDb, uri );
          if ( graphNode == null ) {
-            LOGGER.warn( "No Class exists for URI " + uri );
+//            LOGGER.warn( "No Class exists for URI " + uri );
             return Collections.singletonList( createUnknownAnnotation( jcas, beginOffset, endOffset, uri ,
                                                                        semanticTui ) );
          }
@@ -136,7 +136,7 @@ public class UriAnnotationFactory {
       try ( Transaction tx = graphDb.beginTx() ) {
          final Node graphNode = SearchUtil.getClassNode( graphDb, uri );
          if ( graphNode == null ) {
-            LOGGER.warn( "No Class exists for URI " + uri );
+//            LOGGER.warn( "No Class exists for URI " + uri );
             return Collections.singletonList( createUnknownAnnotation( jcas, beginOffset, endOffset, uri,
                                                                        semanticGroup, tui ) );
          }
@@ -196,7 +196,7 @@ public class UriAnnotationFactory {
       try ( Transaction tx = graphDb.beginTx() ) {
          final Node graphNode = SearchUtil.getClassNode( graphDb, uri );
          if ( graphNode == null ) {
-            LOGGER.warn( "No Class exists for URI " + uri );
+//            LOGGER.warn( "No Class exists for URI " + uri );
             return Collections.singletonList( createUnknownAnnotation( jcas, beginOffset, endOffset, uri,
                                                                        semanticGroup, tui, preferredText ) );
          }

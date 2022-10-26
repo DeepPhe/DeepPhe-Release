@@ -1307,7 +1307,7 @@ static private String toConceptText( final ConceptAggregate concept ) {
                final Note note = NoteNodeStore.getInstance()
                                               .get( mention.getNoteId() );
                if ( note == null ) {
-                  LOGGER.warn( "No Note stored for Note ID " + mention.getNoteId() );
+//                  LOGGER.warn( "No Note stored for Note ID " + mention.getNoteId() );
                   continue;
                }
 //               if ( isHeaderText( note, mention ) ) {

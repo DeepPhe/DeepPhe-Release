@@ -125,7 +125,7 @@ public class DeepPheSummaryWriter extends AbstractFileWriter<Patient> {
       final int patientDocCount = PatientNoteStore.getInstance()
                                                   .getWantedDocCount( patientId );
       if ( patient.getNotes().size() < patientDocCount ) {
-         LOGGER.info( patientId + " " + patient.getNotes().size() + " of " + patientDocCount );
+//         LOGGER.info( patientId + " " + patient.getNotes().size() + " of " + patientDocCount );
          return;
       }
       // Somebody else may have already created the patient summary.
@@ -136,6 +136,13 @@ public class DeepPheSummaryWriter extends AbstractFileWriter<Patient> {
          // Add the summary just in case some other consumer can utilize it.  e.g. eval file writer.
          PatientSummaryXnNodeStore.getInstance().add( patientId, patientSummary );
       }
+
+      StringBuilder sb = new StringBuilder();
+      final List<Note> notes = patientSummary.getPatient().getNotes();
+      for ( Note note : notes ) {
+         sb.append( note.getId() ).append( "   " ).append( note.getEpisode() ).append( "\n" );
+      }
+
 
       final Gson gson = new GsonBuilder().setPrettyPrinting().create();
       final String summaryJson = gson.toJson( patientSummary );

@@ -22,9 +22,11 @@ final public class PipelineStopper extends JCasAnnotator_ImplBase {
       Logger.getLogger( "PipelineStopper" ).info( "Processing Complete." );
       final Frame[] frames = Frame.getFrames();
       if ( frames != null && frames.length > 0 ) {
-         JOptionPane.showMessageDialog( null, "Processing Complete.  Click OK to exit." );
+         JOptionPane.showMessageDialog( null, "Processing Complete.  \n"
+                                              + "Please exit the Patient Phenotype Summarizer." );
+      } else {
+         System.exit( 0 );
       }
-      System.exit( 0 );
    }
 
 }

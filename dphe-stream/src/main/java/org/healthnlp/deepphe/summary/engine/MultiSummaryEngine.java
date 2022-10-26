@@ -324,19 +324,19 @@ final public class MultiSummaryEngine {
 ////                                        .sum() < maxSites )
 //                          .collect( Collectors.toSet() );
 //      LOGGER.info( "Site Mention Counts ..." );
-      diagnosisMap.keySet()
-                  .forEach( c -> LOGGER.info(
-                        c.getUri() + " " + String.join( ",", c.getAllUris() )
-                        + "  " + c.getRelatedSites()
-                                   .stream()
-                                   .mapToInt( s -> s.getMentions().size() )
-                                   .sum()
-                        + " :\n" + c.getRelatedSites()
-                                  .stream()
-                                  .map( s -> String.join( ",", s.getAllUris() )
-                                             + " " + s.getMentions().size() )
-                                  .collect( Collectors.joining("\n") )
-                         ) );
+//      diagnosisMap.keySet()
+//                  .forEach( c -> LOGGER.info(
+//                        c.getUri() + " " + String.join( ",", c.getAllUris() )
+//                        + "  " + c.getRelatedSites()
+//                                   .stream()
+//                                   .mapToInt( s -> s.getMentions().size() )
+//                                   .sum()
+//                        + " :\n" + c.getRelatedSites()
+//                                  .stream()
+//                                  .map( s -> String.join( ",", s.getAllUris() )
+//                                             + " " + s.getMentions().size() )
+//                                  .collect( Collectors.joining("\n") )
+//                         ) );
 
 //      LOGGER.info( "Removing Too Few Sites Cancers from max " + maxSites + "/3 :\n"
 //                   + tooFewSites.stream()
@@ -366,19 +366,19 @@ final public class MultiSummaryEngine {
                                                                   .stream()
                                                                   .sorted( Comparator.comparing( ConceptAggregate::getUri ) )
                                                                   .collect( Collectors.toSet() );
-      for ( ConceptAggregate cancer : cancerList2 ) {
-         LOGGER.info( "\n\n!!! Cancer !!!\n" + cancer.toString() );
-         diagnosisMap.get( cancer )
-                     .stream()
-                     .sorted( Comparator.comparing( ConceptAggregate::getUri ) )
-                     .forEach( t -> LOGGER.info( "\n  !! Tumor !!\n" + t.toString() ) );
-      }
-      loneTumors.forEach( t -> LOGGER.info( "\n!! Lone Tumor !!\n" + t.toString() ) );
-
-      LOGGER.info( "Remaining Cancers:\n"
-                   + diagnosisMap.keySet().stream()
-                             .map( c -> c.getUri() + " : " + c.getMentions().size() )
-                             .collect( Collectors.joining( "\n" ) ) );
+//      for ( ConceptAggregate cancer : cancerList2 ) {
+//         LOGGER.info( "\n\n!!! Cancer !!!\n" + cancer.toString() );
+//         diagnosisMap.get( cancer )
+//                     .stream()
+//                     .sorted( Comparator.comparing( ConceptAggregate::getUri ) )
+//                     .forEach( t -> LOGGER.info( "\n  !! Tumor !!\n" + t.toString() ) );
+//      }
+//      loneTumors.forEach( t -> LOGGER.info( "\n!! Lone Tumor !!\n" + t.toString() ) );
+//
+//      LOGGER.info( "Remaining Cancers:\n"
+//                   + diagnosisMap.keySet().stream()
+//                             .map( c -> c.getUri() + " : " + c.getMentions().size() )
+//                             .collect( Collectors.joining( "\n" ) ) );
 
 //      System.exit( 0 );
       return summarizeConceptAggregateMap( patientId, diagnosisMap, loneTumors, allConcepts );
@@ -418,7 +418,7 @@ final public class MultiSummaryEngine {
             final Collection<String> removals = related.keySet().stream()
                                                        .filter( ConceptAggregateUtil::isCancerOnlyFact )
                                                        .collect( Collectors.toList() );
-            LOGGER.info( "Cancer Only Removals\n" + String.join( " ; ", removals ) );
+//            LOGGER.info( "Cancer Only Removals\n" + String.join( " ; ", removals ) );
             related.keySet().removeAll( removals );
             tumors.add( TumorCreator.createTumor( cancerTumor, factMap ) );
          }
@@ -436,7 +436,7 @@ final public class MultiSummaryEngine {
                                                        .stream()
                                                        .filter( ConceptAggregateUtil::isCancerOnlyFact )
                                                        .collect( Collectors.toList() );
-            LOGGER.info( "Cancer Only Removals\n" + String.join( " ; ", removals ) );
+//            LOGGER.info( "Cancer Only Removals\n" + String.join( " ; ", removals ) );
             related.keySet()
                    .removeAll( removals );
             tumors.add( TumorCreator.createTumor( loneTumor, factMap ) );

@@ -77,15 +77,15 @@ public class SiteAttributeHelper extends AbstractAttributeHelper {
                            .collect( Collectors.toMap( Map.Entry::getKey,
                                                        e -> getTwoBestUriScores( e.getValue(), allNeoplasmMentions ) ) );
       _orderedScoreMap.putAll( orderedBestScores );
-      LOGGER.info( "!!!!!!!!!! Ordered Best Scores: " );
+//      LOGGER.info( "!!!!!!!!!! Ordered Best Scores: " );
       String bestSiteUri = "";
       for ( Integer order : _sitesOrders ) {
-         LOGGER.info( order + " "
-                      + orderedBestScores.get( order ).getValue1().getKey()
-                      + " = " + orderedBestScores.get( order ).getValue1().getValue()
-                      + " , "
-                        + orderedBestScores.get( order ).getValue2().getKey()
-                      + " = " + orderedBestScores.get( order ).getValue2().getValue() );
+//         LOGGER.info( order + " "
+//                      + orderedBestScores.get( order ).getValue1().getKey()
+//                      + " = " + orderedBestScores.get( order ).getValue1().getValue()
+//                      + " , "
+//                        + orderedBestScores.get( order ).getValue2().getKey()
+//                      + " = " + orderedBestScores.get( order ).getValue2().getValue() );
          if ( bestSiteUri.isEmpty() ) {
             bestSiteUri = orderedBestScores.get( order ).getValue1().getKey();
          }
@@ -196,31 +196,31 @@ public class SiteAttributeHelper extends AbstractAttributeHelper {
       final List<KeyValue<String,Double>> bestKeyValues = UriScoreUtil.getBestUriScores( uriQuotientList );
       final Map<String,Integer> classLevelMap = UriScoreUtil.createClassLevelMap( bestKeyValues );
 
-      LOGGER.info( "!!!    SiteAttributeHelper.getTwoBestUriScores");
-      uriQuotientList.stream().map( kv -> "URI " + kv.getKey()
-                                          + "   mention count " + uriCountsMap.get( kv.getKey() )
-                                          + "   quotient score " + kv.getValue()
-                                          + "   root count "
-                                          + ( uriRootsMap.get( kv.getKey() ) == null
-                                              ? "-1"
-                                              : uriRootsMap.get( kv.getKey() ).size() )
-                                          + "   uri Sum "
-                                          + ( uriSums.get( kv.getKey() ) == null
-                                              ? "-1"
-                                              : uriSums.get( kv.getKey() ) )
-                                          + "   quotient level score "
-                                          + ( classLevelMap.get( kv.getKey() ) == null
-                                              ? "-1"
-                                              : (kv.getValue()*classLevelMap.get( kv.getKey() )) )
-                                          + "   rooted "
-                                          + ( classLevelMap.get( kv.getKey() ) == null || uriRootsMap.get( kv.getKey() ) == null
-                                              ? "-1"
-                                              : (kv.getValue()
-                                                 *classLevelMap.get( kv.getKey() )
-                                                 *uriRootsMap.get( kv.getKey() ).size()) )
-                                          + "   class level " + classLevelMap.get( kv.getKey() )
-                                  )
-                     .forEach( LOGGER::info );
+//      LOGGER.info( "!!!    SiteAttributeHelper.getTwoBestUriScores");
+//      uriQuotientList.stream().map( kv -> "URI " + kv.getKey()
+//                                          + "   mention count " + uriCountsMap.get( kv.getKey() )
+//                                          + "   quotient score " + kv.getValue()
+//                                          + "   root count "
+//                                          + ( uriRootsMap.get( kv.getKey() ) == null
+//                                              ? "-1"
+//                                              : uriRootsMap.get( kv.getKey() ).size() )
+//                                          + "   uri Sum "
+//                                          + ( uriSums.get( kv.getKey() ) == null
+//                                              ? "-1"
+//                                              : uriSums.get( kv.getKey() ) )
+//                                          + "   quotient level score "
+//                                          + ( classLevelMap.get( kv.getKey() ) == null
+//                                              ? "-1"
+//                                              : (kv.getValue()*classLevelMap.get( kv.getKey() )) )
+//                                          + "   rooted "
+//                                          + ( classLevelMap.get( kv.getKey() ) == null || uriRootsMap.get( kv.getKey() ) == null
+//                                              ? "-1"
+//                                              : (kv.getValue()
+//                                                 *classLevelMap.get( kv.getKey() )
+//                                                 *uriRootsMap.get( kv.getKey() ).size()) )
+//                                          + "   class level " + classLevelMap.get( kv.getKey() )
+//                                  )
+//                     .forEach( LOGGER::info );
 
       return getTwoBestUriScores( bestKeyValues, classLevelMap, uriRootsMap );
    }

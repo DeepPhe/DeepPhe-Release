@@ -91,7 +91,7 @@ final public class ParagraphFinder extends JCasAnnotator_ImplBase {
       } catch ( IOException ioE ) {
          throw new ResourceInitializationException( ioE );
       }
-      LOGGER.info( "Finished Parsing" );
+//      LOGGER.info( "Finished Parsing" );
    }
 
    /**
@@ -99,11 +99,11 @@ final public class ParagraphFinder extends JCasAnnotator_ImplBase {
     */
    @Override
    public void process( final JCas jcas ) throws AnalysisEngineProcessException {
-      LOGGER.info( "Annotating Paragraphs ..." );
       if ( _paragraphTypes.isEmpty() ) {
-         LOGGER.info( "Finished processing, no paragraph types defined" );
+//         LOGGER.info( "Finished processing, no paragraph types defined" );
          return;
       }
+      LOGGER.info( "Annotating Paragraphs ..." );
       createParagraphs( jcas );
    }
 

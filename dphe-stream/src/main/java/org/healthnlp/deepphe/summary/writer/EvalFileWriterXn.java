@@ -141,7 +141,7 @@ public class EvalFileWriterXn extends AbstractFileWriter<Patient> {
       final int patientDocCount = PatientNoteStore.getInstance()
                                                   .getWantedDocCount( patientId );
       if ( patient.getNotes().size() < patientDocCount ) {
-         LOGGER.info( patientId + " " + patient.getNotes().size() + " of " + patientDocCount );
+//         LOGGER.info( patientId + " " + patient.getNotes().size() + " of " + patientDocCount );
          return;
       }
       // Somebody else may have already created the patient summary.

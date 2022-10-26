@@ -21,7 +21,7 @@ final public class WtfSectionFixer extends JCasAnnotator_ImplBase {
 
    @Override
    public void process( JCas jCas ) throws AnalysisEngineProcessException {
-      LOGGER.info( "Checkin Out of Bounds Sections ..." );
+      LOGGER.info( "Checking Out of Bounds Sections ..." );
       final Collection<Segment> removals = new HashSet<>();
       final int length = jCas.getDocumentText().length();
       for ( Segment section : JCasUtil.select( jCas, Segment.class ) ) {

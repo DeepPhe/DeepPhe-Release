@@ -9,7 +9,6 @@ import org.neo4j.logging.Log;
 import org.neo4j.procedure.*;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -69,19 +68,22 @@ final public class WriteFunctions {
       final Patient patient = gson.fromJson( realJson, Patient.class );
       NodeWriter.getInstance().addPatientInfo( graphDb, log, patient );
       final ProcedureString joke
-            = new ProcedureString( "Patient " + patient.getId() + " added to DeepPhe graph." );
+            = new ProcedureString( "Patient " + patient.getName()
+                                   + " (" + patient.getId()
+                                   + ") added to DeepPhe graph." );
       return Stream.of( joke );
    }
 
    @Procedure( name="deepphe.clearPatientSummary", mode=Mode.WRITE )
    @Description( "Clears a Patient node and cancer summary." )
    public Stream<ProcedureString> clearPatientSummary( @Name( "patientId" ) String patientId ) {
-      log.info("Entered clearPatientSummary" );
-      log.info("Calling clearPatientInfo for patient : " + patientId );
+//      log.info("Entered clearPatientSummary" );
+//      log.info("Calling clearPatientInfo for patient : " + patientId );
       NodeWriter.getInstance().clearPatientInfo( graphDb, log, patientId );
-      log.info("clearPatientInfo succeeded for patient: " + patientId );
+//      log.info("clearPatientInfo succeeded for patient: " + patientId );
       final ProcedureString joke
-            = new ProcedureString( "Patient " + patientId + " cleared from DeepPhe graph." );
+            = new ProcedureString( "Old Patient (" + patientId
+                                   + ") cleared from DeepPhe graph." );
       return Stream.of( joke );
    }
 
@@ -89,28 +91,31 @@ final public class WriteFunctions {
    @Procedure( name="deepphe.addPatientSummary", mode=Mode.WRITE )
    @Description( "Creates or appends to a Patient node and cancer summary." )
    public Stream<ProcedureString> addPatientSummary( @Name( "patientSummaryJson" ) String patientSummaryJson ) {
-      log.info("Entered addPatientSummary");
+//      log.info("Entered addPatientSummary");
       final String realJson = JsonUtil.unpackFromNeo4j( patientSummaryJson );
-      log.info("Unpacking JSON fron neo4j");
+//      log.info("Unpacking JSON fron neo4j");
       final Gson gson = new Gson();
       final PatientSummary patientSummary = gson.fromJson( realJson, PatientSummary.class );
-      log.info("Unmarshalling patientSummary from JSON");
+//      log.info("Unmarshalling patientSummary from JSON");
       final Patient patient = patientSummary.getPatient();
 
-      log.info("Patient information for patient: " + patient.getId() + " extracted.");
-      log.info("Calling addPatientInfo for patient : " + patient.getId());
+//      log.info("Patient information for patient: " + patient.getId() + " extracted.");
+//      log.info("Calling addPatientInfo for patient : " + patient.getId());
       NodeWriter.getInstance().addPatientInfo( graphDb, log, patient );
-      log.info("addPatientInfo succeeded for patient: " + patient.getId());
-      log.info("Getting neoplasms for " + patient.getId());
+//      log.info("addPatientInfo succeeded for patient: " + patient.getId());
+//      log.info("Getting neoplasms for " + patient.getId());
       final List<NeoplasmSummary> neoplasms = patientSummary.getNeoplasms();
-      log.info("There are " + neoplasms.size() + " neoplasms for patientId: " + patient.getId());
+//      log.info("There are " + neoplasms.size() + " neoplasms for patientId: " + patient.getId());
 
       for ( NeoplasmSummary neoplasm : neoplasms ) {
-         log.info("Writing neoplasm  " + neoplasm.getId() + " to datqbase");
+//         log.info("Writing neoplasm  " + neoplasm.getId() + " to database");
          NodeWriter.getInstance().addCancerInfo(graphDb, log, patient.getId(), neoplasm);
       }
       final ProcedureString joke
-            = new ProcedureString( "Patient Summary " + patientSummary.getId() + " added to DeepPhe graph." );
+            =
+            new ProcedureString( "Patient " + patient.getName()
+                                 + " Summary (" + patientSummary.getId()
+                                 + ") added to DeepPhe graph." );
       return Stream.of( joke );
    }
 
@@ -132,7 +137,10 @@ final public class WriteFunctions {
       final NeoplasmSummary cancer = gson.fromJson( realJson, NeoplasmSummary.class );
       NodeWriter.getInstance().addCancerInfo( graphDb, log, patientId, cancer );
       final ProcedureString joke
-            = new ProcedureString( "Cancer " + cancer.getId() + " added to DeepPhe graph." );
+            =
+            new ProcedureString( "Cancer " + cancer.getClassUri().replace( '_', ' ' )
+                                 + " (" + cancer.getId()
+                                 + ") added to DeepPhe graph." );
       return Stream.of( joke );
    }
 
@@ -152,7 +160,9 @@ final public class WriteFunctions {
 //      final Note note = gson.fromJson( noteJson, Note.class );
       final Note note = gson.fromJson( realJson, Note.class );
       NodeWriter.getInstance().addNoteInfo( graphDb, log, patientId, note );
-      final ProcedureString joke = new ProcedureString( "Note " + note.getId() + " added to DeepPhe graph." );
+      final ProcedureString joke = new ProcedureString( "Note " + note.getName()
+                                                        + " (" + note.getId()
+                                                        + ") added to DeepPhe graph." );
       return Stream.of( joke );
    }
 
@@ -181,7 +191,8 @@ final public class WriteFunctions {
 //      final Mention mention = gson.fromJson( mentionJson, Mention.class );
       final Mention mention = gson.fromJson( realJson, Mention.class );
       NodeWriter.getInstance().addMentionInfo( graphDb, log, noteId, mention );
-      final ProcedureString joke = new ProcedureString( "Mention " + mention.getId() + " added to DeepPhe graph." );
+      final ProcedureString joke = new ProcedureString( "Mention (" + mention.getId()
+                                                        + ") added to DeepPhe graph." );
       return Stream.of( joke );
    }
 

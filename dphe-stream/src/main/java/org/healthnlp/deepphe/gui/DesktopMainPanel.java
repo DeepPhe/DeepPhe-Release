@@ -180,8 +180,6 @@ public class DesktopMainPanel extends JPanel {
       if ( _stop ) {
          return;
       }
-      LOGGER.info( "DIR: " + dir);
-      LOGGER.info( "Command: " + command);
       final SystemUtil.CommandRunner runner = new SystemUtil.CommandRunner( command );
       runner.setLogger( LOGGER );
       if ( dir != null && !dir.isEmpty() ) {
@@ -257,9 +255,9 @@ public class DesktopMainPanel extends JPanel {
       @Override
       public void run() {
          final String dir = "org/healthnlp/deepphe/desktop/icon/";
-         final String dphePng = "StartDphe_144.png";
-         final String vizPng = "StartViz_144.png";
-         final String helpPng = "Help_144.png";
+         final String dphePng = "StartPFS_144_4.png";
+         final String vizPng = "StartViz_144_3.png";
+         final String helpPng = "Info_144_3.png";
          final Icon dpheIcon = IconLoader.loadIcon( dir + dphePng );
          final Icon vizIcon = IconLoader.loadIcon( dir + vizPng );
          final Icon helpIcon = IconLoader.loadIcon( dir + helpPng );

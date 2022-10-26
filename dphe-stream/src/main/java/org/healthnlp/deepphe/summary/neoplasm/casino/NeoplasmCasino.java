@@ -91,19 +91,19 @@ final public class NeoplasmCasino {
       final SiteTable siteTable = new SiteTable( neoplasms, allConcepts );
       final HistologyTable histologyTable = new HistologyTable( neoplasms, allConcepts );
       if ( siteTable.areAllWanted() && histologyTable.areAllWanted() ) {
-         LOGGER.info( "Done Refining Neoplasms by site and histology, all distributed.  "
-                      + SiteTable.TOPOGRAPHY_CUTOFF + " " + HistologyTable.ONE_SITE_HISTOLOGY_CUTOFF );
+//         LOGGER.info( "Done Refining Neoplasms by site and histology, all distributed.  "
+//                      + SiteTable.TOPOGRAPHY_CUTOFF + " " + HistologyTable.ONE_SITE_HISTOLOGY_CUTOFF );
          return new KeyValue<>( siteTable, histologyTable );
       } else if ( previousUnwantedSites.equals( siteTable.getUnwantedCodes() )
            && previousUnwantedHistologies.equals( histologyTable.getUnwantedCodes() ) ) {
-         LOGGER.info( "Done Refining Neoplasms by site and histology, no longer distributing." );
+//         LOGGER.info( "Done Refining Neoplasms by site and histology, no longer distributing." );
          return new KeyValue<>( siteTable, histologyTable );
       }
-      LOGGER.info( "Continue Refining Neoplasms by site and histology ... "
-                   + siteTable.getBestNeoplasmsMap().size() + " "
-                   + siteTable.getUnwantedCodes().size() + " "
-                   + histologyTable.getBestNeoplasmsMap().size() + " "
-                   + histologyTable.getUnwantedCodes().size() );
+//      LOGGER.info( "Continue Refining Neoplasms by site and histology ... "
+//                   + siteTable.getBestNeoplasmsMap().size() + " "
+//                   + siteTable.getUnwantedCodes().size() + " "
+//                   + histologyTable.getBestNeoplasmsMap().size() + " "
+//                   + histologyTable.getUnwantedCodes().size() );
       return refineNeoplasms( neoplasms, allConcepts,
                        siteTable.getUnwantedCodes(),
                        histologyTable.getUnwantedCodes() );
