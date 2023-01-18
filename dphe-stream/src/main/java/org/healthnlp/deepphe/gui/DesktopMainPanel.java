@@ -20,6 +20,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 
@@ -88,6 +90,12 @@ public class DesktopMainPanel extends JPanel {
       if ( _stop ) {
          return;
       }
+      // We should do something with the summarizer.  If neo4j is stopped then a running summarizer will fail.
+//      registerShutdownHook( "DeepPhe Summarizer", getParameter( "StopSum", "StopSum" ),
+//                            getParameter( "SumDir", "SumDir" ) );
+//      if ( _stop ) {
+//         return;
+//      }
       registerShutdownHook( "DeepPhe Viz", getParameter( "StopViz", "StopVis" ), getParameter( "VizDir", "VisDir" ) );
       if ( _stop ) {
          return;
@@ -185,6 +193,7 @@ public class DesktopMainPanel extends JPanel {
       if ( dir != null && !dir.isEmpty() ) {
          runner.setDirectory( dir );
       }
+      //runner.stopOnExit( true );
       LOGGER.info( "Starting Neo4j Server  ..." );
       try {
          SystemUtil.run( runner );
@@ -198,6 +207,7 @@ public class DesktopMainPanel extends JPanel {
       private final String _name;
       private final String _command;
       private final String _dir;
+      private boolean _paused = false;
 
       private StartAction( final String name, final String command, final String dir ) {
          _name = name;
@@ -206,21 +216,25 @@ public class DesktopMainPanel extends JPanel {
       }
 
       @Override
-      public void actionPerformed( final ActionEvent event ) {
-         if ( _dpheButton == null ) {
+      synchronized public void actionPerformed( final ActionEvent event ) {
+         if ( _dpheButton == null || _paused ) {
             return;
          }
+         _paused = true;
          final SystemUtil.CommandRunner runner = new SystemUtil.CommandRunner( _command );
          runner.setLogger( LOGGER );
          if ( _dir != null && !_dir.isEmpty() ) {
             runner.setDirectory( _dir );
          }
          LOGGER.info( "Starting " + _name + " ..." );
+         LOGGER.info( "\n     Initializing may require several seconds.\n     Please Wait.\n" );
          try {
             SystemUtil.run( runner );
          } catch ( IOException ioE ) {
             LOGGER.error( ioE.getMessage() );
          }
+         Executors.newSingleThreadScheduledExecutor()
+                  .schedule( () -> { _paused = false; }, 10, TimeUnit.SECONDS );
       }
    }
 
@@ -230,19 +244,7 @@ public class DesktopMainPanel extends JPanel {
          if ( _helpButton == null ) {
             return;
          }
-         // TODO - just use SystemUtil.openWebPage(..)
-         LOGGER.info( "Opening Web Page: " + HTTPS_DEEPPHE_GITHUB_IO + " ...");
-         String command = "start \"Browser\" /max " + HTTPS_DEEPPHE_GITHUB_IO;
-         final String os = System.getProperty( "os.name" );
-         if ( !os.toLowerCase()
-                 .contains( "windows" ) ) {
-            command = "xdg-open " + HTTPS_DEEPPHE_GITHUB_IO + " || sensible-browser " + HTTPS_DEEPPHE_GITHUB_IO + " || open " + HTTPS_DEEPPHE_GITHUB_IO;
-         }
-         try {
-            SystemUtil.run( command );
-         } catch ( IOException e ) {
-            LOGGER.error( e.getMessage() );
-         }
+         SystemUtil.openWebPage( HTTPS_DEEPPHE_GITHUB_IO );
       }
    }
 
@@ -280,14 +282,14 @@ public class DesktopMainPanel extends JPanel {
             if ( dir != null && !dir.isEmpty() ) {
                runner.setDirectory( dir );
             }
-            LOGGER.info( "Stopping " + name + " Server  ..." );
+            LOGGER.info( "Stopping " + name + " ..." );
             try {
                SystemUtil.run( runner );
             } catch ( IOException ioE ) {
                LOGGER.error( ioE.getMessage() );
             }
          } catch ( LifecycleException | RotationTimeoutException multE ) {
-            LOGGER.error( "Could not stop " + name + " Server.", multE );
+            LOGGER.error( "Could not stop " + name + ".", multE );
          }
       } ) );
    }
