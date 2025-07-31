@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<assembly
+        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+   <id>bin</id>
+   <formats>
+      <format>dir</format>
+   </formats>
+
+   <includeBaseDirectory>true</includeBaseDirectory>
+   <baseDirectory>/deepphe-${project.version}</baseDirectory>
+
+   <dependencySets>
+      <dependencySet>
+         <includes>
+            <include>org.healthnlp:deepphe-nlp</include>
+         </includes>
+         <unpack>false</unpack>
+         <useProjectArtifact>false</useProjectArtifact>
+         <useTransitiveFiltering>true</useTransitiveFiltering>
+         <fileMode>644</fileMode>
+         <directoryMode>755</directoryMode>
+         <outputDirectory>lib</outputDirectory>
+      </dependencySet>
+   </dependencySets>
+
+   <fileSets>
+      <fileSet>
+         <directory>resources</directory>
+         <fileMode>755</fileMode>
+         <directoryMode>755</directoryMode>
+         <outputDirectory>resources</outputDirectory>
+      </fileSet>
+      <fileSet>
+         <directory>src/main/resources</directory>
+         <fileMode>755</fileMode>
+         <directoryMode>755</directoryMode>
+         <outputDirectory>resources</outputDirectory>
+      </fileSet>
+      <fileSet>
+         <directory>src/main/bin</directory>
+         <fileMode>755</fileMode>
+         <directoryMode>755</directoryMode>
+         <outputDirectory>bin</outputDirectory>
+      </fileSet>
+      <fileSet>
+         <directory>.</directory>
+         <outputDirectory/>
+         <fileMode>644</fileMode>
+         <directoryMode>755</directoryMode>
+         <includes>
+            <include>README.md</include>
+            <!--            <include>LICENSE</include>-->
+         </includes>
+      </fileSet>
+   </fileSets>
+</assembly>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.healthnlp</groupId>
+   <artifactId>deepphe-neo4j</artifactId>
+   <version>0.7.0</version>
+   <name>deepphe-neo4j</name>
+   <description>Cancer Deep Phenotype Extraction (DeepPhe) Neo4j code module</description>
+   <packaging>jar</packaging>
+   <properties>
+      <deepphe.version>0.7.0</deepphe.version>
+      <ctakes.version>5.1.0</ctakes.version>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <neo4j.version>3.5.20</neo4j.version>
+   </properties>
+   <dependencies>
+      <!--  neo4j for ontology graph  -->
+      <dependency>
+         <groupId>org.neo4j</groupId>
+         <artifactId>neo4j</artifactId>
+         <version>${neo4j.version}</version>
+      </dependency>
+
+<!--      <dependency>-->
+<!--         <groupId>org.neo4j.test</groupId>-->
+<!--         <artifactId>neo4j-harness</artifactId>-->
+<!--         <version>${neo4j.version}</version>-->
+<!--         <scope>test</scope>-->
+<!--      </dependency>-->
+
+      <dependency>
+         <groupId>org.neo4j.driver</groupId>
+         <artifactId>neo4j-java-driver</artifactId>
+         <version>4.0.1</version>
+      </dependency>
+
+      <dependency>
+         <groupId>com.google.code.gson</groupId>
+         <artifactId>gson</artifactId>
+         <version>2.8.9</version>
+      </dependency>
+
+       <!-- TODO : Upgrade to log4j 2.x
+            This will require changing all classes that use log4j and the config.xml
+            See Neo4jRelationUtil for an example.
+            Also the log4j upgrade page https://logging.apache.org/log4j/2.x/manual/migration.html
+            -->
+       <!--      <dependency>-->
+       <!--         <groupId>org.apache.logging.log4j</groupId>-->
+       <!--         <artifactId>log4j-core</artifactId>-->
+       <!--         <version>2.14.1</version>-->
+       <!--      </dependency>-->
+       <!--      <dependency>-->
+       <!--         <groupId>log4j</groupId>-->
+       <!--         <artifactId>log4j</artifactId>-->
+       <!--         <version>1.2.17</version>-->
+       <!--      </dependency>-->
+       <dependency>
+           <groupId>org.apache.logging.log4j</groupId>
+           <artifactId>log4j-1.2-api</artifactId>
+           <version>2.23.1</version>
+       </dependency>
+   </dependencies>
+
+   <build>
+      <finalName>deepphe-neo4j</finalName>
+      <!-- It's good practice to explicitly declare versions for all plugins -->
+      <pluginManagement>
+         <plugins>
+
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-install-plugin</artifactId>
+               <version>2.4</version>
+               <executions>
+<!--                  <execution>-->
+<!--                     <id>default-install</id>-->
+<!--                     <goals>-->
+<!--                        <goal>install</goal>-->
+<!--                     </goals>-->
+<!--                     <phase>install</phase>-->
+<!--                     <configuration>-->
+<!--                        <skip>true</skip>-->
+<!--                     </configuration>-->
+<!--                  </execution>-->
+
+                  <execution>
+                     <id>latest-install</id>
+                     <goals>
+                        <goal>install-file</goal>
+                     </goals>
+                     <phase>install</phase>
+                     <configuration>
+                        <file>${project.build.directory}/${project.build.finalName}.jar</file>
+                        <generatePom>false</generatePom>
+                        <pomFile>pom.xml</pomFile>
+                        <version>${deepphe.version}</version>
+                     </configuration>
+                  </execution>
+               </executions>
+            </plugin>
+
+         </plugins>
+      </pluginManagement>
+   </build>
+
+    <distributionManagement>
+      <repository>
+         <id>github</id>
+         <name>DeepPhe-Robot</name>
+         <url>https://maven.pkg.github.com/DeepPhe/dphe-neo4j</url>
+      </repository>
+   </distributionManagement>
+
+</project>

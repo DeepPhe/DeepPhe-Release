@@ -1,0 +1,60 @@
+
+package org.apache.ctakes.core.patient
+package org.apache.ctakes.core.util.log
+package org.apache.ctakes.ner.ae
+package org.healthnlp.deepphe.core.ae
+package org.healthnlp.deepphe.nlp.ae
+package org.healthnlp.deepphe.nlp.ae.annotation
+package org.healthnlp.deepphe.nlp.ae.attribute
+package org.healthnlp.deepphe.nlp.ae.doc
+package org.healthnlp.deepphe.nlp.ae.neo4j
+package org.healthnlp.deepphe.nlp.ae.patient
+package org.healthnlp.deepphe.nlp.ae.relation
+package org.healthnlp.deepphe.nlp.ae.section
+package org.healthnlp.deepphe.nlp.writer
+
+set GraphDb=C:/Spiffy/output/mark_6_onto/test_runs/neo4j/DeepPhe_2023_v1.db
+
+// Get cas from Artemis.
+reader PbjReceiver ReceiveQueue=SummaryQueue
+
+
+// Connect to local ontology graph embedded db.
+add Neo4jEmbeddedConnectAe
+
+// Connect to remote data graph server db
+//////// add Neo4jServerConnectAe    TODO
+
+// Need an AE that runs a background process listening for patient doc count updates
+//add PbjPatientCountListener ReceiveQueue=DocCountQueue
+
+
+add PatientCasCollector
+
+//  Summarize the patient phenotype.
+add PatientSummarizer
+
+// Putting the LogFileWriter here allows us to have summary log info in the last doc log.
+//add LogFileWriter SubDirectory=LOG
+//load SmallJsonPrefs
+add PatientSummaryXnJsonFileWriter SubDirectory=JSON ZipJson=yes
+
+// Write the patient phenotypes from Multi-Cancer CI creation
+//add CiCancersBsvWriter SubDirectory=CI_EVAL
+//add CiTumorsBsvWriter SubDirectory=CI_EVAL
+
+//  Write patient phenotypes to the neo4j graph database.
+//add PatientNeo4jWriter
+///////////// add NeoplasmNeo4jWriter  TODO
+
+// add PatientJsonFileWriter SubDirectory=JSON
+//package org.healthnlp.deepphe.summary.writer
+//cli CancerEvalFile=c
+//add EvalFileWriterXn SubDirectory=EVAL
+
+//add DeepPheSummaryWriter SubDirectory=SUMMARY
+
+
+// Anything that needs to use the patient cas or the patient summary node need to be here!
+add PatientCasCleaner
+add PatientSummaryXnCleaner

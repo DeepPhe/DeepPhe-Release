@@ -1,0 +1,18 @@
+//  Preferences to trim the json output to the essentials.
+
+set PrettyPrint=no
+
+// By default these values are all "yes".
+set WriteNote=yes
+set WriteSections=no
+set WriteConcepts=yes
+set WriteConceptRelations=yes
+set WriteMentions=yes
+set WriteMentionRelations=yes
+set WriteEvidence=yes
+
+// set SummaryOnly=yes is the same as using all of the above settings.
+
+// Write multiple json files for each patient: patient, cancers, concepts, documents.
+// The default value is "no".
+set SplitJson=yes

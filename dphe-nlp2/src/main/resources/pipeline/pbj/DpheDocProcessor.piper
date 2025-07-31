@@ -1,0 +1,167 @@
+
+package org.apache.ctakes.core.patient
+package org.apache.ctakes.core.util.log
+package org.apache.ctakes.ner.ae
+package org.healthnlp.deepphe.core.ae
+package org.healthnlp.deepphe.nlp.ae
+package org.healthnlp.deepphe.nlp.ae.annotation
+package org.healthnlp.deepphe.nlp.ae.attribute
+package org.healthnlp.deepphe.nlp.ae.doc
+package org.healthnlp.deepphe.nlp.ae.neo4j
+package org.healthnlp.deepphe.nlp.ae.patient
+package org.healthnlp.deepphe.nlp.ae.relation
+package org.healthnlp.deepphe.nlp.ae.section
+package org.healthnlp.deepphe.nlp.writer
+
+// New settings for cased ner.
+set Dictionaries=deepphe_2023_v1
+set deepphe_2023_v1_url=jdbc:hsqldb:file:C:/Spiffy/output/mark_6_onto/test_runs/hsqldb/DeepPhe_2023_v1/DeepPhe_2023_v1
+set Detailers=deepphe_2023_v1
+set deepphe_2023_v1_type=JDBC
+
+set GraphDb=C:/Spiffy/output/mark_6_onto/test_runs/neo4j/DeepPhe_2023_v1.db
+
+// Get cas from Artemis.
+reader PbjReceiver ReceiveQueue=DocQueue
+
+
+// Connect to local ontology graph embedded db.
+add Neo4jEmbeddedConnectAe
+
+// Connect to remote data graph server db
+//////// add Neo4jServerConnectAe    TODO
+
+//  Discover sections.   TODO try CrSectionizer instead, which will trim any "REFERENCES:" from the report.
+add Sectionizer
+
+//  Discover items in University of Pittsburgh / University of Pittsburgh Medical Center -style note headers.
+add PittHeaderAnnotator
+
+//  Remove sections that should not be used by the rest of the pipeline.
+//add SectionRemover
+
+//  Use the DeepPhe paragraph expressions for paragraph discovery.
+set PARAGRAPH_TYPES_PATH=org/healthnlp/deepphe/paragraph/ParagraphRegex.bsv
+//  Discover paragraphs.
+add ParagraphFinder
+
+add WtfSectionFixer
+
+//  Detect sentences using a machine learning model.  Modified to use paragraphs when available.
+addLogged SentenceDetectorBIO classifierJarPath=/org/apache/ctakes/core/sentdetect/model.jar
+//add SentenceDetector
+
+add MrsDrSentenceJoiner
+
+//  Fix sentences so that no sentence spans across two or more paragraphs.
+//  Appears to be removing sentences.  Why?  Are the paragraph offsets wrong?  11/30/2023
+//  Best fix is probably to make a copy of ...BIO that can use paragraphs, then find paragraphs before sentences.
+//add ParagraphSentenceFixer
+
+
+set LIST_TYPES_PATH=org/healthnlp/deepphe/list/CancerListRegex.bsv
+//  Discover formatted lists and tables.
+//add ListAnnotator
+//add ListFinder
+//add BsvRegexTopicFinder
+//add TreeListFinder
+
+
+//  Fix sentences so that no sentence spans across two or more list entries.
+//add ListSentenceFixer
+//add ListSentenceSplitter
+
+//add EolSentenceFixer
+
+//  I don't think that the tokenizer actually uses the updated/medical rules.
+//  There might also be problems with #s and other items.  I need to double-check and maybe add CasedTokenizer.
+//  Tokenize by penn treebank rules.
+add TokenizerAnnotatorPTB
+
+// Tokenize multi-token types such as dates, fractions and measurements.
+add ContextDependentTokenizerAnnotator
+
+// Approximate a document creation time using TimeAnnotation normalization.
+//add DocTimeApproximator ApproximateDocTime=True
+
+//  Tag word part of speech.
+addDescription POSTagger
+
+// new NER.
+set UseAllPOS=yes
+set MinimumSpan=2
+add NamedEntityFinder
+
+//  Filter various concepts using context.
+add MassFilter
+
+// Add the cleartk package for cleartk class lookups
+package org.apache.ctakes.assertion.medfacts.cleartk
+package org.apache.ctakes.assertion.medfacts.cleartk.windowed
+
+//  Assign such as negation and uncertainty using machine-learning models.
+// Add the cleartk attribute engines, logging for them as a block
+add StartFinishLogger LOGGER_NAME=CleartkAnalysisEngine LOGGER_TASK="Assigning Attributes" IS_START=true
+addDescription PolarityCleartkAnalysisEngineWindowed
+addDescription UncertaintyCleartkAnalysisEngineWindowed
+
+//  Assign such as negation and uncertainty using context.
+set MaxRightScopeSize=12
+load NeContextsSubPipe
+
+//  Find modifiers for disease attributes such as negation and uncertainty and make appropriate assignments.
+add DiseaseAttributeFinder
+
+// Adjust attributes in list entries
+add ListEntryNegator
+
+// Adjust attributes by text
+add CancerAttributeAdjuster
+
+// Negate any cancers that are alone in a paragraph and any 1 is negated
+add LonerNegator2
+
+//  Fix the Subject type (patient, family member) by section type.
+add SubjectSectionFixer
+
+//  Find phenotype attributes not declared in the ontology by special means.
+//add PhenotypeFinder
+
+//add PsaFinder
+
+//add GleasonFinder
+
+//add Ki67Finder
+
+//add division.BiomarkerFinderNew
+add BiomarkerFinder
+
+//add GradeFinder
+//add division.GradeFinderNew
+
+// Adjust Subjects for entities
+add SubjectAdjuster
+
+//  Set the section type in which each element was discovered to that element.
+add SectionIdSetter
+
+// Adjust Historic for entities
+add HistoryAdjuster
+
+// New Relation Finder
+add RelationFinder
+
+//  Tag the overall Episode for each document.
+add DocEpisodeTagger
+add MelanomaDocEpisodeTagger
+
+// Send CAS to Artemis at the specified queue.  Don't send stop signal when processing has finished.
+add PbjJmsSender SendQueue=SummaryQueue SendStop=no
+
+//add html.HtmlTextWriter SubDirectory=HTML
+//add DpheTableWriter SubDirectory=TABLE TableType=HTML
+//add DpheRelTableWriter SubDirectory=REL TableType=HTML
+//add pretty.plaintext.PrettyTextWriterFit SubDirectory=TEXT
+
+
+

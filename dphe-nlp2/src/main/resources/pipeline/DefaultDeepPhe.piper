@@ -1,0 +1,164 @@
+// This is a default DeepPhe pipeline that can be run for demonstration purposes.
+
+// Add DeepPhe packages to those searchable by cTAKES.
+package org.apache.ctakes.core.patient
+package org.apache.ctakes.core.util.log
+package org.apache.ctakes.ner.ae
+package org.healthnlp.deepphe.core.ae
+package org.healthnlp.deepphe.nlp.ae
+package org.healthnlp.deepphe.nlp.ae.annotation
+package org.healthnlp.deepphe.nlp.ae.attribute
+package org.healthnlp.deepphe.nlp.ae.doc
+package org.healthnlp.deepphe.nlp.ae.neo4j
+package org.healthnlp.deepphe.nlp.ae.patient
+package org.healthnlp.deepphe.nlp.ae.relation
+package org.healthnlp.deepphe.nlp.ae.section
+package org.healthnlp.deepphe.nlp.writer
+package org.healthnlp.deepphe.nlp.util
+
+//  Ignore dos/windows carriage return characters when reading files.
+set CRtoSpace=true
+cli PatientList=L
+set PrettyPrint=yes
+
+// New settings for cased ner, used with the ontology.
+set Dictionaries=deepphe_2023_v1
+set deepphe_2023_v1_url=jdbc:hsqldb:file:resources/hsqldb/DeepPhe_2023_v1/DeepPhe_2023_v1
+set Detailers=deepphe_2023_v1
+set deepphe_2023_v1_type=JDBC
+// The ontology graph.
+set GraphDb=resources/neo4j/DeepPhe_2023_v1.db
+
+// Use some default limitations on what DeepPhe should report.
+load pipeline/DefaultLimits
+
+// Connect to local ontology graph embedded db.
+add Neo4jEmbeddedConnectAe
+
+//
+//    Processing Pipeline
+//
+
+//  Discover sections.
+add Sectionizer
+
+//  Discover items in University of Pittsburgh / University of Pittsburgh Medical Center -style note headers.
+add PittHeaderAnnotator
+
+//  Use the DeepPhe paragraph expressions for paragraph discovery.
+set PARAGRAPH_TYPES_PATH=org/healthnlp/deepphe/paragraph/ParagraphRegex.bsv
+//  Discover paragraphs.
+add ParagraphFinder
+
+// Fix possible paragraph errors from poorly formatted documents.
+add WtfSectionFixer
+
+//  Detect sentences using a machine learning model.  Modified to use paragraphs when available.
+addLogged SentenceDetectorBIO classifierJarPath=/org/apache/ctakes/core/sentdetect/model.jar
+
+// Restructure sentences when the machine was too sensitive to periods.
+add MrsDrSentenceJoiner
+
+//  Tokenize by penn treebank rules.
+add TokenizerAnnotatorPTB
+
+// Tokenize multi-token types such as dates, fractions and measurements.
+add ContextDependentTokenizerAnnotator
+
+//  Tag word part of speech.
+addDescription POSTagger
+
+// new NER.  Use all parts of speech, minimum word span is 2 characters.
+set UseAllPOS=yes
+set MinimumSpan=2
+add NamedEntityFinder
+
+//  Filter various concepts using context.
+add MassFilter
+
+// Add the cleartk package for cleartk class lookups
+package org.apache.ctakes.assertion.medfacts.cleartk.windowed
+
+//  Assign such as negation and uncertainty using machine-learning models.
+// Add the cleartk attribute engines, logging for them as a block.
+add StartFinishLogger LOGGER_NAME=CleartkAnalysisEngine LOGGER_TASK="Assigning Attributes" IS_START=true
+addDescription PolarityCleartkAnalysisEngineWindowed
+addDescription UncertaintyCleartkAnalysisEngineWindowed
+
+//  Assign such as negation and uncertainty using context.
+set MaxRightScopeSize=12
+load NeContextsSubPipe
+
+//  Find modifiers for disease attributes such as negation and uncertainty and make appropriate assignments.
+add DiseaseAttributeFinder
+
+// Adjust attributes by surrounding text.
+add CancerAttributeAdjuster
+
+// Negate any cancers that are alone in a paragraph and any 1 is negated.
+add LonerNegator2
+
+//  Fix the Subject type (patient, family member) by section type.
+add SubjectSectionFixer
+
+// Find Biomarkers and values.
+add BiomarkerFinder
+
+// Find TNM Staging.
+add TnmFinderAe
+
+// Adjust Subjects for entities.
+add SubjectAdjuster
+
+//  Set the section type in which each element was discovered to that element.
+add SectionIdSetter
+
+// Adjust Historic for entities.
+add HistoryAdjuster
+
+// Find relations between entities.
+add RelationFinder
+
+//  Tag the overall Episode for each document.
+add DocEpisodeTagger
+add MelanomaDocEpisodeTagger
+
+//   The following 4 writers are optional.  They can be commented out ( // ) if wanted.
+// Write each document to HTML with entities and relations marked.
+add html.HtmlTextWriter SubDirectory=htmldocs
+// Write each document's entities to an HTML file.  TableType can also be TAB, CSV, BSV
+add DpheTableWriter SubDirectory=ents TableType=HTML
+// Write each document's relations to an HTML file.  TableType can also be TAB, CSV, BSV
+add DpheRelTableWriter SubDirectory=rels TableType=HTML
+// Write each document to plain text with entities and relations marked.
+add pretty.plaintext.PrettyTextWriterFit SubDirectory=plaintext
+
+// Need to increment count of patient notes for the ProtocolWriter.
+add DocComplete
+// Collect document information for a Patient.
+add PatientCasCollector
+
+//  Summarize the patient phenotype.
+add PatientSummarizer
+
+// Putting the LogFileWriter here allows us to have summary log info in the last doc log.  For Debug purposes.
+//add LogFileWriter SubDirectory=logs
+
+// Write Patient information to json file.  These are the primary output files used for visualization.
+add PatientSummaryXnJsonFileWriter SubDirectory=json
+
+// Write Patient information to a table.  For Debug purposes.
+//add PatientSummaryXnTableWriter PatientMax=100
+
+// Clean the Patient Summary.
+add PatientSummaryXnCleaner
+// Clear the URI cache.  Set ClenAfterDoc to 'yes' if there are patients with large numbers of documents.
+add UriInfoCacheCleaner CleanAfterDoc=no
+// Always clear the patient cas and note last as other cleaners may rely upon the count there.
+add PatientCasCleaner
+add PatientNoteCleaner
+
+//  Inform the user that the pipeline is Finished.
+addLast FinishedLogger
+// Force an exit, just in case the operating system has unnecessarily suspended something or put it in the background.
+addLast ExitForcer

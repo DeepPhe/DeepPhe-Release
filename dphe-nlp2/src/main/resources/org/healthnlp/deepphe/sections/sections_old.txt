@@ -1,0 +1,135 @@
+# This file is used by the sectionizer
+# Format is based on format of ccda_sections.txt but without the second field (the "code")
+# The format is as follows:
+# name,list of n regular expressions for header names (separated by commas). Note some characters need to be escaped. To match the 3-character token *** represent it here as \*\*\*
+# By default, they are Case Sensitive and spaces are trimmed.
+# list of chars to escape <([{\^-=$!|]})?*+.> taken from  http://www.baeldung.com/java-regexp-escape-char
+# Could simplify the creation of the below using this info:
+#  It is an error to use a backslash prior to any alphabetic character that does not denote an escaped construct;
+#  these are reserved for future extensions to the regular-expression language.
+#  A backslash may be used prior to a non-alphabetic character regardless of whether that character is part of an unescaped construct.
+# Which was taken from  https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
+#
+### removed Synop* as a section header so Gross Desc for patientX includes the synoptic information, and staging is linked correctly in the 08.09 code
+#
+AP Label,AP LABEL:
+Abdomen/Pelvis,Abdomen/pelvis
+Addendum Comment,Addendum Comment,Addendum Comments,ADDENDUM COMMENTS,ADDENDUM COMMENT
+Addendum,ADDENDUM,Addendum,SUPP REPORTS ADDENDA,SUPP REPORTS ADDENDA:,\*\*\*\* Addendum \*\*\*\*,ADDENDUM:
+Agreement,AGREEMENT:
+Amendments,Amendments
+Assay,ASSAY DESCRIPTION:
+Assessment,ASSESSMENT:,Assessment:
+Assessment and Plan,ASSESSMENT AND PLAN:,Assessment and Plan,A/P:,A\+P:
+Basic Information,Basic Information
+Biopsy Results,Biopsy Results
+CPT,CPT CODE:,CPT:
+CT Abdomen and Pelvis,CT ABDOMEN AND PELVIS:,CT ABDOMEN AND PELVIS WITH CONTRAST,CT ABDOMEN AND PELVIS WITH IV CONTRAST
+CT Brain,CT BRAIN:,CT BRAIN WITHOUT AND WITH IV CONTRAST
+CT Chest,CT CHEST:,CT CHEST WITH CONTRAST,CT CHEST WITH IV CONTRAST
+CT Neck,CT NECK:,CT NECK WITH CONTRAST
+Case,CASE:,CASE SYNOPSIS:
+Chemoradiation,CHEMORADIATION:
+Chief Complaint,CHIEF COMPLAINT/PRE\-OP/POST\-OP DIAGNOSIS:,CHIEF COMPLAINT:,CHIEF COMPLAINTS:,PRIMARY COMPLAINT:,PRIMARY COMPLAINTS:
+Clinical Data,Clinical Data:,CLINICAL DATA
+Clinical Diagnosis and History,Clinical Diagnosis and History
+Clinical Experience,CLINICAL EXPERIENCE:
+Clinical History,CLINICAL HISTORY:,CLINICAL HISTORY AND DATA:,CLINICAL HISTORY,relevant Hx,Relevant Hx,Clinical History,ClinicalHistory:
+Clinical Indication,CLINICAL INDICATION:
+Clinical Info,CLINICAL INFO:,CLINICAL INFORMATION:
+Clinical Question,SPECIFIC CLINICAL QUESTION:
+Clinical Summary,CLINICAL SUMMARY:
+Comment,COMMENT:,COMMENTS:,CORRECTED COMMENT:,Comment Section,Comment:,comments,Interpretation-Comments
+Comparison,COMPARISON:,Comparison:
+Consultation,CONSULTATION:
+Current Medication, CURRENT MEDICATIONS?:?
+Current Therapy,CURRENT THERAPY,CURRENT THERAPY:
+Current Treatment,CURRENT TREATMENT:
+Description of Specimen,DESCRIPTION OF SPECIMEN:
+Discharge Diagnosis,DISCHARGE DIAGNOSES:,DISCHARGE DIAGNOSIS:
+Discussion,Discussion:,Discussion
+Divider,\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\* FINAL \*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*
+End of Impression,END OF IMPRESSION:
+Examination,EXAMINATION PERFORMED:,EXAMINATION:,EXAMS:,Physical Examination,PHYSICAL EXAMINATION:
+External Beam Radiation Therapy,External Beam Radiation Therapy
+# Family History,FAMILY HISTORY,FAMILY HISTORY:,Family History:
+Family Medical History,Family History,FAMILY HISTORY,FAMILY HISTORY:,Family History:
+Final Diagnosis,\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\* FINAL,Addendum Diagnosis,Diagnosis,DIAGNOSIS,DIAGNOSIS:,Diagnosis/Indication,F I N A L P A T H O L O G I C D I A G N,FINAL PATHOLOGIC DIAGNOSIS,FINAL PATHOLOGICAL DIAGNOSIS,FINAL DIAGNOSIS:,FINAL DIAGNOSIS,Final Diagnosis,final diagnosis,GROSS AND MICROSCOPIC DIAGNOSIS,GROSS AND MICROSCOPIC PATHOLOGIC DIAGNOSIS,FINAL DX:,FinalDiagnosis:,FORMAL DX:,ADDENDUM FINAL DX:,FINAL DX: (Continued),AddendumDiagnosis:,Addendum Diagnosis,ClinicalDignosis,ClinicalDiagnosis,ADDENDUM DIAGNOSIS:
+Final Report,Final Report
+Findings,FINDINGS:,Findings:,PROCEDURE AND FINDINGS:,SUMMATION OF FINDINGS:,ADDITIONAL PATHOLOGIC FINDINGS:,OPERATIVE FINDINGS:
+Follow-Up,Follow-Up
+Full Text,FULL TEXT:
+Gross Description,GROSS DESCRIPTION,GROSS DESCRIPTION:,GROSS:,Gross Description,Gross Pathology,SPECIMEN\(S\) SUBMITTED: GROSS DESCRIPTION,gross description,GROSS PATHOLOGY:,GrossDescription
+Histo Tissue Summary,HISTO TISSUE SUMMARY/SLIDES REVIEWED:
+# History,HISTORY:,PAST MEDICAL HISTORY,PRIOR THERAPY:,Histories
+History,HISTORY:,PRIOR THERAPY:,Histories,IDENTIFICATION:
+History of Present Illness,History of Present Illness,HISTORY OF PRESENT ILLNESS:,HPI:,relevant Hx
+Hospital Course,HOSPITAL COURSE ACCORDING TO SYSTEMS:,HOSPITAL COURSE IN BRIEF:,HOSPITAL COURSE BY SYSTEMS:
+ICD 9,ICD 9:
+ID Label,ID LABEL:,ID label:
+IHC Tech Info,IMMUNOHISTOCHEMISTRY TECHNICAL INFORMATION:
+Imaging Studies,Imaging Studies
+Immunohistochem,IMMUNOHISTOCHEMICAL STUDIES FOR HER\-2\-NEU,IMMUNOHISTOCHEMISTRY STUDY:
+Immunosuppression,IMMUNOSUPPRESSION:
+Impression,IMPRESSION:,Impression:,Impression and Plan,IMPRESSION AND PLAN:
+Indication,Indication:
+Injection Site,INJECTION SITE:
+Interim History,Interim History:
+Interpretation,INTERPRETATION:
+Intradept Consultation,INTRADEPARTMENTAL CONSULTATION:
+Intraop Consult,INTRAOPERATIVE CONSULT:,INTRAOPERATIVE CONSULTATION:
+Intraop Dx,INTRAOPERATIVE DX:,INTRAOPERATIVE CONSULTATION DIAGNOSIS,IntraoperativeDiagnosis:
+Intraop Report,INTRAOPERATIVE REPORT
+Laboratory Studies,Laboratory Studies,Labs
+Medications,Inpatient Medications
+Microscopic,MICROSCOPIC:
+Microscopic Desc,MICROSCOPIC DESCRIPTION,MICROSCOPIC DESCRIPTION/COMMENT,MICROSCOPIC DESCRIPTION:,Microscopic Description,MicroscopicDescription:,MICROSCOPIC DESC:
+Microscopic Path,Micro Pathology,Microscopic Pathology
+Nature of Specimen,Nature of Specimen
+Note,NOTE:
+Objective,OBJECTIVE:,O:
+Operation,OPERATION:,Title of Operation
+Operators,OPERATORS:
+Organ Transplant,ORGAN TRANSPLANT:
+Original Report,ORIGINAL REPORT
+Other Diseases,OTHER DISEASES:
+Outside Accession Number,OUTSIDE ACCESSION #:
+Outside Tissue Diag,OUTSIDE TISSUE DIAGNOSIS:
+Past Medical History,Past Medical History:,PAST MEDICAL HISTORY,PAST MEDICAL HISTORY:,PMH
+Past Surgical History,Past Surgical History:,PAST SURGICAL HISTORY,PAST SURGICAL HISTORY:
+Pathologist Comments,PATHOLOGIST'S COMMENTS
+Pathology,PATHOLOGY:
+Patient History,PATIENT HISTORY:
+Patient,PATIENT:
+Pittsburgh Header,===================================================================
+Physician Notification,PHYSICIAN NOTIFICATION:,ATTENDING PHYSICIAN:,Credentials Title and Author
+Plan,PLAN:,P:,Plan
+Post-op Diagnosis,POST OP DIAGNOSIS:,POST\-OP DIAGNOSIS:,POSTOPERATIVE CLINICAL DIAGNOSIS:,PostOperativeDiagnosis:,POSTOPERATIVE DIAGNOSIS:,DISCHARGE DIAGNOSES:
+Pre Post Diag,PREOP/POSTOP DIAGNOSIS
+Pre-op Diagnosis,PRE OP DIAGNOSIS:,PRE OP DX:,PRE\-OP DIAGNOSIS:,PREOP DX:,PREOPERATIVE CLINICAL DIAGNOSIS:,PreOperativeDiagnosis:,PREOPERATIVE DIAGNOSIS:,ADMISSION DIAGNOSES:
+Principal Diagnosis,PRINCIPAL DIAGNOSIS,PRINCIPLE DIAGNOSIS,MAIN DIAGNOSIS,PRIMARY DIAGNOSIS,PRIMARY DIAGNOSES:,Diagnosis
+Prior Malignancy,PRIOR MALIGNANCY:
+Prior Therapy,PRIOR THERAPY
+Procedure,PROCEDURE:,PROCEDURES:,PROCEDURES/ADDENDA,SPECIAL PROCEDURES,PROCEDURES PERFORMED:,DESCRIPTION OF PROCEDURE:
+Pulsing Sequences,PULSING SEQUENCES:
+Radiology,Radiology
+Radiopharm,RADIOPHARMACEUTICAL :,RADIOPHARMACEUTICAL:,RADIOPHARMACEUTICAL ADMINISTERED:
+Read,READ
+Reason for Exam,Reason for Exam:
+Recommendation,RECOMMENDATIONS:
+References,References:
+Results,RESULTS:,Results
+Review of Systems,REVIEW OF SYSTEMS:,Review of Systems as above
+Secondary Diagnosis,SECONDARY DIAGNOSES:
+SNOMED,SNOMED CODES:
+Signature,\*\*\*Electronically Signed Out\*\*\*,REPORT SIGNED:,Electronically Signed Out By,\*\* Report Electronically Signed Out \*\*,Dictated By:
+Site of Origin,site of origin
+Slide/Block Desc,SLIDE/BLOCK DESCRIPTION
+Specimen,SPECIMEN INFORMATION,SPECIMEN LABELED:,SPECIMEN REMOVED:,SPECIMEN SOURCE:,SPECIMEN:,Specimen\(s\) Received:,NATURE OF SPECIMENS:,SPECIMEN INFO:
+Staging,STAGING PARAMS:
+Subjective,S:
+Technique,TECHNIQUE:
+Time of Imaging,TIME OF IMAGING:
+Treatment of Bone Metastases,Treatment of Bone Metastases
+Treatment Options,Treatment Options
+Tumor Info,TUMOR INFORMATION:,TUMOR INFO:

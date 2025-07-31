@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.healthnlp</groupId>
+    <artifactId>deepphe-nlp</artifactId>
+    <version>0.7.0</version>
+    <name>deepphe-nlp</name>
+    <description>Cancer Deep Phenotype Extraction (DeepPhe) Core module</description>
+    <packaging>jar</packaging>
+    <properties>
+        <deepphe.version>0.7.0</deepphe.version>
+        <deepphe.neo4j.version>0.7.0</deepphe.neo4j.version>
+        <deepphe.onto-db.version>0.7.0</deepphe.onto-db.version>
+        <ctakes.version>5.1.0</ctakes.version>
+        <hsqldb.version>2.3.4</hsqldb.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.healthnlp</groupId>
+            <artifactId>deepphe-neo4j</artifactId>
+            <version>${deepphe.neo4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.healthnlp</groupId>
+            <artifactId>deepphe-onto-db2</artifactId>
+            <version>${deepphe.onto-db.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.ctakes</groupId>
+            <artifactId>ctakes-utils</artifactId>
+            <version>${ctakes.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-queries</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-queryparser</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-analyzers-common</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ctakes</groupId>
+            <artifactId>ctakes-core</artifactId>
+            <version>${ctakes.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>jdom</groupId>
+                    <artifactId>jdom</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>jdom</groupId>
+                    <artifactId>jdom2</artifactId>
+                </exclusion>
+<!--                Somewhere SentenceDetectorAnnotatorBIO or a dependency needs google.Function -->
+<!--                <exclusion>-->
+<!--                    <groupId>com.google.guava</groupId>-->
+<!--                    <artifactId>guava</artifactId>-->
+<!--                </exclusion>-->
+                <exclusion>
+                    <groupId>org.apache.opennlp</groupId>
+                    <artifactId>opennlp-tools</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.opennlp</groupId>
+                    <artifactId>opennlp-maxent</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>edu.mit.findstruct</groupId>
+                    <artifactId>findstructapi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.googlecode.armbrust-file-utils</groupId>
+                    <artifactId>sqlwrapper</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sourceforge.openai</groupId>
+                    <artifactId>openaifsm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.lexicalscope.jewelcli</groupId>
+                    <artifactId>jewelcli</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.ctakes</groupId>
+            <artifactId>ctakes-context-tokenizer</artifactId>
+            <version>${ctakes.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.ctakes</groupId>
+            <artifactId>ctakes-assertion</artifactId>
+            <version>${ctakes.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-chunker</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.ctakes</groupId>
+            <artifactId>ctakes-dictionary-lookup-fast</artifactId>
+            <version>${ctakes.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.sourceforge.ctakesresources</groupId>
+                    <artifactId>ctakes-resources-sno_rx</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.ctakes</groupId>
+            <artifactId>ctakes-ne-contexts</artifactId>
+            <version>${ctakes.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.ctakes</groupId>
+            <artifactId>ctakes-user-resources</artifactId>
+            <version>${ctakes.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-assertion-zoner</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-chunker</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-clinical-pipeline</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-coreference</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-dictionary-lookup</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-distribution</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-dockhand</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-drug-ner</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-examples</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-fhir</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-lvg</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-pbj</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-preprocessor</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-regression-test</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-relation-extractor</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-side-effect</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-smoking-status</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-template-filler</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-temporal</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-tiny-rest</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-web-rest</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-ytex</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-ytex-uima</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-ytex-web</artifactId>
+                </exclusion>
+
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>${hsqldb.version}</version>
+        </dependency>
+
+        <!--        <dependency>-->
+        <!--            <groupId>log4j</groupId>-->
+        <!--            <artifactId>log4j</artifactId>-->
+        <!--            <version>1.2.17</version>-->
+        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+            <version>2.23.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.uima</groupId>
+            <artifactId>uimaj-core</artifactId>
+            <version>2.10.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.uima</groupId>
+            <artifactId>uimaj-document-annotation</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.uima</groupId>
+            <artifactId>uimafit-core</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.opennlp</groupId>
+            <artifactId>opennlp-tools</artifactId>
+            <version>1.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <dependency>
+            <groupId>com.lexicalscope.jewelcli</groupId>
+            <artifactId>jewelcli</artifactId>
+            <version>0.8.3</version>
+        </dependency>
+<!--        Used by ContextDependentTokenizerAnnotator  -->
+        <dependency>
+            <groupId>net.sourceforge.openai</groupId>
+            <artifactId>openaifsm</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Development Snapshot Repository</name>
+            <url>https://repository.apache.org/content/groups/snapshots/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!--      <repository>-->
+        <!--          <id>github</id>-->
+        <!--          <name>Github Packages</name>-->
+        <!--          <url>https://maven.pkg.github.com/DeepPhe/dphe-neo4j</url>-->
+        <!--      </repository>-->
+    </repositories>
+
+    <build>
+        <finalName>deepphe-nlp</finalName>
+        <!-- It's good practice to explicitly declare versions for all plugins -->
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.uima</groupId>
+                <artifactId>jcasgen-maven-plugin</artifactId>
+                <version>2.9.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <typeSystemIncludes>
+                                <typeSystemInclude>src/main/resources/org/apache/ctakes/**/types/TypeSystem.xml
+                                </typeSystemInclude>
+                            </typeSystemIncludes>
+                            <limitToProject>true</limitToProject>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-dependencies-ide</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <!-- copy the ontology to ${project.basedir}/resources to work with IDE -->
+                            <includeArtifactIds>deepphe-onto-db2</includeArtifactIds>
+                            <excludes>**/META-INF/**</excludes>
+                            <outputDirectory>${project.basedir}/resources</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <!--                  <execution>-->
+                    <!--                     <id>default-install</id>-->
+                    <!--                     <goals>-->
+                    <!--                        <goal>install</goal>-->
+                    <!--                     </goals>-->
+                    <!--                     <phase>install</phase>-->
+                    <!--                     <configuration>-->
+                    <!--                        <skip>true</skip>-->
+                    <!--                      </configuration>-->
+                    <!--                  </execution>-->
+
+                    <execution>
+                        <id>latest-install</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+                            <file>${project.build.directory}/${project.build.finalName}.jar</file>
+                            <generatePom>false</generatePom>
+                            <pomFile>pom.xml</pomFile>
+                            <version>${deepphe.version}</version>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+			
+			         <!-- PLUGINS FOR BINARY DISTRIBUTION -->
+			 <plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
+				<executions>
+				   <execution>
+					  <id>bundle-project-sources</id>
+					  <phase>package</phase>
+					  <goals>
+						 <goal>single</goal>
+					  </goals>
+					  <configuration>
+						 <descriptors>
+							<descriptor>src/main/assembly/bin.xml</descriptor>
+						 </descriptors>
+						 <!-- Tar package is only compatible with gnu tar, many files have more
+							 than 100 chars. Right now only javadoc files are too long. -->
+						 <tarLongFileMode>gnu</tarLongFileMode>
+						 <finalName>deepphe-${project.version}</finalName>
+					  </configuration>
+				   </execution>
+				</executions>
+			 </plugin>
+
+        </plugins>
+    </build>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>DeepPhe-Robot</name>
+            <url>https://maven.pkg.github.com/DeepPhe/dphe-nlp2</url>
+        </repository>
+    </distributionManagement>
+</project>

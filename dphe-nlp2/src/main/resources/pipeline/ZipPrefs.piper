@@ -1,0 +1,10 @@
+
+// Place json output in zip files
+set ZipJson=yes
+// Maximum patients to put in a zip.  A counter will be appended to zip file names.
+set ZipMax=1000
+
+// Place table output in zip files.  The last table file will not be zipped (future fix).
+set ZipTable=yes
+
+set PatientMax=1000

@@ -1,0 +1,76 @@
+
+//  Ignore dos/windows carriage return characters when reading files.
+set CRtoSpace=true
+cli PatientList=L
+
+package org.apache.ctakes.core.patient
+package org.apache.ctakes.core.util.log
+package org.apache.ctakes.ner.ae
+package org.healthnlp.deepphe.core.ae
+package org.healthnlp.deepphe.nlp.ae
+package org.healthnlp.deepphe.nlp.ae.annotation
+package org.healthnlp.deepphe.nlp.ae.attribute
+package org.healthnlp.deepphe.nlp.ae.doc
+package org.healthnlp.deepphe.nlp.ae.neo4j
+package org.healthnlp.deepphe.nlp.ae.patient
+package org.healthnlp.deepphe.nlp.ae.relation
+package org.healthnlp.deepphe.nlp.ae.section
+package org.healthnlp.deepphe.nlp.writer
+package org.healthnlp.deepphe.nlp.util
+
+// New settings for cased ner.
+set Dictionaries=deepphe_2023_v1
+//set deepphe_2023_v1_url=jdbc:hsqldb:file:resources/hsqldb/DeepPhe_2023_v1/DeepPhe_2023_v1
+set deepphe_2023_v1_url=jdbc:hsqldb:file:C:/Spiffy/output/mark_6_onto/test_runs/hsqldb/DeepPhe_2023_v1/DeepPhe_2023_v1
+set Detailers=deepphe_2023_v1
+set deepphe_2023_v1_type=JDBC
+
+//set GraphDb=resources/neo4j/DeepPhe_2023_v1.db
+set GraphDb=C:/Spiffy/output/mark_6_onto/test_runs/neo4j/DeepPhe_2023_v1.db
+
+// Connect to local ontology graph embedded db.
+add Neo4jEmbeddedConnectAe
+
+//  Discover sections.   TODO try CrSectionizer instead, which will trim any "REFERENCES:" from the report.
+add Sectionizer
+
+//  Use the DeepPhe paragraph expressions for paragraph discovery.
+set PARAGRAPH_TYPES_PATH=org/healthnlp/deepphe/paragraph/ParagraphRegex.bsv
+//  Discover paragraphs.
+add ParagraphFinder
+
+add WtfSectionFixer
+
+//  Detect sentences using a machine learning model.  Modified to use paragraphs when available.
+addLogged SentenceDetectorBIO classifierJarPath=/org/apache/ctakes/core/sentdetect/model.jar
+
+add MrsDrSentenceJoiner
+
+//  I don't think that the tokenizer actually uses the updated/medical rules.
+//  There might also be problems with #s and other items.  I need to double-check and maybe add CasedTokenizer.
+//  Tokenize by penn treebank rules.
+add TokenizerAnnotatorPTB
+
+// Tokenize multi-token types such as dates, fractions and measurements.
+//add ContextDependentTokenizerAnnotator
+
+//  Tag word part of speech.
+addDescription POSTagger
+
+// new NER.
+set UseAllPOS=yes
+set MinimumSpan=2
+add NamedEntityFinder
+
+add GeneTableWriter
+add GeneTableWriter TableType=HTML
+add SpanTableWriter
+
+// Need to increment count of patient notes for the ProtocolWriter
+add DocComplete
+
+add UriInfoCacheCleaner CleanAtDoc=yes
+add PatientNoteCleaner
+
+addLast FinishedLogger
+addLast ExitForcer
