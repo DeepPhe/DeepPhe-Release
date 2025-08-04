@@ -86,10 +86,10 @@ public class DesktopMainPanel extends JPanel {
          System.exit( -1 );
       }
       // Register Shutdown hooks first so that an exit by any subsequent bad parameter causes the server to stop.
-      registerShutdownHook( "Neo4j", getParameter( "StopNeo4j" ), getParameter( "Neo4jDir" ) );
-      if ( _stop ) {
-         return;
-      }
+//      registerShutdownHook( "Neo4j", getParameter( "StopNeo4j" ), getParameter( "Neo4jDir" ) );
+//      if ( _stop ) {
+//         return;
+//      }
       // We should do something with the summarizer.  If neo4j is stopped then a running summarizer will fail.
 //      registerShutdownHook( "DeepPhe Summarizer", getParameter( "StopSum", "StopSum" ),
 //                            getParameter( "SumDir", "SumDir" ) );
@@ -100,10 +100,10 @@ public class DesktopMainPanel extends JPanel {
       if ( _stop ) {
          return;
       }
-      startNeo4j( getParameter( "StartNeo4j" ), getParameter( "Neo4jDir" ) );
-      if ( _stop ) {
-         return;
-      }
+//      startNeo4j( getParameter( "StartNeo4j" ), getParameter( "Neo4jDir" ) );
+//      if ( _stop ) {
+//         return;
+//      }
       _dpheButton.addActionListener( new StartAction( DPHE_NAME,
                                                       getParameter( "StartDphe", "StartDeepPhe" ),
                                                       getParameter( "DpheDir", "DeepPheDir" ) ) );
@@ -143,9 +143,9 @@ public class DesktopMainPanel extends JPanel {
       LOGGER.info( "Name=Value" );
       LOGGER.info( "" );
       LOGGER.info( "The required values are:" );
-      LOGGER.info( "StartNeo4j" );
-      LOGGER.info( "Neo4jDir" );
-      LOGGER.info( "StopNeo4j" );
+//      LOGGER.info( "StartNeo4j" );
+//      LOGGER.info( "Neo4jDir" );
+//      LOGGER.info( "StopNeo4j" );
       LOGGER.info( "DpheDir or DeepPheDir" );
       LOGGER.info( "StartDphe or StartDeepPhe" );
       LOGGER.info( "VizDir or VisDir" );
