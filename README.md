@@ -10,7 +10,7 @@ for [Windows](https://github.com/DeepPhe/DeepPhe-Dist/releases/download/main/Dee
 or [Linux](https://github.com/DeepPhe/DeepPhe-Dist/releases/download/main/DeepPhe.dmg).
 
 
-DeepPhe uses combines natural language processing (based on [Apache cTAKES](ctakes.apache.org)) with an extensive domain information model to:
+DeepPhe uses combines natural language processing built on the [Apache cTAKES](https://github.com/apache/ctakes?tab=readme-ov-file#apache-ctakes) clinical NLP framework with an extensive domain information model to:
 * extract information from plaintext documents    
 * summarize information for Cancers and Tumors across multiple documents
 * visualize results at patient and cohort levels using our [DeepPhe Viz](https://github.com/DeepPhe/DeepPhe-Viz-v2) tool. 
@@ -42,7 +42,7 @@ Installation instructions are available in the [DeepPhe-CR release repository](h
 
 * DeepPhe includes portions of the [NLM UMLS](https://www.nlm.nih.gov/research/umls/index.html).
 
-* DeepPhe uses [Apache cTAKES](https://github.com/apache/ctakes?tab=readme-ov-file#apache-ctakes).
+* DeepPhe uses the [Apache cTAKES](https://github.com/apache/ctakes?tab=readme-ov-file#apache-ctakes) clinical NLP framework.
 
 * DeepPhe uses the [Neo4j](https://neo4j.com/) graph database platform.
 
