@@ -22,19 +22,19 @@ The system has been tested using documents from five cancer domains:
 * Prostate Cancer
 * Childhood brain cancer
 
-There are two versions of DeepPhe:
+There are two different products associated with DeepPhe:
 
 * __DeepPhe-XN__: a full suite of tools, designed to support cohort discovery for cancer clinical research.
-This is the version that most users will want to start with. 
 Instructions for our installation tool are available on our [Wiki](https://github.com/DeepPhe/DeepPhe-Release/wiki) for [Windows](https://github.com/DeepPhe/DeepPhe-Release/wiki/Windows-Installation-Instructions), 
 [MacOS](https://github.com/DeepPhe/DeepPhe-Release/wiki/Mac-Installation-Instructions),
 or [Linux](https://github.com/DeepPhe/DeepPhe-Release/wiki/Linux-Installation-Instructions)
-* __DeepPhe-CR__: a web-service version of DeepPhe designed to support cancer registries. 
+* __DeepPhe-CR__: separate web-service based software similar in some ways to DeepPhe, but designed to support cancer registries. 
+It uses a different ontology, extracts only top-confidence attributes pertinent to Cancer-Registries, and processes single documents instead of a patient's entire record.
 Installation instructions are available in the [DeepPhe-CR release repository](https://github.com/DeepPhe/DeepPhe-CR-Release).
 
 
 ## Licensing
-* DeepPhe is provided under an [Academic Software Use Agreement](LICENSE).  Refer to that agreement for information about requesting the use of the Software for commercial purposes.
+* DeepPhe is provided under an [Apache 2 software license](LICENSE).
 
 * DeepPhe includes portions of the [HemOnc.org](https://hemonc.org/wiki/Ontology) ontology. 
 

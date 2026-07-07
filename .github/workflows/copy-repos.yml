@@ -1,0 +1,33 @@
+name: Copy Code Repositories
+on:
+  workflow_dispatch:
+
+jobs:
+  checkout-repos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Desktop
+        uses: actions/checkout@v7
+        with:
+          # Contains dphe Desktop gui
+          repository: 'DeepPhe/dphe-gui'
+          path: 'dphe-gui'
+      - name: Get neo4j API
+        uses: actions/checkout@v7
+        with:
+          # Our api for neo4j
+          repository: 'DeepPhe/dphe-neo4j'
+          path: 'dphe-neo4j'
+      - name: Get Ontology
+        uses: actions/checkout@v7
+        with:
+          # Ontology graph db and synonym db
+          repository: 'DeepPhe/dphe-onto-db2'
+          path: 'dphe-onto-db2'
+      - name: Get Summarizer
+        uses: actions/checkout@v7
+        with:
+          # Summarizer code
+          repository: 'DeepPhe/dphe-nlp2'
+          path: 'dphe-nlp2'
+
