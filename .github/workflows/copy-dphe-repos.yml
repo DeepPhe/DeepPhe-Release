@@ -8,6 +8,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Get Release repo
+        uses: actions/checkout@v7
+
       - name: Get Desktop
         uses: actions/checkout@v7
         with:
@@ -32,9 +35,12 @@ jobs:
           # Summarizer code
           repository: 'DeepPhe/dphe-nlp2'
           path: 'dphe-nlp2'
+
       - name: Commit to main
         uses: stefanzweifel/git-auto-commit-action@v7
         with:
+          create_branch: true
+          branch: auto-copy
           commit_message: Action-based commit of copies of current dphe repositories
 
 
