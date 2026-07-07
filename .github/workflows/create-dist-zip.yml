@@ -55,7 +55,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: zips/DeepPhe-NLP.zip
           asset_name: DeepPhe-NLP.zip
-          tag: 'deepphe-nlp 7.1'
+          tag: 'dphe-nlp-7.1'
           overwrite: true
           prerelease: true
           body: 'Release version 7.1 of the DeepPhe Translational (xn) software NLP binary.'
