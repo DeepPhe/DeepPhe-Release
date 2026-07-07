@@ -51,7 +51,7 @@ jobs:
 
       - name: Create or update DeepPhe-Dist release
         env:
-          GH_TOKEN: ${{ secrets.DEEPHE_DIST_RELEASE_TOKEN }}
+          GH_TOKEN: ${{ secrets.DEEPHE_DIST_RELEASE_TOKEN_SPF }}
           RELEASE_TAG: ${{ env.PACKAGE_NAME }}-${{ env.DPHE_VERSION }}
           RELEASE_TITLE: ${{ env.PACKAGE_NAME }} ${{ env.DPHE_VERSION }}
           RELEASE_NOTES: 'auto-created tag'
@@ -77,7 +77,7 @@ jobs:
         with:
           repo_name: 'DeepPhe/DeepPhe-Dist'
 #          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          repo_token: ${{ secrets.DEEPHE_DIST_RELEASE_TOKEN }}
+          repo_token: ${{ secrets.DEEPHE_DIST_RELEASE_TOKEN_SPF }}
           file: zips/DeepPhe-NLP.zip
           asset_name: DeepPhe-NLP.zip
           tag:  ${{ env.PACKAGE_NAME }}-${{ env.DPHE_VERSION }}
