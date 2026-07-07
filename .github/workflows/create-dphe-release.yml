@@ -1,0 +1,22 @@
+name: Create Dphe Release
+on:
+  workflow_dispatch:
+
+jobs:
+  create_tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Get Release Branch
+        uses: actions/checkout@v7
+        with:
+          ref: auto-copy
+      - name: Create Tag and Release
+        uses: ncipollo/release-action@v1
+        with:
+          commit: 'auto-copy'
+          tag: 'xn0.7.1'
+          name: 'xn0.7.1'
+          draft: true
+          body: 'Release version 7 of the DeepPhe Translational (xn) software source code.'
