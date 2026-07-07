@@ -5,6 +5,8 @@ on:
 jobs:
   checkout-repos:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Get Desktop
         uses: actions/checkout@v7
@@ -30,4 +32,9 @@ jobs:
           # Summarizer code
           repository: 'DeepPhe/dphe-nlp2'
           path: 'dphe-nlp2'
+      - name: Commit to main
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: Action-based commit of copies of current dphe repositories
+
 
