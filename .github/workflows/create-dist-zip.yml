@@ -2,6 +2,11 @@ name: Create Distribution Zip
 on:
   workflow_dispatch:
 
+env:
+  DIST_REPO: DeepPhe/DeepPhe-Dist
+  PACKAGE_NAME: dphe-nlp
+  DPHE_VERSION: 7.1
+
 jobs:
   checkout-repos:
     runs-on: ubuntu-latest
@@ -44,18 +49,38 @@ jobs:
           dest: zips/DeepPhe-NLP.zip
           recursive: true
 
+      - name: Create or update DeepPhe-Dist release
+        env:
+          GH_TOKEN: ${{ secrets.DEEPHE_DIST_RELEASE_TOKEN }}
+          RELEASE_TAG: ${{ env.PACKAGE_NAME }}-${{ env.DPHE_VERSION }}
+          RELEASE_TITLE: ${{ env.PACKAGE_NAME }} ${{ env.DPHE_VERSION }}
+          RELEASE_NOTES: 'auto-created tag'
+        shell: bash
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error title=Missing release token::Add a DEEPHE_DIST_RELEASE_TOKEN secret with contents:write access to ${DIST_REPO}."
+            exit 1
+          fi
+
+          if gh release view "$RELEASE_TAG" --repo "$DIST_REPO" > /dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" --repo "$DIST_REPO" --title "$RELEASE_TITLE" --notes "$RELEASE_NOTES"
+          else
+            gh release create "$RELEASE_TAG" --repo "$DIST_REPO" --title "$RELEASE_TITLE" --notes "$RELEASE_NOTES"
+          fi
+
       # The NLP tools are all Java and do not have platform-dependencies.
       # We shouldn't need to create multiple (sub)installers with certification, etc.
       - name: Upload Release Asset
         uses: svenstaro/upload-release-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           repo_name: 'DeepPhe/DeepPhe-Dist'
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+#          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.DEEPHE_DIST_RELEASE_TOKEN }}
           file: zips/DeepPhe-NLP.zip
           asset_name: DeepPhe-NLP.zip
-          tag: 'dphe-nlp-7.1'
+          tag:  ${{ env.PACKAGE_NAME }}-${{ env.DPHE_VERSION }}
           overwrite: true
           prerelease: true
           body: 'Release version 7.1 of the DeepPhe Translational (xn) software NLP binary.'
