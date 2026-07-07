@@ -1,0 +1,62 @@
+name: Create Distribution Zip
+on:
+  workflow_dispatch:
+
+jobs:
+  checkout-repos:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Get Release Branch
+        uses: actions/checkout@v7
+        with:
+          ref: auto-copy
+          path: copies
+
+      - uses: actions/setup-java@v2
+        with:
+          java-version: '8'
+          distribution: 'adopt'
+
+      - name: Build with Maven
+        run: |
+          cd copies
+          cd dphe-gui
+          mvn --batch-mode clean install -U -DskipTests
+          cd ..          
+          cd dphe-neo4j
+          mvn --batch-mode clean install -U -DskipTests
+          cd ..
+          cd dphe-onto-db2
+          mvn --batch-mode clean install -U -DskipTests
+          cd ..
+          cd dphe-nlp2
+          mvn --batch-mode clean package -U -DskipTests
+          cp target/deepphe-nlp.jar target/deepphe-0.7.1-bin/deepphe-0.7.1/lib/
+          cd ..
+          mkdir zips
+
+      - name: Create zips
+        uses: vimtor/action-zip@v1.3
+        with:
+          files: copies/dphe-nlp2/target/deepphe-0.7.1-bin/deepphe-0.7.1/
+          dest: zips/DeepPhe-NLP.zip
+          recursive: true
+
+      # The NLP tools are all Java and do not have platform-dependencies.
+      # We shouldn't need to create multiple (sub)installers with certification, etc.
+      - name: Upload Release Asset
+        uses: svenstaro/upload-release-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          repo_name: 'DeepPhe/DeepPhe-Dist'
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: zips/DeepPhe-NLP.zip
+          asset_name: DeepPhe-NLP.zip
+          tag: 'deepphe-nlp 7.1'
+          overwrite: true
+          prerelease: true
+          body: 'Release version 7.1 of the DeepPhe Translational (xn) software NLP binary.'
+

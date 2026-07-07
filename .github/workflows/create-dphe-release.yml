@@ -19,4 +19,4 @@ jobs:
           tag: 'xn0.7.1'
           name: 'xn0.7.1'
           draft: true
-          body: 'Release version 7 of the DeepPhe Translational (xn) software source code.'
+          body: 'Release version 7.1 of the DeepPhe Translational (xn) software NLP source code.'
