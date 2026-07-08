@@ -39,9 +39,9 @@ jobs:
           cd ..
           cd dphe-gui
           mvn --batch-mode clean package -U -DskipTests
-          cp target/deepphe-desktop.jar target/deepphe-0.7.1-bin/deepphe-0.7.1/lib/
+          cp target/deepphe-desktop.jar target/deepphe-gui-0.7.1-bin/deepphe-desktop-0.7.1/lib/
           cd ..          
-          cp -frn dphe-gui/target/deepphe-0.7.1-bin/deepphe-0.7.1/ dphe-nlp2/target/deepphe-0.7.1-bin/deepphe-0.7.1
+          cp -frn dphe-gui/target/deepphe-gui-0.7.1-bin/deepphe-desktop-0.7.1/ dphe-nlp2/target/deepphe-0.7.1-bin/deepphe-0.7.1/
           mkdir zips
 
       - name: Create zips
