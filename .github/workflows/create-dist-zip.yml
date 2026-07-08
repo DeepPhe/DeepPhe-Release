@@ -51,12 +51,26 @@ jobs:
           dest: zips/DeepPhe-NLP.zip
           recursive: true
 
+      - name: Resolve release metadata
+        id: release
+        shell: bash
+        run: |
+          {
+            echo "title=${PACKAGE_NAME} ${DPHE_VERSION}"
+            echo "notes<<EOF"
+            echo "Release version ${DPHE_VERSION} of the DeepPhe Translational (xn) software NLP binary."
+            echo
+            echo "Built from: ${GITHUB_REPOSITORY}@${GITHUB_SHA}"
+            echo "Workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Create or update DeepPhe-Dist release
         env:
           GH_TOKEN: ${{ secrets.DEEPHE_DIST_RELEASE_TOKEN_SPF }}
           RELEASE_TAG: ${{ env.PACKAGE_NAME }}-${{ env.DPHE_VERSION }}
-          RELEASE_TITLE: ${{ env.PACKAGE_NAME }} ${{ env.DPHE_VERSION }}
-          RELEASE_NOTES: 'auto-created tag'
+          RELEASE_TITLE: ${{ steps.release.outputs.title }}
+          RELEASE_NOTES: ${{ steps.release.outputs.notes }}
         shell: bash
         run: |
           if [ -z "$GH_TOKEN" ]; then
@@ -85,5 +99,4 @@ jobs:
           tag:  ${{ env.PACKAGE_NAME }}-${{ env.DPHE_VERSION }}
           overwrite: true
           prerelease: true
-          body: 'Release version 7.1 of the DeepPhe Translational (xn) software NLP binary.'
-
+          body: ${{ steps.release.outputs.notes }}
