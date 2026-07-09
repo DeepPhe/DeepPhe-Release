@@ -51,5 +51,6 @@ jobs:
           create_branch: true
           branch: auto-copy
           commit_message: Action-based commit of copies of current dphe repositories
+          push_options: '--force'   
 
 
