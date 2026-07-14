@@ -1,0 +1,1 @@
+ExampleProject=resources/projects/ExampleProject.txt

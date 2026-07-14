@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+   <name>org.apache.ctakes.typesystem.types.TypeSystem</name>
+   <description/>
+   <version>1.0</version>
+   <vendor>DeepPhe</vendor>
+   <types>
+
+
+<!--      THESE CTAKES TYPES ARE COPIED HERE JUST TO KEEP JCASGEN HAPPY.   IT CANNOT EXTEND PREVIOUSLY GEN'd TYPES.  -->
+<!--      In OTHER WORDS, EVEN THOUGH A DEPENDENCY LIBRARY (ctakes-type-system) HAD A DECLARED TYPE,
+          JCASGEN GENERATED A JAVA CLASS FROM THE TYPE AND THE TYPE ITSELF (DECLARED IN XML) NO LONGER EXISTS.   -->
+
+      <typeDescription>
+         <name>org.apache.ctakes.typesystem.type.refsem.OntologyConcept</name>
+         <description>Ontologies (e.g., SNOMED-CT) provide an expert semantic representation for concepts. They typically assign a code to a concept and normalize across various textual representations of that concept.
+            IdentifiedAnnotation and Elements may point to these normalized concept representations to indicate clinical concepts.
+            Equivalent to cTAKES: edu.mayo.bmi.uima.core.type.OntologyConcept</description>
+         <supertypeName>uima.cas.TOP</supertypeName>
+         <features>
+            <featureDescription>
+               <name>codingScheme</name>
+               <description/>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>code</name>
+               <description/>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>oid</name>
+               <description/>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>oui</name>
+               <description>holds the rxnorm unique identifier for a given drug mention.
+                  TODO: change this attribute because of name clash (UMLS/SNOMED)</description>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>score</name>
+               <description>Word Sense disambiguation: if this named entity is assigned multiple ontologyConcepts, the score represents how similar this sense is to surrounding senses (higher scores = more likely to be the correct sense)</description>
+               <rangeTypeName>uima.cas.Double</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>disambiguated</name>
+               <description>Word Sense disambiguation: if this named entity is assigned multiple ontologyConcepts, then the OntologyConcept with disambiguated=true is the most likely sense</description>
+               <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+            </featureDescription>
+         </features>
+      </typeDescription>
+
+      <typeDescription>
+         <name>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</name>
+         <description>Any span of text that has been discovered or flagged for some reason, such as a Named Entity.  Allows for mapping to an ontology.  Generalized from cTAKES: org.apache.ctakes.typesystem.type.IdentifiedAnnotation.</description>
+         <supertypeName>uima.tcas.Annotation</supertypeName>
+         <features>
+            <featureDescription>
+               <name>id</name>
+               <description/>
+               <rangeTypeName>uima.cas.Integer</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>ontologyConceptArr</name>
+               <description/>
+               <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+               <elementType>org.apache.ctakes.typesystem.type.refsem.OntologyConcept</elementType>
+            </featureDescription>
+            <featureDescription>
+               <name>typeID</name>
+               <description>The type of named entity (e.g. drug, disorder, ...)</description>
+               <rangeTypeName>uima.cas.Integer</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>segmentID</name>
+               <description/>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>sentenceID</name>
+               <description>contains the sentence id of the sentence that contains the NE's text span</description>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>discoveryTechnique</name>
+               <description/>
+               <rangeTypeName>uima.cas.Integer</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>confidence</name>
+               <description>The confidence of the annotation.</description>
+               <rangeTypeName>uima.cas.Float</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>polarity</name>
+               <description/>
+               <rangeTypeName>uima.cas.Integer</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>uncertainty</name>
+               <description/>
+               <rangeTypeName>uima.cas.Integer</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>conditional</name>
+               <description/>
+               <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>generic</name>
+               <description/>
+               <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>subject</name>
+               <description/>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>historyOf</name>
+               <description/>
+               <rangeTypeName>uima.cas.Integer</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>originalText</name>
+               <description>The covered text of the span or the disjoint spans that resulted in the creation of this
+                  IdentifiedAnnotation. If the covered text is from disjoint spans, they are separated by a delimeter.</description>
+               <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+            </featureDescription>
+         </features>
+      </typeDescription>
+
+<!--     THE NEW TYPES START HERE.   -->
+
+<!--      <typeDescription>-->
+<!--         <name>org.apache.ctakes.typesystem.type.textspan.NormalizableAnnotation</name>-->
+<!--         <description>A generic annotation that can have a normalized value.</description>-->
+<!--         <supertypeName>uima.tcas.Annotation</supertypeName>-->
+<!--         <features>-->
+<!--            <featureDescription>-->
+<!--               <name>id</name>-->
+<!--               <description/>-->
+<!--               <rangeTypeName>uima.cas.String</rangeTypeName>-->
+<!--            </featureDescription>-->
+<!--            <featureDescription>-->
+<!--               <name>normalizedValue</name>-->
+<!--               <description/>-->
+<!--               <rangeTypeName>uima.cas.String</rangeTypeName>-->
+<!--            </featureDescription>-->
+<!--            <featureDescription>-->
+<!--               <name>preferredText</name>-->
+<!--               <description/>-->
+<!--               <rangeTypeName>uima.cas.String</rangeTypeName>-->
+<!--            </featureDescription>-->
+<!--            <featureDescription>-->
+<!--               <name>details</name>-->
+<!--               <description/>-->
+<!--               <rangeTypeName>uima.cas.String</rangeTypeName>-->
+<!--            </featureDescription>-->
+<!--         </features>-->
+<!--      </typeDescription>-->
+
+<!--      <typeDescription>-->
+<!--         <name>org.apache.ctakes.typesystem.type.textspan.NormalizableIdentifiedAnnotation</name>-->
+<!--         <description>An identified annotation that can have a normalized value.</description>-->
+<!--         <supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>-->
+<!--         <features>-->
+<!--            <featureDescription>-->
+<!--               <name>normalizedValue</name>-->
+<!--               <description/>-->
+<!--               <rangeTypeName>uima.cas.String</rangeTypeName>-->
+<!--            </featureDescription>-->
+<!--            <featureDescription>-->
+<!--               <name>details</name>-->
+<!--               <description/>-->
+<!--               <rangeTypeName>uima.cas.String</rangeTypeName>-->
+<!--            </featureDescription>-->
+<!--         </features>-->
+<!--      </typeDescription>-->
+
+      <typeDescription>
+         <name>org.apache.ctakes.typesystem.type.textspan.FormattedListEntry</name>
+         <description>A List found in text of a document.</description>
+         <supertypeName>uima.tcas.Annotation</supertypeName>
+         <features>
+            <featureDescription>
+               <name>id</name>
+               <description/>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>index</name>
+               <description>some index associated with the entry.</description>
+<!--               <rangeTypeName>org.apache.ctakes.typesystem.type.textspan.NormalizableAnnotation</rangeTypeName>-->
+               <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>name</name>
+               <description>some name associated with a value in the entry.</description>
+<!--               <rangeTypeName>org.apache.ctakes.typesystem.type.textspan.NormalizableAnnotation</rangeTypeName>-->
+               <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>value</name>
+               <description>some value associated with a name in the entry.</description>
+<!--               <rangeTypeName>org.apache.ctakes.typesystem.type.textspan.NormalizableAnnotation</rangeTypeName>-->
+               <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>details</name>
+               <description>some details associated with the entry.</description>
+<!--               <rangeTypeName>org.apache.ctakes.typesystem.type.textspan.NormalizableAnnotation</rangeTypeName>-->
+               <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</rangeTypeName>
+            </featureDescription>
+         </features>
+      </typeDescription>
+      <typeDescription>
+         <name>org.apache.ctakes.typesystem.type.textspan.FormattedList</name>
+         <description>A List found in text of a document.</description>
+         <supertypeName>uima.tcas.Annotation</supertypeName>
+         <features>
+            <featureDescription>
+               <name>id</name>
+               <description/>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>listType</name>
+               <description>the type of list.</description>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>heading</name>
+               <description>Text in the document indicating the subject of the list.</description>
+               <!--               <rangeTypeName>org.apache.ctakes.typesystem.type.textspan.NormalizableAnnotation</rangeTypeName>-->
+               <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>listEntries</name>
+               <description/>
+               <rangeTypeName>uima.cas.FSArray</rangeTypeName>
+               <elementType>org.apache.ctakes.typesystem.type.textspan.FormattedListEntry</elementType>
+            </featureDescription>
+         </features>
+      </typeDescription>
+<!--      <typeDescription>-->
+<!--         <name>org.apache.ctakes.typesystem.type.textspan.HeaderedList</name>-->
+<!--         <description>A Tree List found in text of a document.</description>-->
+<!--         <supertypeName>uima.tcas.Annotation</supertypeName>-->
+<!--         <features>-->
+<!--            <featureDescription>-->
+<!--               <name>id</name>-->
+<!--               <description/>-->
+<!--               <rangeTypeName>uima.cas.String</rangeTypeName>-->
+<!--            </featureDescription>-->
+<!--            <featureDescription>-->
+<!--               <name>listType</name>-->
+<!--               <description>the type of list.</description>-->
+<!--               <rangeTypeName>uima.cas.String</rangeTypeName>-->
+<!--            </featureDescription>-->
+<!--            <featureDescription>-->
+<!--               <name>header</name>-->
+<!--               <description>Text in the document indicating the subject of the parent node.</description>-->
+<!--&lt;!&ndash;               <rangeTypeName>org.apache.ctakes.typesystem.type.textspan.NormalizableAnnotation</rangeTypeName>&ndash;&gt;-->
+<!--               <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</rangeTypeName>-->
+<!--            </featureDescription>-->
+<!--            <featureDescription>-->
+<!--               <name>list</name>-->
+<!--               <description/>-->
+<!--               <rangeTypeName>org.apache.ctakes.typesystem.type.textspan.FormattedList</rangeTypeName>-->
+<!--            </featureDescription>-->
+<!--         </features>-->
+<!--      </typeDescription>-->
+      <typeDescription>
+         <name>org.apache.ctakes.typesystem.type.textspan.Topic</name>
+         <description>A subsection pertinent to a particular subject, e.g., Biopsy of Stomach.</description>
+         <supertypeName>uima.tcas.Annotation</supertypeName>
+         <features>
+            <featureDescription>
+               <name>id</name>
+               <description/>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>topicType</name>
+               <description>the type of topic.</description>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>index</name>
+               <description>some index associated with the topic.</description>
+               <rangeTypeName>uima.cas.String</rangeTypeName>
+            </featureDescription>
+            <featureDescription>
+               <name>subject</name>
+               <description>the text in the document indicating the subject of the topic.</description>
+<!--               <rangeTypeName>org.apache.ctakes.typesystem.type.textspan.NormalizableAnnotation</rangeTypeName>-->
+            <rangeTypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</rangeTypeName>
+            </featureDescription>
+         </features>
+      </typeDescription>
+   </types>
+</typeSystemDescription>

@@ -1,0 +1,54 @@
+// Set limits on how much is written / used based upon count and confidence limits.
+// Confidence numbers for Cancer, Tumor and Attribute are not the confidence of the element,
+//  but rather a relative confidence within the group.
+// For instance, Cancer A may have a confidence of 0.8, Cancer B 0.7 and Cancer C 0.6.
+// The comparative confidence A to B and C may be 0.5.
+
+// Minimum number to use.  Starting with the top confidence cancer, at least this many will be included.
+set MinCancers=1
+// Maximum number to use.  Any cancer past this count will be discarded, regardless of confidence.
+set MaxCancers=3
+// Minimum confidence.  Any cancer below this number will be discarded unless it is required to meet the minimum.
+set MinCancerConfidence=0.84
+
+// The following apply to tumors per cancer, not overall tumors per patient.
+// For instance, Cancer A may have tumors 1, 2, 3 and Cancer B tumors 4, 5, 6 even if MaxTumors is 3.
+set MinTumors=0
+set MaxTumors=2
+set MinTumorConfidence=0.84
+// each tumor's relation to a cancer must be this confident.
+// This takes into account MinTumors and MaxTumors but overrides MinTumorConfidence if higher.
+set MinHasTumorConf=0.7
+
+// The following apply to attributes per cancer or tumor, those that should be limited.
+// Location, Topo major, Histology,
+// Grade, Stage, TNM, Tissue, Behavior, Course
+set MinMajorAttributes=1
+set MaxMajorAttributes=1
+set MinMajorAttributeConfidence=0.5
+
+// The following apply to attributes per cancer or tumor, those that should be limited.
+// Topo minor, Clockface, Quadrant, Laterality
+set MinAttributes=0
+set MaxAttributes=1
+set MinAttributeConfidence=0.5
+
+// The following apply to attributes per cancer or tumor, those that should not really be limited.
+// Receptor Status, Test Results, Biomarkers, Lymph Involvement, Metastatic Site,
+// Treatments, Procedures, Genes, Comorbidities
+set MinOptAttributes=0
+set MaxOptAttributes=100
+set MinOptAttributeConfidence=0.1
+
+// Concept settings apply to the whole patient, per semantic group.
+// For instance, MinConcepts=1 means at least 1 anatomic site, at least 1 behavior, etc.
+// Concepts that are evidence of cancers, tumors and attributes are always included.
+// MaxConcepts should not be used as the overall number of concepts per patient is variable.
+set MinConcepts=1
+set MaxConcepts=1000
+set MinConceptConfidence=0.1
+// Minimum confidence for inclusion of negated concepts.
+set MinNegConceptConfidence=0.1
+
+// A relation between two concepts must be at least this confident to be kept for Patient Cas.
+set MinConceptRelConfidence=0.15

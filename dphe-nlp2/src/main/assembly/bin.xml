@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<assembly
+        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+   <id>bin</id>
+   <formats>
+      <format>dir</format>
+   </formats>
+
+   <includeBaseDirectory>true</includeBaseDirectory>
+   <baseDirectory>/deepphe-${project.version}</baseDirectory>
+
+   <dependencySets>
+      <dependencySet>
+         <includes>
+            <include>org.healthnlp:deepphe-nlp</include>
+         </includes>
+         <!-- Drop real log4j 1.x (log4j:log4j:1.2.17), pulled in transitively by
+              ctakes-core. We ship the log4j2 stack instead (log4j-core + the
+              log4j-1.2-api bridge, declared in pom.xml). Having both put two
+              org.apache.log4j.* implementations on the runtime classpath; they
+              shadowed each other nondeterministically by OS, which left the desktop
+              Activity Log empty on Linux. useTransitiveFiltering (below) applies
+              this exclude across the transitive graph. -->
+         <excludes>
+            <exclude>log4j:log4j</exclude>
+         </excludes>
+         <unpack>false</unpack>
+         <useProjectArtifact>false</useProjectArtifact>
+         <useTransitiveFiltering>true</useTransitiveFiltering>
+         <fileMode>644</fileMode>
+         <directoryMode>755</directoryMode>
+         <outputDirectory>lib</outputDirectory>
+      </dependencySet>
+      <dependencySet>
+         <!-- DpheDesktop and cTAKES code use org.apache.log4j.* APIs. Keep the
+              Log4j 2 compatibility stack in its own dependency set so the old
+              assembly plugin cannot drop direct dependencies while filtering the
+              broader transitive graph above. -->
+         <includes>
+            <include>org.apache.logging.log4j:log4j-1.2-api</include>
+            <include>org.apache.logging.log4j:log4j-api</include>
+            <include>org.apache.logging.log4j:log4j-core</include>
+         </includes>
+         <unpack>false</unpack>
+         <useProjectArtifact>false</useProjectArtifact>
+         <useTransitiveFiltering>false</useTransitiveFiltering>
+         <fileMode>644</fileMode>
+         <directoryMode>755</directoryMode>
+         <outputDirectory>lib</outputDirectory>
+      </dependencySet>
+   </dependencySets>
+
+   <fileSets>
+<!--      <fileSet>-->
+<!--         <directory>resources</directory>-->
+<!--         <fileMode>755</fileMode>-->
+<!--         <directoryMode>755</directoryMode>-->
+<!--         <outputDirectory>resources</outputDirectory>-->
+<!--      </fileSet>-->
+      <fileSet>
+         <directory>src/main/resources</directory>
+         <fileMode>755</fileMode>
+         <directoryMode>755</directoryMode>
+         <outputDirectory>resources</outputDirectory>
+      </fileSet>
+      <fileSet>
+         <directory>src/main/bin</directory>
+         <fileMode>755</fileMode>
+         <directoryMode>755</directoryMode>
+         <outputDirectory>bin</outputDirectory>
+      </fileSet>
+      <fileSet>
+         <directory>src/main/config</directory>
+         <fileMode>755</fileMode>
+         <directoryMode>755</directoryMode>
+         <outputDirectory>config</outputDirectory>
+      </fileSet>
+      <fileSet>
+         <directory>.</directory>
+         <outputDirectory/>
+         <fileMode>644</fileMode>
+         <directoryMode>755</directoryMode>
+         <includes>
+            <include>README.md</include>
+            <include>LICENSE</include>
+            <include>NOTICE</include>
+         </includes>
+      </fileSet>
+   </fileSets>
+</assembly>

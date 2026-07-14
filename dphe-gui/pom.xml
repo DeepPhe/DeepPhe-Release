@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.healthnlp</groupId>
+    <artifactId>deepphe-desktop</artifactId>
+    <version>0.7.1</version>
+    <name>deepphe-desktop</name>
+    <description>Cancer Deep Phenotype Extraction (DeepPhe) Desktop GUI</description>
+    <packaging>jar</packaging>
+
+    <properties>
+        <deepphe.version>0.7.1</deepphe.version>
+        <!--  Until the next version of dphe uses java 17 we are stuck with ctakes version 5.1.0  -->
+        <ctakes.version>5.1.0</ctakes.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <maven-install-plugin.version>3.1.1</maven-install-plugin.version>
+        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
+        <maven-clean-plugin.version>3.3.2</maven-clean-plugin.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.ctakes</groupId>
+            <artifactId>ctakes-core</artifactId>
+            <version>${ctakes.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-core-models</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-utils</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.cleartk</groupId>
+                    <artifactId>cleartk-util</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.cleartk</groupId>
+                    <artifactId>cleartk-ml</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.uima</groupId>
+                    <artifactId>uimafit-cpe</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>jdom</groupId>
+                    <artifactId>jdom</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>jdom</groupId>
+                    <artifactId>jdom2</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.opennlp</groupId>
+                    <artifactId>opennlp-tools</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.opennlp</groupId>
+                    <artifactId>opennlp-maxent</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>edu.mit.findstruct</groupId>
+                    <artifactId>findstructapi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.googlecode.armbrust-file-utils</groupId>
+                    <artifactId>sqlwrapper</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.sourceforge.openai</groupId>
+                    <artifactId>openaifsm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.lexicalscope.jewelcli</groupId>
+                    <artifactId>jewelcli</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- cTAKES GUI components (for DisablerPane, LoggerPanel, IconLoader) -->
+        <dependency>
+            <groupId>org.apache.ctakes</groupId>
+            <artifactId>ctakes-gui</artifactId>
+            <version>${ctakes.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.ctakes</groupId>
+                    <artifactId>ctakes-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.hsqldb</groupId>
+                    <artifactId>hsqldb</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.github.classgraph</groupId>
+                    <artifactId>classgraph</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Development Snapshot Repository</name>
+            <url>https://repository.apache.org/content/groups/snapshots/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <build>
+        <finalName>deepphe-desktop</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven-resources-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <!--	Copy resources that should not be user-editable for testing without recompiling.  -->
+                        <!--	Permanent edits must be made in src/main/resources -->
+                        <id>copy-main-resources</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${project.basedir}/resources</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!--	Copy config that should be user-editable for testing without requiring recompiling.  -->
+                        <!--	This makes it much easier for developers to find configuration files. -->
+                        <!--	Permanent edits must still be made in src/main/resources -->
+                        <id>copy-main-config</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/config</directory>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${project.basedir}/config</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>${maven-install-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>latest-install</id>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+                            <file>${project.build.directory}/${project.build.finalName}.jar</file>
+                            <generatePom>false</generatePom>
+                            <pomFile>pom.xml</pomFile>
+                            <version>${deepphe.version}</version>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven-assembly-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>bundle-project-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/bin.xml</descriptor>
+                            </descriptors>
+                            <tarLongFileMode>gnu</tarLongFileMode>
+                            <finalName>deepphe-gui-${project.version}</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven-clean-plugin.version}</version>
+                    <configuration>
+                    <filesets>
+                    <!--  Clean up the resources directory so that mvn compile regenerates with any changes.
+                    Use individual modules.
+                    Do not use universal / alone as user may add their own module.  -->
+                        <fileset>
+                            <directory>${project.basedir}/resources/org/healthnlp/deepphe/desktop</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>${project.basedir}/config</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>DeepPhe-Robot</name>
+            <url>https://maven.pkg.github.com/DeepPhe/dphe-gui</url>
+        </repository>
+    </distributionManagement>
+
+</project>

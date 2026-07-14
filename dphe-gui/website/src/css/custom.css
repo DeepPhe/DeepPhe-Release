@@ -1,0 +1,79 @@
+/**
+ * DeepPhe Desktop GUI docs theme.
+ * Docusaurus uses Infima; these variables tune it to the DeepPhe brand.
+ */
+
+:root {
+  --ifm-color-primary: #008c91;
+  --ifm-color-primary-dark: #007f84;
+  --ifm-color-primary-darker: #00777c;
+  --ifm-color-primary-darkest: #006266;
+  --ifm-color-primary-light: #009aa0;
+  --ifm-color-primary-lighter: #00a1a7;
+  --ifm-color-primary-lightest: #12b6bc;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --deepphe-accent-berry: #9b325f;
+  --deepphe-accent-gold: #b38600;
+  --deepphe-panel-bg: #f5fbfb;
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #4fd1d9;
+  --ifm-color-primary-dark: #32c8d1;
+  --ifm-color-primary-darker: #27bdc5;
+  --ifm-color-primary-darkest: #209ca3;
+  --ifm-color-primary-light: #6ad9df;
+  --ifm-color-primary-lighter: #7bdde3;
+  --ifm-color-primary-lightest: #a7e9ed;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --deepphe-panel-bg: #10272a;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+  margin: 1.25rem 0;
+}
+
+.tool-card {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  padding: 1rem;
+  background: var(--ifm-background-surface-color);
+}
+
+.tool-card img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+}
+
+.tool-card strong {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.path-table code {
+  white-space: normal;
+  word-break: break-word;
+}
+
+.workflow-note {
+  border-left: 4px solid var(--deepphe-accent-gold);
+  background: var(--deepphe-panel-bg);
+  padding: 0.9rem 1rem;
+  margin: 1rem 0;
+}
+
+.button-chip {
+  display: inline-block;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  font-weight: 700;
+  color: var(--deepphe-accent-berry);
+  background: var(--ifm-color-emphasis-100);
+}
