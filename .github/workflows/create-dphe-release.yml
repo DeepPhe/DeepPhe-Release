@@ -15,9 +15,9 @@ jobs:
       - name: Create Tag
         uses: rickstaa/action-create-tag@v1
         with:
-          tag: "tag xn0.7.1"
+          tag: "xn0.7.1"
           tag_exists_error: false
-          message: "tag xn0.7.1"
+          message: "Creating tag xn0.7.1"
       - name: Release
         uses: ncipollo/release-action@v1
         with:
