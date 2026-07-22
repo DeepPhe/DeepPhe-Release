@@ -12,7 +12,13 @@ jobs:
         uses: actions/checkout@v7
         with:
           ref: auto-copy
-      - name: Create Tag and Release
+      - name: Create Tag
+        uses: rickstaa/action-create-tag@v1
+        with:
+          tag: "tag xn0.7.1"
+          tag_exists_error: false
+          message: "tag xn0.7.1"
+      - name: Release
         uses: ncipollo/release-action@v1
         with:
           commit: 'auto-copy'
