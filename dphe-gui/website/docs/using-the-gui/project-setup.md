@@ -41,7 +41,16 @@ OMOP_DB=/path/to/patient_demographics.json
 OUTPUT_DIR=/path/to/output
 ```
 
-## Corpus Layout
+## Piper Files
+
+[Piper files](https://github.com/apache/ctakes/wiki/Piper-Files) contain commands and parameters used to configure a pipeline.
+The DefaultDeepPhe.piper file contains the default DeepPhe Translational (DeepPhe-XN) pipeline that can be used to generate example output.
+You can modify the pipeline to cater DeepPhe processing and output to a particular cancer type, cancer attribute, document type, etc.
+DeepPhe is meant to be highly modifiable, and using the default pipeline without modification may not provide the results
+that can be achieved by making even minor changes to the default workflow or settings.
+
+
+## Corpus Directory
 
 The corpus directory should contain one directory per patient, with that patient's text documents inside the patient directory.
 
@@ -53,5 +62,13 @@ example_corpus/
   Patient_002/
     note_001.txt
 ```
+
+## OMOP Database
+
+The OMOP Database is expected to follow the [Common Data Model (CDM)](https://www.ohdsi.org/data-standardization/) 
+and have tables similar to what is outlined in the [official schema](https://ohdsi.github.io/CommonDataModel/cdm54.html). 
+Please note that your institution's data repository and/or your view of that repository may not follow the OMOP CDM standard.
+
+## Output Directory
 
 Use stable, writable output directories for real runs. The NLP step and data merge step both write files under the selected output directory.

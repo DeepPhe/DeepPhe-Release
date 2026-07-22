@@ -1,19 +1,18 @@
 ---
-title: Install and Launch
+title: Launch the DeepPhe Desktop GUI
 ---
-
-The GUI is normally launched from a DeepPhe desktop installation. The launcher starts a Java Swing application named `org.healthnlp.deepphe.gui.DpheDesktop`.
 
 ## Requirements
 
 - A complete DeepPhe installation with the `.DeepPhe` tool directory.
-- Java 8 or newer. Installed desktop bundles usually provide their own Java runtime.
+- Java 8. Installed desktop bundles usually provide their own Java runtime.
 - Writable project, log, and output directories.
 - Ports `3333` and `3334` available when using the visualizer.
 
-## Launch from an Installed DeepPhe App
+## Launch from an Installed DeepPhe Application
 
-Open the DeepPhe Desktop application from the operating system shortcut or application launcher. The GUI opens with a welcome message and a project panel at the top.
+Open the DeepPhe Desktop GUI application from the operating system shortcut or application launcher. 
+The Desktop GUI opens with a welcome message and a project panel at the top.
 
 The default example project expects sample data under:
 

@@ -17,7 +17,9 @@ Before starting a run, check:
 
 Click <span className="button-chip">NLP Summarizer</span>.
 
-The GUI writes a small CLI parameter file for the selected project, then starts the DeepPhe NLP tool with the selected Piper file:
+The Desktop GUI writes a small CLI parameter file for the selected project, then starts the
+DeepPhe NLP [Piper File Submitter](https://github.com/apache/ctakes/wiki/Piper-File-Submitter) with the selected Piper file. 
+The command is equivalent to:
 
 ```bash
 bin/runDeepPheGUI -p <PIPER_FILE> -c <PROJECT_NAME>.cli
@@ -36,7 +38,8 @@ Progress and errors appear in the Desktop Activity Log. Detailed tool output is 
 
 Click <span className="button-chip">Data Merge Tool</span>.
 
-This step combines the NLP output with the OMOP demographics JSON and prepares data for visualization. The GUI passes three arguments to the merge tool:
+This step combines the NLP output with the OMOP demographics JSON and prepares data for visualization. 
+The GUI passes three arguments to the merge tool, with a command equivalent to:
 
 ```bash
 runDbCreator <OUTPUT_DIR> <OMOP_DB> <OUTPUT_DIR>/vizDb/<PROJECT_NAME>
@@ -63,9 +66,9 @@ http://127.0.0.1:3334
 
 ## 5. Shut Down the Visualizer
 
-When the visualizer is running, the button label changes to <span className="button-chip">Visualizer Shutdown</span>. Click it before exiting if you want to stop the local Data API and visualizer immediately.
+When the visualizer is running, the Desktop GUI button label changes to <span className="button-chip">Visualizer Shutdown</span>. Click it before exiting if you want to stop the local Data API and visualizer immediately.
 
-The GUI also tries to stop visualization services when the desktop app exits.
+The Desktop GUI also tries to stop visualization services when the desktop app exits.
 
 <div className="workflow-note">
 The visualizer uses local ports only. It does not publish patient data to the public internet, but you should still follow your institution's rules for handling clinical text and derived data on the workstation.
